@@ -21,6 +21,11 @@ model User {
   isVerified        Boolean  @default(false)
   verificationToken String?
   role              Role     @default(USER)
+  verifyOtp         String   @default("")
+  verifyOtpExpireAt Int      @default(0)
+  isAccountVerified Boolean  @default(false)
+  resetOtp          String   @default("")
+  resetOtpExpireAt  Int      @default(0)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   profile           Profile?

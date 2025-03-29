@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "isAccountVerified" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "resetOtp" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "resetOtpExpireAt" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "verifyOtp" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "verifyOtpExpireAt" INTEGER NOT NULL DEFAULT 0;
