@@ -23,7 +23,7 @@ const register = async (firstName: string, lastName: string, email: string, phon
         // Create a new user transaction
         const newUser = await prisma.$transaction(async (tx) => {
             const user = await tx.user.create({
-                data: { firstName, lastName, email, phoneNumber, password: hashedPassword, verificationToken },
+                data: { firstName, lastName, email, phoneNumber, password: hashedPassword, verificationToken, role:'DONOR' },
             });
 
             await tx.profile.create({
@@ -34,7 +34,7 @@ const register = async (firstName: string, lastName: string, email: string, phon
         });
 
         const emailSubject = "Verify Your Email";
-        const verificationUrl = `http://localhost:${process.env.PORT}/api/user/auth/verify-email?token=${verificationToken}`;
+        const verificationUrl = `http://localhost:${process.env.PORT}/api/donor/auth/verify-email?token=${verificationToken}`;
         const emailBody = `Click the following link to verify your email: ${verificationUrl}`;
         console.log("Verification URL:", verificationUrl);
         await sendEmail(email, emailSubject, emailBody);
@@ -46,4 +46,24 @@ const register = async (firstName: string, lastName: string, email: string, phon
     }
 };
 
-export {register}
+const verifyEmail = async (token: string) => {
+    try {
+        const user = await prisma.user.findFirst({ where: { verificationToken: token } });
+
+        if (!user) {
+             
+            throw new CustomError('Invalid or expired token', 400);
+        }
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { isVerified: true, verificationToken: null },
+        });
+
+        return;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export {register, verifyEmail}
