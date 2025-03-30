@@ -66,4 +66,28 @@ const verifyEmail = async (token: string) => {
     }
 };
 
-export {register, verifyEmail}
+
+const login = async (email:string, password:string) => {
+    try {
+        const user = await prisma.user.findUnique({where: {email, role:'DONOR'}});
+        if (!user)
+            throw new CustomError("Incorrect email or password!", 400);
+
+        if (!user.isVerified) {
+            throw new CustomError("Please verify your email before logging in.", 400);
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            throw new CustomError("Incorrect email or password!", 400);
+        }
+
+        const jwt_token = jwt.sign({ id: user.id, email:user.email, role: user.role}, 'secret');
+        return {token:jwt_token}
+
+  } catch (error) {
+        throw error
+  }
+
+}
+
+export {register, verifyEmail, login}
