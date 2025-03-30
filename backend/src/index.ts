@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv'
 import cors from 'cors';
+import { donorAuthRoutes } from './routes/donor/authRoute';
+
 dotenv.config();
 
 
@@ -10,6 +12,9 @@ const PORT = process.env.PORT;
 
 app.use(cors({origin: 'http://localhost:3000'}));
 app.use(express.json());
+
+
+app.use('/api/donor/auth', donorAuthRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello, TypeScript with Express!');
