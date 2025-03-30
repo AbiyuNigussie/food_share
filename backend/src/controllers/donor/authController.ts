@@ -47,7 +47,19 @@ const register = async (req:Request, res:Response) => {
         res.status(500).json({ message: 'Unknown error occurred' });
       }
     }
- }
+ };
+ const verifyEmail = async (req:Request, res:Response) => {
+  try {
+    const { token } = req.query;
 
+    const user = await authService.verifyEmail(token)
 
- export { register }
+    res.status(200).json({ message: 'Email verified successfully. You can now log in.' });
+    
+  } catch (error:any) {
+    res.status(error.status || 500).json({ message: error.message || 'internal server error' });
+  }
+
+}
+
+ export { register, verifyEmail }
