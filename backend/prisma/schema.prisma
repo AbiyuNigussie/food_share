@@ -8,29 +8,150 @@ datasource db {
 }
 
 model User {
-  id                Int      @id @default(autoincrement())
+  id                String  @id @default(uuid())
   email             String   @unique
   password          String
   isVerified        Boolean  @default(false)
   verificationToken String?
   role              Role     @default(DONOR)
+  recipient         Recipient?
+  donor             Donor?
+  admin             Admin?
+  logistics_staff   LogisticsStaff?
+  notifications     Notification[]
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   firstName         String
   lastName          String
   phoneNumber       String
-  profile           Profile?
 }
 
-model Profile {
-  id     Int    @id @default(autoincrement())
-  img    String
-  bio    String
-  userId Int    @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Recipient {
+  userId   String   @id
+  user     User     @relation(fields: [userId], references: [id])
+  address  String
+  subscriptionStatus SubscriptionStatus
+  subscriptionDate   DateTime
+  needs    RecipientNeed[]
 }
+
+model Donor {
+  userId       String  @id
+  user         User    @relation(fields: [userId], references: [id])
+  organization String?
+  foodItems    FoodItem[]
+}
+
+model Admin {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model LogisticsStaff {
+  userId       String @id
+  user         User   @relation(fields: [userId], references: [id])
+  role         String
+  vehicleInfo  String?
+  assignedZone String?
+  deliveries   Delivery[]
+}
+
+
+model FoodItem {
+  id         String    @id @default(uuid())
+  donorId    String
+  donor      Donor     @relation(fields: [donorId], references: [userId])
+  name       String
+  category   String
+  quantity   Int
+  expiryDate DateTime?
+  listedAt   DateTime  @default(now())
+  status     FoodStatus
+  matches    Match[]
+}
+
+model RecipientNeed {
+  id              String   @id @default(uuid())
+  recipientId     String
+  recipient       Recipient @relation(fields: [recipientId], references: [userId])
+  itemName        String
+  category        String
+  quantityNeeded  Int
+  requestedAt     DateTime @default(now())
+  status          NeedStatus
+  matches         Match[]
+}
+
+model Match {
+  id               String   @id @default(uuid())
+  foodItemId       String
+  foodItem         FoodItem @relation(fields: [foodItemId], references: [id])
+  recipientNeedId  String
+  recipientNeed    RecipientNeed @relation(fields: [recipientNeedId], references: [id])
+  matchedAt        DateTime @default(now())
+  notified         Boolean  @default(false)
+  accepted         Boolean  @default(false)
+  delivery         Delivery?
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  message    String
+  readStatus Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model DeliveryTracking {
+  id           String   @id @default(uuid())
+  deliveryId   String
+  delivery     Delivery @relation(fields: [deliveryId], references: [id])
+  location     String
+  statusUpdate String
+  timestamp    DateTime @default(now())
+}
+
+model Delivery {
+  id              String          @id @default(uuid())
+  matchId         String          @unique
+  match           Match           @relation(fields: [matchId], references: [id])
+  logisticsStaffId String
+  logisticsStaff  LogisticsStaff  @relation(fields: [logisticsStaffId], references: [userId])
+  scheduledDate   DateTime
+  deliveredAt     DateTime?
+  deliveryStatus  DeliveryStatus  @default(pending)
+  trackingUpdates DeliveryTracking[]
+}
+
 
 enum Role {
   ADMIN
   DONOR
+}
+
+enum SubscriptionStatus {
+  active
+  inactive
+  pending
+}
+
+enum FoodStatus {
+  available
+  matched
+  delivered
+  expired
+}
+
+enum NeedStatus {
+  pending
+  matched
+  fulfilled
+}
+
+enum DeliveryStatus {
+  pending
+  in_transit
+  completed
+  failed
 }
