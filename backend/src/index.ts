@@ -17,7 +17,7 @@ app.use(express.json());
 app.use('/api/donor/auth', donorAuthRoutes);
 
 app.get('/', (req, res) => {
-  res.send('Hello, TypeScript with Express!');
+  res.send('Hello, welcome to the ekekiyans gang with typeScript and Express!');
 });
 
 app.listen(PORT, () => {
