@@ -26,9 +26,9 @@ const register = async (firstName: string, lastName: string, email: string, phon
                 data: { firstName, lastName, email, phoneNumber, password: hashedPassword, verificationToken, role:'DONOR' },
             });
 
-            await tx.profile.create({
-                data: { userId: user.id, img: '', bio: '' },
-            });
+            // await tx.profile.create({
+            //     data: { userId: user.id, img: '', bio: '' },
+            // });
 
             return user;
         });
