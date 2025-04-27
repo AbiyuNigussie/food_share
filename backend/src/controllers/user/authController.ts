@@ -64,14 +64,13 @@ const register = async (req:Request, res:Response) => {
 
 const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
 
-    // Validate input fields
-    if (!email || !password) {
+    if (!email || !password || !role ) {
       throw new CustomError("You should fill all fields", 400);
     }
 
-    const success = await authService.login(email, password);
+    const success = await authService.login(email, password, role);
 
     res.status(200).json({
       token: success.token
