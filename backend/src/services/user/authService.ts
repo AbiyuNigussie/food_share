@@ -91,27 +91,44 @@ const verifyEmail = async (token: string) => {
 };
 
 
-const login = async (email:string, password:string) => {
+const login = async (email: string, password: string, role: string) => {
     try {
-        const user = await prisma.user.findUnique({where: {email, role:'DONOR'}});
-        if (!user)
-            throw new CustomError("Incorrect email or password!", 400);
-
-        if (!user.isVerified) {
-            throw new CustomError("Please verify your email before logging in.", 400);
+      if (!['DONOR', 'RECIPIENT', 'LOGISTIC_PROVIDER'].includes(role.toUpperCase())) {
+        throw new CustomError('Invalid role specified', 400);
+      }
+  
+      const user = await prisma.user.findUnique({
+        where: { email },
+        include: {
+          donor: true,        
+          recipient: true,    
+          logistics_staff: true 
         }
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            throw new CustomError("Incorrect email or password!", 400);
-        }
+      });
+  
+      if (!user || user.role !== role.toUpperCase()) {
+        throw new CustomError('Incorrect email or role!', 400);
+      }
 
-        const jwt_token = jwt.sign({ id: user.id, email:user.email, role: user.role}, 'secret');
-        return {token:jwt_token}
+      if (!user.isVerified) {
+        throw new CustomError('Please verify your email before logging in.', 400);
+      }
 
-  } catch (error) {
-        throw error
-  }
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        throw new CustomError('Incorrect email or password!', 400);
+      }
 
-}
+      const jwt_token = jwt.sign(
+        { id: user.id, email: user.email, role: user.role },
+        'secret',
+        { expiresIn: '1h' } 
+      );
+  
+      return { token: jwt_token };
+    } catch (error) {
+      throw error;
+    }
+  };
 
 export {register, verifyEmail, login}
