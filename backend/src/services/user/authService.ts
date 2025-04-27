@@ -2,12 +2,13 @@ import { CustomError } from "../../utils/CustomError";
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role } from '@prisma/client';
 import { sendEmail } from "../../utils/email";
+
 
 const prisma = new PrismaClient();
 
-const register = async (firstName: string, lastName: string, email: string, phoneNumber:string, password: string) => {
+const register = async (firstName: string, lastName: string, email: string, phoneNumber:string, password: string, role: Role) => {
     try {
         const existingUser = await prisma.user.findUnique({ where: { email } });
 
@@ -23,12 +24,35 @@ const register = async (firstName: string, lastName: string, email: string, phon
         // Create a new user transaction
         const newUser = await prisma.$transaction(async (tx) => {
             const user = await tx.user.create({
-                data: { firstName, lastName, email, phoneNumber, password: hashedPassword, verificationToken, role:'DONOR' },
+                data: { firstName, lastName, email, phoneNumber, password: hashedPassword, verificationToken, role: Role[role.toUpperCase() as keyof typeof Role] },
             });
-
-            // await tx.profile.create({
-            //     data: { userId: user.id, img: '', bio: '' },
-            // });
+        
+            if (role.toUpperCase() === 'DONOR') {
+                await tx.donor.create({ data: { userId: user.id } });
+            }
+            else if (role.toUpperCase() === 'RECIPIENT') {
+                await tx.recipient.create({
+                    data: {
+                        userId: user.id,
+                        address: '', 
+                        subscriptionStatus: 'pending', 
+                        subscriptionDate: new Date()
+                    }
+                });
+            }
+            else if (role.toUpperCase() === 'LOGISTIC_PROVIDER') {
+                await tx.logisticsStaff.create({
+                    data: {
+                        userId: user.id,
+                        role: 'Driver',  
+                        vehicleInfo: null,
+                        assignedZone: null
+                    }
+                });
+            }
+            else {
+                throw new CustomError("Invalid role provided", 400);
+            }
 
             return user;
         });
