@@ -73,6 +73,7 @@ const login = async (req: Request, res: Response) => {
     const success = await authService.login(email, password, role);
 
     res.status(200).json({
+     user: success.user,
       token: success.token
     });
 
