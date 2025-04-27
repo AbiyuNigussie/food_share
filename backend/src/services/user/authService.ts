@@ -58,7 +58,8 @@ const register = async (firstName: string, lastName: string, email: string, phon
         });
 
         const emailSubject = "Verify Your Email";
-        const verificationUrl = `http://localhost:${process.env.PORT}/api/donor/auth/verify-email?token=${verificationToken}`;
+        // const verificationUrl = `http://localhost:${process.env.PORT}/api/user/auth/verify-email?token=${verificationToken}`;
+        const verificationUrl = `http://localhost:${process.env.CLIENT_PORT}/verify-email?token=${verificationToken}`
         const emailBody = `Click the following link to verify your email: ${verificationUrl}`;
         console.log("Verification URL:", verificationUrl);
         await sendEmail(email, emailSubject, emailBody);
@@ -125,7 +126,7 @@ const login = async (email: string, password: string, role: string) => {
         { expiresIn: '1h' } 
       );
   
-      return { token: jwt_token };
+      return { user: {id:user.id, email: user.email}, token: jwt_token };
     } catch (error) {
       throw error;
     }
