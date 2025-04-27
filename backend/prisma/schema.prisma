@@ -128,6 +128,8 @@ model Delivery {
 enum Role {
   ADMIN
   DONOR
+  RECIPIENT
+  LOGISTIC_PROVIDER
 }
 
 enum SubscriptionStatus {

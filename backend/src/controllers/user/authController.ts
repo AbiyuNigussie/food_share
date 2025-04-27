@@ -1,33 +1,33 @@
 import { Request, Response } from 'express'
-const  authService = require('../../services/donor/authService') ;
+const  authService = require('../../services/user/authService') ;
 import { CustomError } from '../../utils/CustomError';
 import {isValidEmail} from '../../utils/validate'
+import { Role } from '@prisma/client';
 const register = async (req:Request, res:Response) => {
     try {
-        const { firstName, lastName , email, phoneNumber, password } = req.body
+        const { firstName, lastName , email, phoneNumber, password, role } = req.body
         
-         if(!firstName || !lastName || !email || !phoneNumber || !password) {
+         if(!firstName || !lastName || !email || !phoneNumber || !password || !role) {
             const error = new CustomError("You should fill all fields ", 400)
             throw error
          }
 
+         if (!['DONOR', 'RECIPIENT', 'LOGISTIC_PROVIDER'].includes(role)) {
+          throw new CustomError("Invalid role specified", 400);
+        }
+
          if(password.length < 6 ) {
           const error = new CustomError("The password should not be less that 6", 400)
           throw error
-         }
-
-         
-
+         }         
          const testEmail = isValidEmail(email)
-         
 
          if(!testEmail) {
           const error = new CustomError("The email is not valid", 400)
           throw error
          }
         
-        const result = await authService.register(firstName, lastName, email, phoneNumber, password);
-       
+        const result = await authService.register(firstName, lastName, email, phoneNumber, password, role);
 
         res.status(201).json({
             message: "User registered successfully!",

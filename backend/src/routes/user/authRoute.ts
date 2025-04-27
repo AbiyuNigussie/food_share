@@ -1,5 +1,5 @@
 import express from 'express'
-import { login, register,verifyEmail } from "../../controllers/donor/authController";
+import { login, register,verifyEmail } from "../../controllers/user/authController";
 
 const router = express.Router();
 
@@ -9,4 +9,4 @@ router.get('/verify-email',  verifyEmail)
 router.post('/login', login)
 
 
-export const donorAuthRoutes = router;
+export const UserAuthRoutes = router;
