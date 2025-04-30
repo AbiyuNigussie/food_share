@@ -1,26 +1,32 @@
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
+import nodemailer from 'nodemailer';
 
-dotenv.config();
+interface EmailOptions {
+  to: string;
+  subject: string;
+  html?: string;
+  text?: string;
+}
 
-const transporter = nodemailer.createTransport({
-  service: "gmail", // or use SMTP settings for production
-  auth: {
-    user: process.env.EMAIL_USER, // Your email
-    pass: process.env.EMAIL_PASS, // Your email password or app password
-  },
-});
+const sendEmail = async ({ to, subject, html, text }: EmailOptions) => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail', // or another provider like SMTP
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
 
-export const sendEmail = async (to: string, subject: string, text: string) => {
-  try {
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to,
-      subject,
-      text,
-    });
-    console.log("📧 Email sent to:", to);
-  } catch (error) {
-    console.error("❌ Error sending email:", error);
-  }
+  const mailOptions = {
+    from: `"Food Share" <${process.env.EMAIL_USER}>`,
+    to,
+    subject,
+    // send both if available, fallback to one
+    ...(html && { html }),
+    ...(text && { text }),
+    ...(html && !text && { text: html.replace(/<\/?[^>]+(>|$)/g, "") }), // generate plain text from HTML if text not provided
+  };
+
+  await transporter.sendMail(mailOptions);
 };
+
+export default sendEmail;

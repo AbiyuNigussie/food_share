@@ -7,45 +7,57 @@ import PrivateRoute from "./routes/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import VerifyEmail from "./pages/auth/VerifyEmail";
 import ResetPassword from "./pages/auth/ResetPassword";
+import { ToastContainer } from "react-toastify";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Auth pages without header/footer */}
-          <Route
-            path="/login"
-            element={
-              <AuthLayout>
-                <Login />
-              </AuthLayout>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <AuthLayout>
-                <Register />
-              </AuthLayout>
-            }
-          />
-          <Route
-            path="/verify-email"
-            element={
-              <AuthLayout>
-                <VerifyEmail />
-              </AuthLayout>
-            }
-          />
-          <Route
-            path="/reset-password"
-            element={
-              <AuthLayout>
-                <ResetPassword />
-              </AuthLayout>
-            }
-          />
-          {/* <Route
+      <>
+        <ToastContainer />
+        <BrowserRouter>
+          <Routes>
+            {/* Auth pages without header/footer */}
+            <Route
+              path="/login"
+              element={
+                <AuthLayout>
+                  <Login />
+                </AuthLayout>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <AuthLayout>
+                  <Register />
+                </AuthLayout>
+              }
+            />
+            <Route
+              path="/verify-email"
+              element={
+                <AuthLayout>
+                  <VerifyEmail />
+                </AuthLayout>
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <AuthLayout>
+                  <ForgotPassword />
+                </AuthLayout>
+              }
+            />
+            <Route
+              path="/reset-password/:token"
+              element={
+                <AuthLayout>
+                  <ResetPassword />
+                </AuthLayout>
+              }
+            />
+            {/* <Route
             path="/dashboard"
             element={
               <PrivateRoute>
@@ -54,10 +66,11 @@ function App() {
             }
           /> */}
 
-          {/* Other pages with Main Layout
+            {/* Other pages with Main Layout
           {/* <Route path="/" element={<Home />} /> */}
-        </Routes>
-      </BrowserRouter>
+          </Routes>
+        </BrowserRouter>
+      </>
     </AuthProvider>
   );
 }
