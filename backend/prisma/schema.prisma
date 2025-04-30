@@ -8,38 +8,39 @@ datasource db {
 }
 
 model User {
-  id                String  @id @default(uuid())
-  email             String   @unique
+  id                String          @id @default(uuid())
+  email             String          @unique
   password          String
-  isVerified        Boolean  @default(false)
+  isVerified        Boolean         @default(false)
   verificationToken String?
-  role              Role     @default(DONOR)
+  role              Role            @default(DONOR)
   recipient         Recipient?
   donor             Donor?
   admin             Admin?
   logistics_staff   LogisticsStaff?
   notifications     Notification[]
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
   firstName         String
   lastName          String
   phoneNumber       String
 }
 
 model Recipient {
-  userId   String   @id
-  user     User     @relation(fields: [userId], references: [id])
-  address  String
+  userId             String             @id
+  user               User               @relation(fields: [userId], references: [id])
+  address            String
+  organization       String?            @default("N/A")
   subscriptionStatus SubscriptionStatus
   subscriptionDate   DateTime
-  needs    RecipientNeed[]
+  needs              RecipientNeed[]
 }
 
 model Donor {
-  userId       String  @id
-  user         User    @relation(fields: [userId], references: [id])
-  organization String?
-  foodItems    FoodItem[]
+  userId    String     @id
+  user      User       @relation(fields: [userId], references: [id])
+  address   String
+  foodItems FoodItem[]
 }
 
 model Admin {
@@ -48,50 +49,49 @@ model Admin {
 }
 
 model LogisticsStaff {
-  userId       String @id
-  user         User   @relation(fields: [userId], references: [id])
+  userId       String     @id
+  user         User       @relation(fields: [userId], references: [id])
   role         String
   vehicleInfo  String?
   assignedZone String?
   deliveries   Delivery[]
 }
 
-
 model FoodItem {
-  id         String    @id @default(uuid())
+  id         String     @id @default(uuid())
   donorId    String
-  donor      Donor     @relation(fields: [donorId], references: [userId])
+  donor      Donor      @relation(fields: [donorId], references: [userId])
   name       String
   category   String
   quantity   Int
   expiryDate DateTime?
-  listedAt   DateTime  @default(now())
+  listedAt   DateTime   @default(now())
   status     FoodStatus
   matches    Match[]
 }
 
 model RecipientNeed {
-  id              String   @id @default(uuid())
-  recipientId     String
-  recipient       Recipient @relation(fields: [recipientId], references: [userId])
-  itemName        String
-  category        String
-  quantityNeeded  Int
-  requestedAt     DateTime @default(now())
-  status          NeedStatus
-  matches         Match[]
+  id             String     @id @default(uuid())
+  recipientId    String
+  recipient      Recipient  @relation(fields: [recipientId], references: [userId])
+  itemName       String
+  category       String
+  quantityNeeded Int
+  requestedAt    DateTime   @default(now())
+  status         NeedStatus
+  matches        Match[]
 }
 
 model Match {
-  id               String   @id @default(uuid())
-  foodItemId       String
-  foodItem         FoodItem @relation(fields: [foodItemId], references: [id])
-  recipientNeedId  String
-  recipientNeed    RecipientNeed @relation(fields: [recipientNeedId], references: [id])
-  matchedAt        DateTime @default(now())
-  notified         Boolean  @default(false)
-  accepted         Boolean  @default(false)
-  delivery         Delivery?
+  id              String        @id @default(uuid())
+  foodItemId      String
+  foodItem        FoodItem      @relation(fields: [foodItemId], references: [id])
+  recipientNeedId String
+  recipientNeed   RecipientNeed @relation(fields: [recipientNeedId], references: [id])
+  matchedAt       DateTime      @default(now())
+  notified        Boolean       @default(false)
+  accepted        Boolean       @default(false)
+  delivery        Delivery?
 }
 
 model Notification {
@@ -113,17 +113,16 @@ model DeliveryTracking {
 }
 
 model Delivery {
-  id              String          @id @default(uuid())
-  matchId         String          @unique
-  match           Match           @relation(fields: [matchId], references: [id])
+  id               String             @id @default(uuid())
+  matchId          String             @unique
+  match            Match              @relation(fields: [matchId], references: [id])
   logisticsStaffId String
-  logisticsStaff  LogisticsStaff  @relation(fields: [logisticsStaffId], references: [userId])
-  scheduledDate   DateTime
-  deliveredAt     DateTime?
-  deliveryStatus  DeliveryStatus  @default(pending)
-  trackingUpdates DeliveryTracking[]
+  logisticsStaff   LogisticsStaff     @relation(fields: [logisticsStaffId], references: [userId])
+  scheduledDate    DateTime
+  deliveredAt      DateTime?
+  deliveryStatus   DeliveryStatus     @default(pending)
+  trackingUpdates  DeliveryTracking[]
 }
-
 
 enum Role {
   ADMIN
