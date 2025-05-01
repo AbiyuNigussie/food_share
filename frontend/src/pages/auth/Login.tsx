@@ -24,7 +24,7 @@ const Login: React.FC = () => {
           role: data.user.role,
         });
         toast.success("Logged in successfully!");
-        navigate("/");
+        navigate("/dashboard");
       } else {
         toast.error(data.message || "Login failed.");
       }
