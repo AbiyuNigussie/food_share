@@ -9,7 +9,7 @@ import VerifyEmail from "./pages/auth/VerifyEmail";
 import ResetPassword from "./pages/auth/ResetPassword";
 import { ToastContainer } from "react-toastify";
 import ForgotPassword from "./pages/auth/ForgotPassword";
-import { Logistics } from "./components/dashboards/Logistics";
+import DashboardPage from "./pages/Dashboard";
 function App() {
   return (
     <AuthProvider>
@@ -58,23 +58,14 @@ function App() {
                 </AuthLayout>
               }
             />
-            <Route 
-             path="/dashboard"
-             element={
-              <PrivateRoute>
-                  <Logistics />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <DashboardPage />
                 </PrivateRoute>
-             }
-            
+              }
             />
-            {/* <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          /> */}
 
             {/* Other pages with Main Layout
           {/* <Route path="/" element={<Home />} /> */}

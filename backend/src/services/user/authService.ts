@@ -1,10 +1,9 @@
 import { CustomError } from "../../utils/CustomError";
-import crypto from 'crypto';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { PrismaClient, Role } from '@prisma/client';
+import crypto from "crypto";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { PrismaClient, Role } from "@prisma/client";
 import sendEmail from "../../utils/email";
-
 
 const prisma = new PrismaClient();
 
@@ -79,79 +78,86 @@ const register = async (
     // Optionally send verification email here
     const emailSubject = "Verify Your Email";
     // const verificationUrl = `http://localhost:${process.env.PORT}/api/user/auth/verify-email?token=${verificationToken}`;
-    const verificationUrl = `http://localhost:${process.env.CLIENT_PORT}/verify-email?token=${verificationToken}`
+    const verificationUrl = `http://localhost:${process.env.CLIENT_PORT}/verify-email?token=${verificationToken}`;
     const emailBody = `Click the following link to verify your email: ${verificationUrl}`;
     console.log("Verification URL:", verificationUrl);
-    await sendEmail({to:email, subject:emailSubject, text:emailBody});
-    
-    const jwt_token = jwt.sign({ id: newUser.id, email:newUser.email, role: newUser.role}, 'secret');
-    return {token:jwt_token}
+    await sendEmail({ to: email, subject: emailSubject, text: emailBody });
+
+    const jwt_token = jwt.sign(
+      { id: newUser.id, email: newUser.email, role: newUser.role },
+      "secret"
+    );
+    return { token: jwt_token };
   } catch (error) {
     throw error;
   }
 };
 
-
 const verifyEmail = async (token: string) => {
-    try {
-        const user = await prisma.user.findFirst({ where: { verificationToken: token } });
+  try {
+    const user = await prisma.user.findFirst({
+      where: { verificationToken: token },
+    });
 
-        if (!user) {
-             
-            throw new CustomError('Invalid or expired token', 400);
-        }
-
-        await prisma.user.update({
-            where: { id: user.id },
-            data: { isVerified: true, verificationToken: null },
-        });
-
-        return;
-    } catch (error) {
-        throw error;
+    if (!user) {
+      throw new CustomError("Invalid or expired token", 400);
     }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { isVerified: true, verificationToken: null },
+    });
+
+    return;
+  } catch (error) {
+    throw error;
+  }
 };
 
-
 const login = async (email: string, password: string, role: string) => {
-    try {
-      if (!['DONOR', 'RECIPIENT', 'LOGISTIC_PROVIDER'].includes(role.toUpperCase())) {
-        throw new CustomError('Invalid role specified', 400);
-      }
-  
-      const user = await prisma.user.findUnique({
-        where: { email },
-        include: {
-          donor: true,        
-          recipient: true,    
-          logistics_staff: true 
-        }
-      });
-  
-      if (!user || user.role !== role.toUpperCase()) {
-        throw new CustomError('Incorrect email or role!', 400);
-      }
-
-      if (!user.isVerified) {
-        throw new CustomError('Please verify your email before logging in.', 400);
-      }
-
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        throw new CustomError('Incorrect email or password!', 400);
-      }
-
-      const jwt_token = jwt.sign(
-        { id: user.id, email: user.email, role: user.role },
-        'secret',
-        { expiresIn: '1h' } 
-      );
-  
-      return { user: {id:user.id, email: user.email}, token: jwt_token };
-    } catch (error) {
-      throw error;
+  try {
+    if (
+      !["DONOR", "RECIPIENT", "LOGISTIC_PROVIDER"].includes(role.toUpperCase())
+    ) {
+      throw new CustomError("Invalid role specified", 400);
     }
-  };
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: {
+        donor: true,
+        recipient: true,
+        logistics_staff: true,
+      },
+    });
+
+    if (!user || user.role !== role.toUpperCase()) {
+      throw new CustomError("Incorrect email or role!", 400);
+    }
+
+    if (!user.isVerified) {
+      throw new CustomError("Please verify your email before logging in.", 400);
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new CustomError("Incorrect email or password!", 400);
+    }
+
+    const jwt_token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      "secret",
+      { expiresIn: "1h" }
+    );
+
+    return {
+      user: { id: user.id, email: user.email, role: user.role },
+      token: jwt_token,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
 
 const sendPasswordResetLink = async (email: string) => {
   const user = await prisma.user.findUnique({ where: { email } });
@@ -159,7 +165,7 @@ const sendPasswordResetLink = async (email: string) => {
     return { success: false, message: "User with this email does not exist." };
   }
 
-  const token = jwt.sign({ userId: user.id }, "secret", { expiresIn:"15m" });
+  const token = jwt.sign({ userId: user.id }, "secret", { expiresIn: "15m" });
 
   const resetLink = `${process.env.CLIENT_URL}/reset-password/${token}`;
   const emailContent = `
@@ -168,16 +174,22 @@ const sendPasswordResetLink = async (email: string) => {
     <a href="${resetLink}">${resetLink}</a>
   `;
 
-  await sendEmail({to:user.email, subject:"Password Reset", html:emailContent});
+  await sendEmail({
+    to: user.email,
+    subject: "Password Reset",
+    html: emailContent,
+  });
 
   return { success: true };
-}
+};
 
 const resetPassword = async (token: string, newPassword: string) => {
   try {
     const decoded = jwt.verify(token, "secret") as { userId: string };
 
-    const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+    });
 
     if (!user) {
       throw new CustomError("Invalid token or user not found.", 400);
@@ -189,12 +201,10 @@ const resetPassword = async (token: string, newPassword: string) => {
       where: { id: user.id },
       data: { password: hashedPassword },
     });
-
   } catch (error: any) {
     console.error("Password reset error:", error);
     throw new CustomError("Invalid or expired token.", 400);
   }
-}
+};
 
-
-export {register, verifyEmail, login, sendPasswordResetLink, resetPassword}
+export { register, verifyEmail, login, sendPasswordResetLink, resetPassword };
