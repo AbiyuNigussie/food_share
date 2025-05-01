@@ -9,6 +9,7 @@ import VerifyEmail from "./pages/auth/VerifyEmail";
 import ResetPassword from "./pages/auth/ResetPassword";
 import { ToastContainer } from "react-toastify";
 import ForgotPassword from "./pages/auth/ForgotPassword";
+import { Logistics } from "./components/dashboards/Logistics";
 function App() {
   return (
     <AuthProvider>
@@ -56,6 +57,15 @@ function App() {
                   <ResetPassword />
                 </AuthLayout>
               }
+            />
+            <Route 
+             path="/dashboard"
+             element={
+              <PrivateRoute>
+                  <Logistics />
+                </PrivateRoute>
+             }
+            
             />
             {/* <Route
             path="/dashboard"
