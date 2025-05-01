@@ -1,13 +1,15 @@
-import React from "react";
+import React from 'react';
 
 interface StatCardProps {
   label: string;
   value: number | string;
 }
 
-export const StatCard: React.FC<StatCardProps> = ({ label, value }) => (
-  <div className="bg-white p-4 rounded shadow w-full text-center">
-    <p className="text-2xl font-bold">{value}</p>
-    <p className="text-gray-500">{label}</p>
-  </div>
-);
+export const StatCard: React.FC<StatCardProps> = ({ label, value }) => {
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-sm flex flex-col">
+      <span className="text-gray-500 text-sm">{label}</span>
+      <span className="text-3xl font-bold mt-2">{value}</span>
+    </div>
+  );
+};

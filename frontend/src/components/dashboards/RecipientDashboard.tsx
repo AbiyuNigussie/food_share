@@ -1,8 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
+import { Header } from "../Header";
 import { StatCard } from "../StatCard";
+import { SearchBar } from "../SearchBar";
+import { FilterSelect } from "../FilterSelect";
 import { DonationSection } from "../DonationSection";
-
+import { DonationStatus } from "../../types";
+import clsx from "clsx";
+import { SideBar } from "../SideBar";
 const RecipientDashboard: React.FC = () => {
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("All Types");
+  const [distanceFilter, setDistanceFilter] = useState("All Distances");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
   const stats = [
     { label: "Total Food Received (lbs)", value: 486 },
     { label: "Meals Served", value: 1458 },
@@ -17,6 +27,7 @@ const RecipientDashboard: React.FC = () => {
       location: "123 Main St",
       expires: "2024-02-10",
       distance: "0.8 miles",
+      onClaim: () => alert("Claimed!"),
     },
     {
       title: "Bread",
@@ -25,6 +36,7 @@ const RecipientDashboard: React.FC = () => {
       location: "456 Oak Ave",
       expires: "2024-02-08",
       distance: "1.2 miles",
+      onClaim: () => alert("Claimed!"),
     },
     {
       title: "Canned Goods",
@@ -33,6 +45,7 @@ const RecipientDashboard: React.FC = () => {
       location: "789 Pine St",
       expires: "2024-03-15",
       distance: "2.5 miles",
+      onClaim: () => alert("Claimed!"),
     },
   ];
 
@@ -42,33 +55,74 @@ const RecipientDashboard: React.FC = () => {
       donor: "Fresh Dairy Inc",
       quantity: "20 gallons",
       location: "321 Elm St",
-      status: "in_transit" as "in_transit",
-      showButton: false,
+      status: "in_transit" as DonationStatus,
+      onFeedback: undefined,
     },
     {
       title: "Vegetables",
       donor: "Green Gardens",
       quantity: "75 lbs",
       location: "654 Maple Dr",
-      status: "completed" as "completed",
-      showButton: false,
+      status: "completed" as DonationStatus,
+      onFeedback: () => alert("Feedback requested"),
     },
   ];
 
-  return (
-    <main className="p-6  min-h-screen">
-      <h1 className="text-2xl font-bold mb-6">Recipient Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {stats.map((stat, idx) => (
-          <StatCard key={idx} {...stat} />
-        ))}
-      </div>
-      <DonationSection
-        title="Available Donations"
-        donations={availableDonations}
+  const controls = (
+    <>
+      <SearchBar
+        value={search}
+        onChange={setSearch}
+        placeholder="Search by food or donor"
       />
-      <DonationSection title="Claimed Donations" donations={claimedDonations} />
-    </main>
+      <FilterSelect
+        options={["All Types", "Fresh Produce", "Bread", "Canned Goods"]}
+        value={typeFilter}
+        onChange={setTypeFilter}
+      />
+      <FilterSelect
+        options={["All Distances", "0-1 miles", "1-2 miles", "2+ miles"]}
+        value={distanceFilter}
+        onChange={setDistanceFilter}
+      />
+    </>
+  );
+
+  return (
+    <>
+      <SideBar open={sidebarOpen} toggle={() => setSidebarOpen((o) => !o)} />
+
+      <div
+        className={clsx(
+          "p-8 bg-gray-50 min-h-screen transition-all duration-200",
+          sidebarOpen ? "ml-64" : "ml-16"
+        )}
+      >
+        <Header title="Recipient Dashboard" />
+        <div className="p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {stats.map((s, i) => (
+              <StatCard key={i} {...s} />
+            ))}
+          </div>
+
+          <DonationSection
+            title="Available Donations"
+            donations={availableDonations}
+            controls={controls}
+            type="available"
+            layout="grid"
+          />
+
+          <DonationSection
+            title="Claimed Donations"
+            donations={claimedDonations}
+            type="claimed"
+            layout="row"
+          />
+        </div>
+      </div>
+    </>
   );
 };
 

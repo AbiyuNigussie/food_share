@@ -1,3 +1,7 @@
+import React from "react";
+
+export type DonationStatus = "in_transit" | "completed";
+
 export interface DonationCardProps {
   title: string;
   donor: string;
@@ -5,9 +9,11 @@ export interface DonationCardProps {
   location: string;
   expires?: string;
   distance?: string;
+  status?: DonationStatus;
   onClaim?: () => void;
-  status?: "in_transit" | "completed";
   showButton?: boolean;
+  variant?: "available" | "claimed";
+  onFeedback?: () => void;
 }
 
 export const DonationCard: React.FC<DonationCardProps> = ({
@@ -17,37 +23,51 @@ export const DonationCard: React.FC<DonationCardProps> = ({
   location,
   expires,
   distance,
-  onClaim,
   status,
+  onClaim,
   showButton = true,
-}) => (
-  <div className="bg-white p-4 rounded shadow w-full">
-    <div className="flex justify-between">
-      <h3 className="text-lg font-semibold">{title}</h3>
-      {distance && <p className="text-sm text-gray-400">{distance}</p>}
-    </div>
-    <p className="text-sm text-gray-600">{donor}</p>
-    <p className="text-sm">Quantity: {quantity}</p>
-    <p className="text-sm">Location: {location}</p>
-    {expires && <p className="text-sm text-gray-500">Expires: {expires}</p>}
-    {status && (
-      <span
-        className={`inline-block text-xs mt-2 px-2 py-1 rounded-full ${
-          status === "completed"
-            ? "bg-green-200 text-green-800"
-            : "bg-blue-200 text-blue-800"
-        }`}
-      >
-        {status.replace("_", " ")}
-      </span>
-    )}
-    {showButton && (
-      <button
-        onClick={onClaim}
-        className="mt-4 w-full bg-indigo-600 text-white py-1 rounded hover:bg-indigo-700"
-      >
-        Claim Donation
-      </button>
-    )}
-  </div>
-);
+  variant = "available",
+  onFeedback,
+}) => {
+  if (variant === "claimed") {
+    return (
+      <div className="bg-white rounded-lg shadow p-6 flex flex-col">
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h3 className="text-lg font-medium text-gray-800">{title}</h3>
+            <p className="text-sm text-gray-500">{donor}</p>
+          </div>
+          {status && (
+            <span
+              className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                status === "completed"
+                  ? "bg-purple-600 text-white"
+                  : "bg-blue-100 text-blue-800"
+              }`}
+            >
+              {status.replace("_", " ")}
+            </span>
+          )}
+        </div>
+        <div className="grid grid-cols-2 gap-x-8 text-sm text-gray-700 mb-4">
+          <div className="space-y-2">
+            <p className="font-medium">Quantity:</p>
+            <p className="font-medium">Location:</p>
+          </div>
+          <div className="space-y-2 text-right">
+            <p>{quantity}</p>
+            <p>{location}</p>
+          </div>
+        </div>
+        {status === "completed" && onFeedback && (
+          <button
+            onClick={onFeedback}
+            className="mt-auto w-full border border-gray-300 rounded-lg py-2 text-sm text-gray-600 hover:bg-gray-50"
+          >
+            Leave Feedback
+          </button>
+        )}
+      </div>
+    );
+  }
+};
