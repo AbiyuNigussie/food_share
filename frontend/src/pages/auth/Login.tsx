@@ -17,7 +17,12 @@ const Login: React.FC = () => {
       const res = await authService.login(email, password, role);
       const data = await res.json();
       if (res.ok) {
-        login({ id: data.user.id, email: data.user.email, token: data.token });
+        login({
+          id: data.user.id,
+          email: data.user.email,
+          token: data.token,
+          role: data.user.role,
+        });
         toast.success("Logged in successfully!");
         navigate("/");
       } else {
