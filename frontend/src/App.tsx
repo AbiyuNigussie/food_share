@@ -10,6 +10,7 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import { ToastContainer } from "react-toastify";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import DashboardPage from "./pages/Dashboard";
+import { DeliveryDetails } from "./components/viewDetail/DeliveryDetails";
 function App() {
   return (
     <AuthProvider>
@@ -63,6 +64,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <DashboardPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/delivery"
+              element={
+                <PrivateRoute>
+                  <DeliveryDetails />
                 </PrivateRoute>
               }
             />
