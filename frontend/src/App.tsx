@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import DashboardPage from "./pages/Dashboard";
 import { DeliveryDetails } from "./components/viewDetail/DeliveryDetails";
+import { LiveTrackingPage } from "./pages/LiveTrackingPage";
 function App() {
   return (
     <AuthProvider>
@@ -72,6 +73,15 @@ function App() {
               element={
                 <PrivateRoute>
                   <DeliveryDetails />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/dashboard/live-tracking"
+              element={
+                <PrivateRoute>
+                  <LiveTrackingPage />
                 </PrivateRoute>
               }
             />
