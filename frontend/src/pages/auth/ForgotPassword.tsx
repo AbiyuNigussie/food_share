@@ -9,16 +9,17 @@ const ForgotPassword: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      const res = await authService.forgotPassword(email);
-      const data = await res.json();
-      if (res.ok) {
-        toast.success("Reset link sent to your email.");
+      await authService.forgotPassword(email);
+      toast.success("Reset link sent to your email.");
+    } catch (err: any) {
+      if (err.response && err.response.data?.message) {
+        toast.error(err.response.data.message);
       } else {
-        toast.error(data.message || "Failed to send reset link.");
+        console.error(err);
+        toast.error("An error occurred.");
       }
-    } catch (err) {
-      toast.error("An error occurred.");
     } finally {
       setLoading(false);
     }

@@ -26,16 +26,16 @@ const ResetPassword: React.FC = () => {
 
     setLoading(true);
     try {
-      const res = await authService.updatePassword(token!, password);
-      const data = await res.json();
-      if (res.ok) {
-        toast.success("Password reset successful. You can now log in.");
-        navigate("/login");
+      await authService.updatePassword(token!, password);
+      toast.success("Password reset successful. You can now log in.");
+      navigate("/login");
+    } catch (err: any) {
+      if (err.response && err.response.data?.message) {
+        toast.error(err.response.data.message);
       } else {
-        toast.error(data.message || "Failed to reset password.");
+        console.error(err);
+        toast.error("Something went wrong.");
       }
-    } catch (err) {
-      toast.error("Something went wrong.");
     } finally {
       setLoading(false);
     }

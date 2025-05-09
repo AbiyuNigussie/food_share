@@ -37,15 +37,16 @@ const Register: React.FC = () => {
         role,
         organization
       );
-      const data = await res.json();
-      if (res.ok) {
-        toast.success("Registered successfully! Please verify your email.");
-        setTimeout(() => navigate("/login"), 3000);
+
+      toast.success("Registered successfully! Please verify your email.");
+      setTimeout(() => navigate("/login"), 3000);
+    } catch (err: any) {
+      if (err.response && err.response.data?.message) {
+        toast.error(err.response.data.message);
       } else {
-        toast.error(data.message);
+        console.error(err);
+        toast.error("An unexpected error occurred.");
       }
-    } catch (err) {
-      toast.error("An unexpected error occurred.");
     }
   };
 

@@ -14,23 +14,25 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await authService.login(email, password, role);
-      const data = await res.json();
-      if (res.ok) {
-        login({
-          id: data.user.id,
-          email: data.user.email,
-          token: data.token,
-          role: data.user.role,
-        });
-        toast.success("Logged in successfully!");
-        navigate("/dashboard");
+      const res = await authService.login(email, password, role); // Axios response
+      const data = res.data;
+
+      login({
+        id: data.user.id,
+        email: data.user.email,
+        token: data.token,
+        role: data.user.role,
+      });
+
+      toast.success("Logged in successfully!");
+      navigate("/dashboard");
+    } catch (err: any) {
+      if (err.response && err.response.data?.message) {
+        toast.error(err.response.data.message);
       } else {
-        toast.error(data.message || "Login failed.");
+        console.error(err);
+        toast.error("An unexpected error occurred.");
       }
-    } catch (err) {
-      console.error(err);
-      toast.error("An unexpected error occurred.");
     }
   };
 
@@ -59,6 +61,17 @@ const Login: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+
+          {/* Forgot password link */}
+          <div className="text-right text-sm">
+            <span
+              onClick={() => navigate("/forgot-password")}
+              className="text-purple-600 hover:underline cursor-pointer"
+            >
+              Forgot password?
+            </span>
+          </div>
+
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
