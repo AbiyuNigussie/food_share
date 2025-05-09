@@ -98,7 +98,7 @@ export const DonorDashboard: React.FC = () => {
               <option value="all">All Statuses</option>
               <option value="matched">Matched</option>
               <option value="pending">Pending</option>
-              <option value="expired">Expired</option>
+              <option value="in-process">in-process</option>
             </select>
           </div>
           <div className="flex items-center space-x-2">
