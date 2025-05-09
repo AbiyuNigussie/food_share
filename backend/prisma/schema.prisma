@@ -14,32 +14,32 @@ model User {
   isVerified        Boolean         @default(false)
   verificationToken String?
   role              Role            @default(DONOR)
-  recipient         Recipient?
-  donor             Donor?
-  admin             Admin?
-  logistics_staff   LogisticsStaff?
-  notifications     Notification[]
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   firstName         String
   lastName          String
   phoneNumber       String
+  admin             Admin?
+  donor             Donor?
+  logistics_staff   LogisticsStaff?
+  notifications     Notification[]
+  recipient         Recipient?
 }
 
 model Recipient {
   userId             String             @id
-  user               User               @relation(fields: [userId], references: [id])
   address            String
-  organization       String?            @default("N/A")
   subscriptionStatus SubscriptionStatus
   subscriptionDate   DateTime
+  organization       String?
+  user               User               @relation(fields: [userId], references: [id])
   needs              RecipientNeed[]
 }
 
 model Donor {
   userId    String     @id
-  user      User       @relation(fields: [userId], references: [id])
   address   String
+  user      User       @relation(fields: [userId], references: [id])
   foodItems FoodItem[]
 }
 
@@ -50,77 +50,77 @@ model Admin {
 
 model LogisticsStaff {
   userId       String     @id
-  user         User       @relation(fields: [userId], references: [id])
   role         String
   vehicleInfo  String?
   assignedZone String?
   deliveries   Delivery[]
+  user         User       @relation(fields: [userId], references: [id])
 }
 
 model FoodItem {
   id         String     @id @default(uuid())
   donorId    String
-  donor      Donor      @relation(fields: [donorId], references: [userId])
   name       String
   category   String
   quantity   Int
   expiryDate DateTime?
   listedAt   DateTime   @default(now())
   status     FoodStatus
+  donor      Donor      @relation(fields: [donorId], references: [userId])
   matches    Match[]
 }
 
 model RecipientNeed {
   id             String     @id @default(uuid())
   recipientId    String
-  recipient      Recipient  @relation(fields: [recipientId], references: [userId])
   itemName       String
   category       String
   quantityNeeded Int
   requestedAt    DateTime   @default(now())
   status         NeedStatus
   matches        Match[]
+  recipient      Recipient  @relation(fields: [recipientId], references: [userId])
 }
 
 model Match {
   id              String        @id @default(uuid())
   foodItemId      String
-  foodItem        FoodItem      @relation(fields: [foodItemId], references: [id])
   recipientNeedId String
-  recipientNeed   RecipientNeed @relation(fields: [recipientNeedId], references: [id])
   matchedAt       DateTime      @default(now())
   notified        Boolean       @default(false)
   accepted        Boolean       @default(false)
   delivery        Delivery?
+  foodItem        FoodItem      @relation(fields: [foodItemId], references: [id])
+  recipientNeed   RecipientNeed @relation(fields: [recipientNeedId], references: [id])
 }
 
 model Notification {
   id         String   @id @default(uuid())
   userId     String
-  user       User     @relation(fields: [userId], references: [id])
   message    String
   readStatus Boolean  @default(false)
   createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
 }
 
 model DeliveryTracking {
   id           String   @id @default(uuid())
   deliveryId   String
-  delivery     Delivery @relation(fields: [deliveryId], references: [id])
   location     String
   statusUpdate String
   timestamp    DateTime @default(now())
+  delivery     Delivery @relation(fields: [deliveryId], references: [id])
 }
 
 model Delivery {
   id               String             @id @default(uuid())
   matchId          String             @unique
-  match            Match              @relation(fields: [matchId], references: [id])
   logisticsStaffId String
-  logisticsStaff   LogisticsStaff     @relation(fields: [logisticsStaffId], references: [userId])
   scheduledDate    DateTime
   deliveredAt      DateTime?
   deliveryStatus   DeliveryStatus     @default(pending)
+  logisticsStaff   LogisticsStaff     @relation(fields: [logisticsStaffId], references: [userId])
+  match            Match              @relation(fields: [matchId], references: [id])
   trackingUpdates  DeliveryTracking[]
 }
 

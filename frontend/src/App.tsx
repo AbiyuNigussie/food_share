@@ -10,7 +10,7 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import { ToastContainer } from "react-toastify";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import DashboardPage from "./pages/Dashboard";
-import { DeliveryDetails } from "./components/viewDetail/DeliveryDetails";
+import { DeliveryDetails } from "./pages/DeliveryDetails";
 import { LiveTrackingPage } from "./pages/LiveTrackingPage";
 function App() {
   return (
@@ -69,7 +69,7 @@ function App() {
               }
             />
             <Route
-              path="/delivery"
+              path="/dashboard/delivery-details"
               element={
                 <PrivateRoute>
                   <DeliveryDetails />
