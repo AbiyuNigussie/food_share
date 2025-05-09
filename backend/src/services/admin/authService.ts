@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { CustomError } from '../../utils/CustomError';
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { CustomError } from "../../utils/CustomError";
 
 const prisma = new PrismaClient();
 
@@ -15,12 +15,12 @@ const register = async (
 ) => {
   try {
     if (secretKey !== process.env.ADMIN_SECRET_KEY) {
-      throw new CustomError('Invalid secret key', 401);
+      throw new CustomError("Invalid secret key", 401);
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      throw new CustomError('Email already exists', 400);
+      throw new CustomError("Email already exists", 400);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -33,21 +33,24 @@ const register = async (
           email,
           phoneNumber,
           password: hashedPassword,
-          role: 'ADMIN',
-          isVerified: true, // No email verification for admin
+          role: "ADMIN",
+          isVerified: true,
         },
       });
 
       await tx.admin.create({
         data: {
-          userId: user.id
-        }
+          userId: user.id,
+        },
       });
 
       return user;
     });
 
-    const jwt_token = jwt.sign({ id: newUser.id, email: newUser.email, role: newUser.role }, 'secret');
+    const jwt_token = jwt.sign(
+      { id: newUser.id, email: newUser.email, role: newUser.role },
+      "secret"
+    );
     return { token: jwt_token };
   } catch (error) {
     throw error;
@@ -56,19 +59,27 @@ const register = async (
 
 const login = async (email: string, password: string) => {
   try {
-    const user = await prisma.user.findUnique({ where: { email, role: 'ADMIN' } });
+    const user = await prisma.user.findUnique({
+      where: { email, role: "ADMIN" },
+    });
 
     if (!user) {
-      throw new CustomError('Invalid email or password', 400);
+      throw new CustomError("Invalid email or password", 400);
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      throw new CustomError('Invalid email or password', 400);
+      throw new CustomError("Invalid email or password", 400);
     }
 
-    const jwt_token = jwt.sign({ id: user.id, email: user.email, role: user.role }, 'secret');
-    return { token: jwt_token };
+    const jwt_token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      "secret"
+    );
+    return {
+      user: { id: user.id, email: user.email, role: user.role },
+      token: jwt_token,
+    };
   } catch (error) {
     throw error;
   }

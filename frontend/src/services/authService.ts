@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000/api/user/auth"; // change accordingly
+const BASE_URL = "http://localhost:5000/api"; // change accordingly
 
 export const authService = {
   register: async (
@@ -12,7 +12,7 @@ export const authService = {
     role: string,
     organization?: string
   ) => {
-    return axios.post(`${BASE_URL}/register`, {
+    return axios.post(`${BASE_URL}user/auth/register`, {
       firstName,
       lastName,
       email,
@@ -24,7 +24,7 @@ export const authService = {
   },
 
   login: async (email: string, password: string, role: string) => {
-    return axios.post(`${BASE_URL}/login`, {
+    return axios.post(`${BASE_URL}user/auth/login`, {
       email,
       password,
       role,
@@ -32,14 +32,33 @@ export const authService = {
   },
 
   verifyEmail: async (token: string) => {
-    return axios.post(`${BASE_URL}/verify-email`, { token });
+    return axios.post(`${BASE_URL}user/auth/verify-email`, { token });
   },
 
   forgotPassword: async (email: string) => {
-    return axios.post(`${BASE_URL}/forgot-password`, { email });
+    return axios.post(`${BASE_URL}user/auth/forgot-password`, { email });
   },
 
   updatePassword: async (token: string, password: string) => {
-    return axios.post(`${BASE_URL}/reset-password/${token}`, { password });
+    return axios.post(`${BASE_URL}user/auth/reset-password/${token}`, {
+      password,
+    });
+  },
+  adminRegister: (payload: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    password: string;
+    secretKey: string;
+  }) => {
+    return axios.post(`${BASE_URL}/admin/auth/register`, payload);
+  },
+
+  adminLogin: (email: string, password: string) => {
+    return axios.post(`${BASE_URL}/admin/auth/login`, {
+      email,
+      password,
+    });
   },
 };

@@ -12,6 +12,8 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import DashboardPage from "./pages/Dashboard";
 import { DeliveryDetails } from "./pages/DeliveryDetails";
 import { LiveTrackingPage } from "./pages/LiveTrackingPage";
+import AdminLogin from "./pages/auth/admin/AdminLogin";
+import AdminRegister from "./pages/auth/admin/AdminRegister";
 function App() {
   return (
     <AuthProvider>
@@ -49,6 +51,23 @@ function App() {
               element={
                 <AuthLayout>
                   <ForgotPassword />
+                </AuthLayout>
+              }
+            />
+
+            <Route
+              path="/admin/login"
+              element={
+                <AuthLayout>
+                  <AdminLogin />
+                </AuthLayout>
+              }
+            />
+            <Route
+              path="/admin/register"
+              element={
+                <AuthLayout>
+                  <AdminRegister />
                 </AuthLayout>
               }
             />
