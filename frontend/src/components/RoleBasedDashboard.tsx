@@ -1,6 +1,7 @@
 import { useAuth } from "../contexts/AuthContext";
 import RecipientDashboard from "./dashboards/RecipientDashboard";
 import { Logistics } from "./dashboards/Logistics";
+import AdminDashboard from "./dashboards/AdminDashboard";
 
 export default function RoleBasedDashboard() {
   const { user } = useAuth();
@@ -12,8 +13,10 @@ export default function RoleBasedDashboard() {
     //   return <DonorDashboard />;
     case "RECIPIENT":
       return <RecipientDashboard />;
-    case 'LOGISTIC_PROVIDER':
+    case "LOGISTIC_PROVIDER":
       return <Logistics />;
+    case "ADMINISTRATOR":
+      return <AdminDashboard />;
     default:
       return <p>Unauthorized role</p>;
   }

@@ -7,6 +7,25 @@ import { DonationSection } from "../DonationSection";
 import { DonationStatus } from "../../types";
 import clsx from "clsx";
 import { SideBar } from "../SideBar";
+import {
+  HomeIcon,
+  PackageIcon,
+  MapPinIcon,
+  UserIcon,
+  SettingsIcon,
+} from "lucide-react";
+
+const recipientNavItems = [
+  { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "#" },
+  { label: "Donations", icon: <PackageIcon className="w-5 h-5" />, href: "#" },
+  {
+    label: "Nearby Locations",
+    icon: <MapPinIcon className="w-5 h-5" />,
+    href: "#",
+  },
+  { label: "Profile", icon: <UserIcon className="w-5 h-5" />, href: "#" },
+  { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "#" },
+];
 const RecipientDashboard: React.FC = () => {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All Types");
@@ -90,7 +109,16 @@ const RecipientDashboard: React.FC = () => {
 
   return (
     <>
-      <SideBar open={sidebarOpen} toggle={() => setSidebarOpen((o) => !o)} />
+      <SideBar
+        open={sidebarOpen}
+        toggle={() => setSidebarOpen((o) => !o)}
+        title="Recipient Portal"
+        navItems={recipientNavItems}
+        userInfo={{
+          name: "Recipient User",
+          email: "recipient@foodshare.org",
+        }}
+      />
 
       <div
         className={clsx(

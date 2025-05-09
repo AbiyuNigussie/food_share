@@ -4,7 +4,7 @@ interface User {
   id: string;
   email: string;
   token: string;
-  role: "DONOR" | "RECIPIENT" | "LOGISTIC_PROVIDER";
+  role: "DONOR" | "RECIPIENT" | "LOGISTIC_PROVIDER" | "ADMINISTRATOR";
 }
 
 interface AuthContextType {
