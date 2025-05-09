@@ -16,7 +16,6 @@ export const DeliveryDetails: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      {/* Header */}
       <header className="flex items-center justify-between mb-8">
         <div className="flex items-center space-x-4">
           <button className="p-2 rounded hover:bg-gray-100">
@@ -36,10 +35,7 @@ export const DeliveryDetails: React.FC = () => {
           </button>
         </div>
       </header>
-
-      {/* Top: Status & Driver Info */}
       <div className="flex flex-col lg:flex-row gap-6 mb-6">
-        {/* Status Card */}
         <div className="bg-white rounded-lg shadow p-6 flex justify-between items-start flex-1">
           <div>
             <h2 className="text-lg font-medium text-gray-900">Status</h2>
@@ -51,7 +47,6 @@ export const DeliveryDetails: React.FC = () => {
           </span>
         </div>
 
-        {/* Driver Info Card */}
         <div className="bg-white rounded-lg shadow p-6 flex-1 flex flex-col justify-between">
           <div>
             <h2 className="text-lg font-medium text-gray-900 mb-4">Driver Info</h2>
@@ -71,11 +66,8 @@ export const DeliveryDetails: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column */}
         <div className="flex flex-col gap-6">
-          {/* Delivery Timeline */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Delivery Timeline</h2>
             <div className="flex flex-col space-y-6">
@@ -95,7 +87,6 @@ export const DeliveryDetails: React.FC = () => {
             </div>
           </div>
 
-          {/* Donation Details */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Donation Details</h2>
             <div className="border border-gray-200 rounded p-4 mb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -121,7 +112,6 @@ export const DeliveryDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column: Route Info */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-medium text-gray-900 mb-4">Route Information</h2>
           <div className="bg-gray-100 rounded h-48 mb-4" />
