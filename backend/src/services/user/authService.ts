@@ -98,7 +98,6 @@ const verifyEmail = async (token: string) => {
     const user = await prisma.user.findFirst({
       where: { verificationToken: token },
     });
-
     if (!user) {
       throw new CustomError("Invalid or expired token", 400);
     }

@@ -16,17 +16,18 @@ const VerifyEmail: React.FC = () => {
       setError("Verification token missing.");
       return;
     }
+
     try {
-      const res = await authService.verifyEmail(token);
-      const data = await res.json();
-      if (res.ok) {
-        setMessage("✅ Email verified successfully! Redirecting to login...");
-        setTimeout(() => navigate("/login"), 3000);
+      await authService.verifyEmail(token);
+      setMessage("✅ Email verified successfully! Redirecting to login...");
+      setTimeout(() => navigate("/login"), 3000);
+    } catch (err: any) {
+      if (err.response && err.response.data?.message) {
+        setError(err.response.data.message);
       } else {
-        setError(data.message || "Verification failed.");
+        console.error(err);
+        setError("An unexpected error occurred.");
       }
-    } catch (err) {
-      setError("An unexpected error occurred.");
     }
   };
 

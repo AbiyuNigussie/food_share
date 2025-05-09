@@ -10,7 +10,7 @@ export default function RoleBasedDashboard() {
   if (!user) return <p>Loading...</p>;
 
   switch (user.role) {
-    case 'DONOR':
+    case "DONOR":
       return <DonorDashboard />;
     case "RECIPIENT":
       return <RecipientDashboard />;

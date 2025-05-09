@@ -78,8 +78,7 @@ const register = async (req: Request, res: Response) => {
 
 const verifyEmail = async (req: Request, res: Response) => {
   try {
-    const { token } = req.query;
-
+    const { token } = req.body;
     const user = await authService.verifyEmail(token);
 
     res
