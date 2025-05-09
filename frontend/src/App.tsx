@@ -12,6 +12,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import DashboardPage from "./pages/Dashboard";
 import { DeliveryDetails } from "./pages/DeliveryDetails";
 import { LiveTrackingPage } from "./pages/LiveTrackingPage";
+import { NewDonationForm } from "./pages/NewDonationForm";
 function App() {
   return (
     <AuthProvider>
@@ -82,6 +83,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <LiveTrackingPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/dashboard/NewDonation"
+              element={
+                <PrivateRoute>
+                  <NewDonationForm />
                 </PrivateRoute>
               }
             />
