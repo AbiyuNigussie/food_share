@@ -15,6 +15,7 @@ import { LiveTrackingPage } from "./pages/LiveTrackingPage";
 import AdminLogin from "./pages/auth/admin/AdminLogin";
 import AdminRegister from "./pages/auth/admin/AdminRegister";
 import { NewDonationForm } from "./pages/NewDonationForm";
+import { RecipientNeeds } from "./pages/RecipientNeeds";
 function App() {
   return (
     <AuthProvider>
@@ -110,6 +111,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <NewDonationForm />
+                </PrivateRoute>
+              }
+            />
+             <Route
+              path="/dashboard/Recipient-Needs"
+              element={
+                <PrivateRoute>
+                  <RecipientNeeds />
                 </PrivateRoute>
               }
             />

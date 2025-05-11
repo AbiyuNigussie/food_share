@@ -13,6 +13,7 @@ import {
   MapPinIcon,
   UserIcon,
   SettingsIcon,
+  ClipboardListIcon,
 } from "lucide-react";
 
 const recipientNavItems = [
@@ -22,6 +23,11 @@ const recipientNavItems = [
     label: "Nearby Locations",
     icon: <MapPinIcon className="w-5 h-5" />,
     href: "#",
+  },
+    {
+    label: "My Needs",
+    icon: <ClipboardListIcon className="w-5 h-5" />,
+    href: "/dashboard/Recipient-Needs",
   },
   { label: "Profile", icon: <UserIcon className="w-5 h-5" />, href: "#" },
   { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "#" },

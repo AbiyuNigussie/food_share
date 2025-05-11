@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  CalendarIcon,
   ChevronLeftIcon,
   ClipboardListIcon,
   FileTextIcon,
@@ -10,41 +9,55 @@ import {
   MapPinIcon,
   TruckIcon,
 } from 'lucide-react';
+import clsx from 'clsx';
 
-export const NewDonationForm: React.FC = () => {
+interface Need {
+  id: number;
+  foodType: string;
+  quantity: string;
+  dropoffAddress: string;
+  notes: string;
+}
+
+export const RecipientNeeds: React.FC = () => {
   const navigate = useNavigate();
 
-  const [availableFrom, setAvailableFrom] = useState('');
-  const [availableTo, setAvailableTo] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [foodType, setFoodType] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [location, setLocation] = useState('');
-  const [notes, setNotes] = useState('');
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [needs, setNeeds] = useState<Need[]>([]);
+
+  const [foodType, setFoodType]           = useState('');
+  const [quantity, setQuantity]           = useState('');
+  const [dropoffAddress, setDropoffAddress] = useState('');
+  const [notes, setNotes]                 = useState('');
+  const [errors, setErrors]               = useState<Record<string,string>>({});
 
   const validate = () => {
-    const errs: Record<string, string> = {};
-    if (!availableFrom) errs.availableFrom = 'Required';
-    if (!availableTo) errs.availableTo = 'Required';
-    if (availableFrom && availableTo && availableFrom >= availableTo)
-      errs.availableTo = 'End must be after start';
-    if (!expiryDate) errs.expiryDate = 'Required';
-    if (!foodType) errs.foodType = 'Required';
-    if (!quantity) errs.quantity = 'Required';
-    if (!location) errs.location = 'Required';
+    const errs: Record<string,string> = {};
+    if (!foodType)      errs.foodType      = 'Required';
+    if (!quantity)      errs.quantity      = 'Required';
+    if (!dropoffAddress) errs.pickupAddress = 'Required';
     return errs;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) {
       setErrors(errs);
       return;
     }
-    alert('Donation created successfully!');
-    navigate(-1);
+    const newNeed: Need = {
+      id: needs.length + 1,
+      foodType,
+      quantity,
+      dropoffAddress,
+      notes,
+    };
+    setNeeds([newNeed, ...needs]);
+    setFoodType('');
+    setQuantity('');
+    setDropoffAddress('');
+    setNotes('');
+    setErrors({});
   };
 
   return (
@@ -57,8 +70,8 @@ export const NewDonationForm: React.FC = () => {
           >
             <ChevronLeftIcon className="w-5 h-5 text-purple-600" />
           </button>
-          <TruckIcon className="w-8 h-8 text-purple-600 ml-6" />
-          <h1 className="ml-4 text-2xl font-bold text-gray-900">New Donation</h1>
+          <HomeIcon className="w-8 h-8 text-purple-600 ml-6" />
+          <h1 className="ml-4 text-2xl font-bold text-gray-900">List Your Needs</h1>
         </div>
 
         <div className="flex-1 overflow-hidden">
@@ -66,63 +79,14 @@ export const NewDonationForm: React.FC = () => {
 
             <div className="p-8 overflow-auto">
               <form
-                onSubmit={handleSubmit}
+                onSubmit={handleAdd}
                 className="bg-white rounded-2xl shadow-lg p-8 space-y-6 min-h-full flex flex-col"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                      <CalendarIcon className="w-5 h-5 mr-2 text-purple-600" />
-                      Available From
-                    </label>
-                    <input
-                      type="datetime-local"
-                      value={availableFrom}
-                      onChange={e => setAvailableFrom(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    />
-                    {errors.availableFrom && (
-                      <p className="mt-1 text-sm text-red-600">{errors.availableFrom}</p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                      <CalendarIcon className="w-5 h-5 mr-2 text-purple-600" />
-                      Available To
-                    </label>
-                    <input
-                      type="datetime-local"
-                      value={availableTo}
-                      onChange={e => setAvailableTo(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    />
-                    {errors.availableTo && (
-                      <p className="mt-1 text-sm text-red-600">{errors.availableTo}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                    <CalendarIcon className="w-5 h-5 mr-2 text-purple-600" />
-                    Expiry Date
-                  </label>
-                  <input
-                    type="date"
-                    value={expiryDate}
-                    onChange={e => setExpiryDate(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                  {errors.expiryDate && (
-                    <p className="mt-1 text-sm text-red-600">{errors.expiryDate}</p>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
                       <ClipboardListIcon className="w-5 h-5 mr-2 text-purple-600" />
-                      Food Type
+                      Food Type *
                     </label>
                     <select
                       value={foodType}
@@ -143,7 +107,7 @@ export const NewDonationForm: React.FC = () => {
                   <div>
                     <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
                       <FileTextIcon className="w-5 h-5 mr-2 text-purple-600" />
-                      Quantity
+                      Quantity *
                     </label>
                     <input
                       type="text"
@@ -161,17 +125,17 @@ export const NewDonationForm: React.FC = () => {
                 <div>
                   <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
                     <MapPinIcon className="w-5 h-5 mr-2 text-purple-600" />
-                    Pickup Address
+                    Dropoff Address *
                   </label>
                   <input
                     type="text"
-                    value={location}
-                    onChange={e => setLocation(e.target.value)}
+                    value={dropoffAddress}
+                    onChange={e => setDropoffAddress(e.target.value)}
                     placeholder="123 Main St, City"
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
-                  {errors.location && (
-                    <p className="mt-1 text-sm text-red-600">{errors.location}</p>
+                  {errors.pickupAddress && (
+                    <p className="mt-1 text-sm text-red-600">{errors.pickupAddress}</p>
                   )}
                 </div>
 
@@ -194,8 +158,8 @@ export const NewDonationForm: React.FC = () => {
                     type="submit"
                     className="inline-flex items-center bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition"
                   >
-                    <HomeIcon className="w-5 h-5 mr-2" />
-                    Create Donation
+                    <TruckIcon className="w-5 h-5 mr-2" />
+                    Add Need
                   </button>
                 </div>
               </form>
@@ -207,21 +171,15 @@ export const NewDonationForm: React.FC = () => {
                   <InfoIcon className="w-6 h-6" />
                   <h2 className="text-lg font-semibold">How It Works</h2>
                 </div>
-                <ol className="list-decimal list-inside space-y-2 flex-1">
-                  <li>Fill out your donation details and availability.</li>
-                  <li>Our team schedules a pick-up at your chosen time.</li>
-                  <li>You receive confirmation and driver contact info.</li>
-                  <li>Track your donation’s impact in your dashboard.</li>
+                <p className="text-sm">
+                  When a donor’s donation matches one of your listed needs, our system will automatically create a match and arrange pickup & delivery. You can also manually claim any available donation directly—no match needed.
+                </p>
+                <ol className="list-decimal list-inside space-y-2 flex-1 text-sm">
+                  <li>List your needs with food type, quantity, and pickup address.</li>
+                  <li>We match you automatically when a suitable donation appears.</li>
+                  <li>Logistics provider picks up and delivers your matched food.</li>
+                  <li>You can also browse & claim any available donation directly.</li>
                 </ol>
-                <div className="text-right">
-                  <button
-                    type="button"
-                    onClick={() => window.open('/faq', '_blank')}
-                    className="text-sm underline"
-                  >
-                    Learn more
-                  </button>
-                </div>
               </div>
             </div>
 

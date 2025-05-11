@@ -1,4 +1,3 @@
-// components/AvailableDonationCard.tsx
 import React from "react";
 import { DonationCardProps } from "../types";
 

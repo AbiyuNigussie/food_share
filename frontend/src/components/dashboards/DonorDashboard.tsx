@@ -1,4 +1,3 @@
-// DonorDashboard.tsx
 import React, { useState, useMemo } from 'react';
 import clsx from 'clsx';
 import { GiftIcon, ListIcon, UserIcon, SettingsIcon, HomeIcon } from 'lucide-react';
