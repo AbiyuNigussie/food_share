@@ -44,6 +44,7 @@ export const authService = {
       password,
     });
   },
+
   adminRegister: (payload: {
     firstName: string;
     lastName: string;
@@ -59,6 +60,46 @@ export const authService = {
     return axios.post(`${BASE_URL}/admin/auth/login`, {
       email,
       password,
+    });
+  },
+
+  createDonation: async (donationData: any, token: string) => {
+    return axios.post(`${BASE_URL}/donations`, donationData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  },
+
+  getDonations: async (token: string) => {
+    return axios.get(`${BASE_URL}/donations`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  },
+
+  updateDonationStatus: async (
+    donationId: number,
+    status: string,
+    token: string
+  ) => {
+    return axios.put(
+      `${BASE_URL}/donations/${donationId}`,
+      { status },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  },
+
+  deleteDonation: async (donationId: number, token: string) => {
+    return axios.delete(`${BASE_URL}/donations/${donationId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
   },
 };

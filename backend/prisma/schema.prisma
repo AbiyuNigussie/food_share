@@ -40,7 +40,22 @@ model Donor {
   userId    String     @id
   address   String
   user      User       @relation(fields: [userId], references: [id])
-  foodItems FoodItem[]
+  Donations Donation[]
+}
+
+model Donation {
+  id            String   @id @default(cuid())
+  donorId       String
+  status        String
+  availableFrom DateTime
+  availableTo   DateTime
+  expiryDate    DateTime
+  foodType      String
+  quantity      String
+  location      String
+  notes         String?
+  createdAt     DateTime @default(now())
+  donor         Donor    @relation(fields: [donorId], references: [userId])
 }
 
 model Admin {
@@ -57,19 +72,6 @@ model LogisticsStaff {
   user         User       @relation(fields: [userId], references: [id])
 }
 
-model FoodItem {
-  id         String     @id @default(uuid())
-  donorId    String
-  name       String
-  category   String
-  quantity   Int
-  expiryDate DateTime?
-  listedAt   DateTime   @default(now())
-  status     FoodStatus
-  donor      Donor      @relation(fields: [donorId], references: [userId])
-  matches    Match[]
-}
-
 model RecipientNeed {
   id             String     @id @default(uuid())
   recipientId    String
@@ -78,20 +80,7 @@ model RecipientNeed {
   quantityNeeded Int
   requestedAt    DateTime   @default(now())
   status         NeedStatus
-  matches        Match[]
   recipient      Recipient  @relation(fields: [recipientId], references: [userId])
-}
-
-model Match {
-  id              String        @id @default(uuid())
-  foodItemId      String
-  recipientNeedId String
-  matchedAt       DateTime      @default(now())
-  notified        Boolean       @default(false)
-  accepted        Boolean       @default(false)
-  delivery        Delivery?
-  foodItem        FoodItem      @relation(fields: [foodItemId], references: [id])
-  recipientNeed   RecipientNeed @relation(fields: [recipientNeedId], references: [id])
 }
 
 model Notification {
@@ -120,7 +109,6 @@ model Delivery {
   deliveredAt      DateTime?
   deliveryStatus   DeliveryStatus     @default(pending)
   logisticsStaff   LogisticsStaff     @relation(fields: [logisticsStaffId], references: [userId])
-  match            Match              @relation(fields: [matchId], references: [id])
   trackingUpdates  DeliveryTracking[]
 }
 
