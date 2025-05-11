@@ -14,6 +14,7 @@ import { DeliveryDetails } from "./pages/DeliveryDetails";
 import { LiveTrackingPage } from "./pages/LiveTrackingPage";
 import AdminLogin from "./pages/auth/admin/AdminLogin";
 import AdminRegister from "./pages/auth/admin/AdminRegister";
+import { NewDonationForm } from "./pages/NewDonationForm";
 function App() {
   return (
     <AuthProvider>
@@ -101,6 +102,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <LiveTrackingPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/dashboard/NewDonation"
+              element={
+                <PrivateRoute>
+                  <NewDonationForm />
                 </PrivateRoute>
               }
             />
