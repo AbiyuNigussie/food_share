@@ -12,7 +12,7 @@ export const authService = {
     role: string,
     organization?: string
   ) => {
-    return axios.post(`${BASE_URL}user/auth/register`, {
+    return axios.post(`${BASE_URL}/user/auth/register`, {
       firstName,
       lastName,
       email,
@@ -24,7 +24,7 @@ export const authService = {
   },
 
   login: async (email: string, password: string, role: string) => {
-    return axios.post(`${BASE_URL}user/auth/login`, {
+    return axios.post(`${BASE_URL}/user/auth/login`, {
       email,
       password,
       role,
@@ -32,15 +32,15 @@ export const authService = {
   },
 
   verifyEmail: async (token: string) => {
-    return axios.post(`${BASE_URL}user/auth/verify-email`, { token });
+    return axios.post(`${BASE_URL}/user/auth/verify-email`, { token });
   },
 
   forgotPassword: async (email: string) => {
-    return axios.post(`${BASE_URL}user/auth/forgot-password`, { email });
+    return axios.post(`${BASE_URL}/user/auth/forgot-password`, { email });
   },
 
   updatePassword: async (token: string, password: string) => {
-    return axios.post(`${BASE_URL}user/auth/reset-password/${token}`, {
+    return axios.post(`${BASE_URL}/user/auth/reset-password/${token}`, {
       password,
     });
   },
