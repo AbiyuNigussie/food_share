@@ -1,4 +1,3 @@
-// LiveTrackingPage.tsx
 import React, { useState } from "react";
 import {
   ArrowLeftIcon,
@@ -137,7 +136,6 @@ export const LiveTrackingPage: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Sidebar / Left Column */}
       <div className="w-96 p-6 space-y-6 overflow-y-auto">
         <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
           <ArrowLeftIcon className="w-5 h-5" />
@@ -147,7 +145,6 @@ export const LiveTrackingPage: React.FC = () => {
           Tracking ID: <span className="font-medium">DEL-2024-001</span>
         </p>
 
-        {/* Map Tabs */}
         <div className="flex space-x-2">
           <Tab
             icon={MapIcon}
@@ -169,20 +166,17 @@ export const LiveTrackingPage: React.FC = () => {
           />
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-2 gap-4">
           <InfoCard title="Estimated Arrival" value="2024-01-21 14:30" />
           <InfoCard title="Distance Remaining" value="2.3 miles" />
         </div>
 
-        {/* Driver */}
         <DriverInfo
           name="Michael Brown"
           vehicle="White Van – XYZ 789"
           onContact={() => alert("Contacting driver…")}
         />
 
-        {/* Route */}
         <div className="space-y-2">
           <SectionTitle>Route Details</SectionTitle>
           <LocationCard
@@ -197,7 +191,6 @@ export const LiveTrackingPage: React.FC = () => {
           />
         </div>
 
-        {/* Checkpoints */}
         <div className="space-y-2 mb-6">
           <SectionTitle>Checkpoints</SectionTitle>
           <Checkpoint
@@ -221,7 +214,6 @@ export const LiveTrackingPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Map / Right Column */}
       <div className="flex-1 relative">
         <div className="absolute top-6 right-6 flex flex-col space-y-2 bg-white rounded shadow p-2">
           <button className="p-1 hover:bg-gray-100 rounded">
@@ -234,7 +226,6 @@ export const LiveTrackingPage: React.FC = () => {
             <HomeIcon className="w-5 h-5 text-gray-600" />
           </button>
         </div>
-        {/* Map placeholder */}
         <div className="w-full h-full bg-gray-200" />
       </div>
     </div>

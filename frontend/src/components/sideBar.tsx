@@ -35,7 +35,6 @@ export const SideBar: React.FC<SidebarProps> = ({
       open ? "w-64" : "w-16"
     )}
   >
-    {/* Toggle Button */}
     <button
       onClick={toggle}
       className="absolute top-4 right-4 p-1 rounded bg-gray-100 hover:bg-gray-200 focus:outline-none"
@@ -47,7 +46,6 @@ export const SideBar: React.FC<SidebarProps> = ({
       )}
     </button>
 
-    {/* Logo */}
     <div
       className={clsx(
         "flex items-center px-4 mb-10 pt-12",
@@ -63,7 +61,6 @@ export const SideBar: React.FC<SidebarProps> = ({
       )}
     </div>
 
-    {/* Nav Links */}
     <nav className="flex-1 px-2 space-y-2">
       {navItems.map((item) => (
         <a
@@ -84,7 +81,6 @@ export const SideBar: React.FC<SidebarProps> = ({
       ))}
     </nav>
 
-    {/* Footer */}
     <div className="px-4 py-4 border-t border-gray-200">
       {open ? (
         userInfo ? (
