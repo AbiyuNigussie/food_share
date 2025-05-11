@@ -1,4 +1,3 @@
-// src/pages/AdminDashboard.tsx
 import React, { useState } from "react";
 import {
   HomeIcon,
@@ -15,162 +14,129 @@ export const AdminDashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const navItems = [
-    {
-      label: "Dashboard",
-      icon: <HomeIcon className="w-5 h-5" />,
-      href: "/admin/dashboard",
-    },
-    {
-      label: "Users",
-      icon: <UsersIcon className="w-5 h-5" />,
-      href: "/admin/users",
-    },
-    {
-      label: "Feedback",
-      icon: <BellIcon className="w-5 h-5" />,
-      href: "/admin/feedback",
-    },
-    {
-      label: "Reports",
-      icon: <ClipboardListIcon className="w-5 h-5" />,
-      href: "/admin/reports",
-    },
-    {
-      label: "Settings",
-      icon: <SettingsIcon className="w-5 h-5" />,
-      href: "/admin/config",
-    },
+    { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "/admin/dashboard" },
+    { label: "Users",     icon: <UsersIcon className="w-5 h-5" />, href: "/admin/users" },
+    { label: "Feedback",  icon: <BellIcon className="w-5 h-5" />, href: "/admin/feedback" },
+    { label: "Reports",   icon: <ClipboardListIcon className="w-5 h-5" />, href: "/admin/reports" },
+    { label: "Settings",  icon: <SettingsIcon className="w-5 h-5" />, href: "/admin/config" },
   ];
 
   const stats = [
-    { label: "Total Users", value: 3421 },
-    { label: "Donations Created", value: 874 },
-    { label: "Pending Feedback", value: 27 },
-    { label: "Total Impact (lbs)", value: 13250 },
+    { label: "Total Users",     value: 324 },
+    { label: "Active Users",    value: 256 },
+    { label: "Total Donations", value: 1458 },
+    { label: "Success Rate",    value: "92%" },
   ];
 
+  const users = [
+    { name: "John Doe",     email: "john@example.com",    role: "Donor",     status: "active"  },
+    { name: "Jane Smith",   email: "jane@example.com",    role: "Recipient", status: "suspended" },
+    { name: "Mike Johnson", email: "mike@example.com",    role: "Donor",     status: "pending" },
+  ];
+
+  const getStatusBadge = (status: string) => {
+    const base = "px-3 py-1 rounded-full text-xs font-semibold";
+    if (status === "active")
+      return <span className={`${base} bg-purple-100 text-purple-700`}>Active</span>;
+    if (status === "suspended")
+      return <span className={`${base} bg-red-100 text-red-700`}>Suspended</span>;
+    return <span className={`${base} bg-gray-200 text-gray-600`}>Pending</span>;
+  };
+
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="min-h-screen">
       <SideBar
         open={sidebarOpen}
-        toggle={() => setSidebarOpen((o) => !o)}
+        toggle={() => setSidebarOpen(o => !o)}
         title="Admin Panel"
         navItems={navItems}
         userInfo={{ name: "Admin User", email: "admin@logistix.com" }}
       />
 
-      <div
-        className={`flex-1 p-8 transition-all duration-200 ${
-          sidebarOpen ? "ml-64" : "ml-16"
-        }`}
-      >
-        {/* Header */}
+      <div className={`flex-1 transition-all duration-200 ${sidebarOpen ? "ml-64" : "ml-16"}`}>
         <Header title="Admin Dashboard" />
 
-        {/* Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((s, i) => (
-            <StatCard key={i} label={s.label} value={s.value} />
-          ))}
-        </div>
+        <main className="p-8 space-y-8">
+          {/* Stat Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {stats.map((s, i) => (
+              <StatCard key={i} label={s.label} value={s.value} />
+            ))}
+          </div>
 
-        {/* Sections */}
-        <div className="space-y-8">
-          {/* User Management Preview */}
           <section>
-            <h2 className="text-xl font-medium text-gray-700 mb-4">
-              Recent Users
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              User Management
             </h2>
-            <div className="bg-white border border-gray-200 rounded overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-2">Name</th>
-                    <th className="px-4 py-2">Email</th>
-                    <th className="px-4 py-2">Role</th>
-                    <th className="px-4 py-2">Status</th>
+
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white rounded-lg shadow-lg">
+                <thead className="bg-white sticky top-0">
+                  <tr className="border-b border-gray-200">
+                    {["Name", "Email", "Role", "Status", "Actions"].map((hdr) => (
+                      <th
+                        key={hdr}
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        {hdr}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    {
-                      name: "Jane Doe",
-                      email: "jane@foo.com",
-                      role: "Donor",
-                      status: "Active",
-                    },
-                    {
-                      name: "Acme Shelter",
-                      email: "shelter@bar.org",
-                      role: "Recipient",
-                      status: "Active",
-                    },
-                    {
-                      name: "Bob Smith",
-                      email: "bob@foo.com",
-                      role: "Donor",
-                      status: "Suspended",
-                    },
-                  ].map((u, i) => (
-                    <tr key={i} className="border-t">
-                      <td className="px-4 py-3">{u.name}</td>
-                      <td className="px-4 py-3">{u.email}</td>
-                      <td className="px-4 py-3">{u.role}</td>
-                      <td className="px-4 py-3">{u.status}</td>
+                  {users.map((u, idx) => (
+                    <tr
+                      key={idx}
+                      className={`${
+                        idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-purple-50 transition-colors`}
+                    >
+                      <td className="px-6 py-4 text-gray-700">{u.name}</td>
+                      <td className="px-6 py-4 text-gray-700">{u.email}</td>
+                      <td className="px-6 py-4 text-gray-700">{u.role}</td>
+                      <td className="px-6 py-4">{getStatusBadge(u.status)}</td>
+                      <td className="px-6 py-4 text-gray-700">
+                        <button className="p-2 rounded hover:bg-gray-100">
+                          <SettingsIcon className="w-5 h-5 text-gray-600" />
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           </section>
-
-          {/* Feedback Preview */}
-          <section>
-            <h2 className="text-xl font-medium text-gray-700 mb-4">
-              Recent Feedback
-            </h2>
-            <div className="space-y-4">
-              {[
-                {
-                  from: "jane@foo.com",
-                  message: "Pickup was delayed by 2 hours.",
-                },
-                {
-                  from: "shelter@bar.org",
-                  message: "Donation quality was excellent!",
-                },
-                {
-                  from: "bob@foo.com",
-                  message: "App crashed on feedback form.",
-                },
-              ].map((f, i) => (
-                <div
-                  key={i}
-                  className="bg-white border border-gray-200 rounded p-4"
-                >
-                  <p className="text-sm text-gray-800">{f.message}</p>
-                  <p className="mt-2 text-xs text-gray-500">— {f.from}</p>
-                </div>
-              ))}
-            </div>
+          <section className="space-y-4">
+            <h2 className="text-xl font-semibold text-gray-800">Recent Feedback</h2>
+            {[
+              { from: "jane@foo.com",    message: "Pickup was delayed by 2 hours." },
+              { from: "shelter@bar.org", message: "Donation quality was excellent!" },
+              { from: "bob@foo.com",     message: "App crashed on feedback form." },
+            ].map((f, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-lg shadow p-4 hover:shadow-xl transition-shadow"
+              >
+                <p className="text-gray-800">{f.message}</p>
+                <p className="mt-2 text-sm text-gray-500">— {f.from}</p>
+              </div>
+            ))}
           </section>
-
-          {/* Reports CTA */}
-          <section className="bg-white border border-gray-200 rounded p-6 text-center">
-            <h2 className="text-lg font-medium text-gray-800 mb-2">
+          <section className="bg-white rounded-lg shadow-lg p-6 text-center">
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">
               Detailed Reports
             </h2>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-gray-600 mb-4">
               View full analytics on donations, users, and impact metrics.
             </p>
             <a
               href="/admin/reports"
-              className="inline-block px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+              className="inline-block px-6 py-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition"
             >
               Go to Reports
             </a>
           </section>
-        </div>
+        </main>
       </div>
     </div>
   );
