@@ -16,7 +16,7 @@ export default function RoleBasedDashboard() {
       return <RecipientDashboard />;
     case "LOGISTIC_PROVIDER":
       return <Logistics />;
-    case "ADMINISTRATOR":
+    case "ADMIN":
       return <AdminDashboard />;
     default:
       return <p>Unauthorized role</p>;
