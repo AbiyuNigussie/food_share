@@ -11,15 +11,10 @@ import { SideBar, NavItem } from "../SideBar";
 import { Header } from "../Header";
 import { NewDonationFormModal } from "../NewDonationFormModal";
 import { authService } from "../../services/authService"; // Adjust the import path
-
-interface Donation {
-  id: number;
-  foodType: string;
-  quantity: string;
-  location: string;
-  expiryDate: string;
-  status: "matched" | "pending" | "in-process";
-}
+import { ViewDonationModal } from "../ViewDonationModal";
+import { useAuth } from "../../contexts/AuthContext";
+import { Donation } from "../../types";
+import { toast } from "react-toastify";
 
 export const DonorDashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -31,20 +26,32 @@ export const DonorDashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const rowsPerPage = 5;
 
-  useEffect(() => {
-    const fetchDonations = async () => {
-      setLoading(true);
-      try {
-        const token = "userToken"; // Replace with actual token from user authentication context
-        const response = await authService.getDonations(token);
-        setDonations(response.data);
-      } catch (error) {
-        console.error("Error fetching donations:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedDonation, setSelectedDonation] = useState<Donation | null>(
+    null
+  );
 
+  const { user } = useAuth();
+
+  const openViewModal = (donation: Donation) => {
+    setSelectedDonation(donation);
+    setViewModalOpen(true);
+  };
+
+  const fetchDonations = async () => {
+    setLoading(true);
+    try {
+      const token = user?.token || "";
+      const response = await authService.getDonations(token);
+      setDonations(response.data);
+    } catch (error) {
+      console.error("Error fetching donations:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchDonations();
   }, []);
 
@@ -81,14 +88,16 @@ export const DonorDashboard: React.FC = () => {
   ];
 
   const handleDeleteDonation = async (donationId: number) => {
-    const token = "userToken"; // Replace with actual token
+    const token = user?.token || ""; // Ensure 'user' is defined in your component
+
     try {
       await authService.deleteDonation(donationId, token);
-      // Refresh donations list after deletion
       const response = await authService.getDonations(token);
       setDonations(response.data);
+      toast.success("Donation deleted successfully!");
     } catch (error) {
       console.error("Error deleting donation:", error);
+      toast.error("Failed to delete donation. Please try again.");
     }
   };
 
@@ -163,6 +172,9 @@ export const DonorDashboard: React.FC = () => {
             <NewDonationFormModal
               isOpen={isModalOpen}
               onClose={() => setModalOpen(false)}
+              onDonationCreated={() => {
+                fetchDonations(); // refetch all donations after adding
+              }}
             />
           </div>
         </div>
@@ -222,7 +234,10 @@ export const DonorDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 space-x-2">
-                      <button className="text-purple-600 hover:underline text-sm">
+                      <button
+                        onClick={() => openViewModal(row)}
+                        className="text-purple-600 hover:underline text-sm"
+                      >
                         View
                       </button>
                       <button
@@ -271,6 +286,11 @@ export const DonorDashboard: React.FC = () => {
           </div>
         </div>
       </main>
+      <ViewDonationModal
+        isOpen={viewModalOpen}
+        onClose={() => setViewModalOpen(false)}
+        donation={selectedDonation}
+      />
     </>
   );
 };
