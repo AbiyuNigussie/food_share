@@ -18,6 +18,7 @@ interface SidebarProps {
     name: string;
     email: string;
   };
+  onLogout?: () => void; // <== NEW
 }
 
 export const SideBar: React.FC<SidebarProps> = ({
@@ -27,6 +28,7 @@ export const SideBar: React.FC<SidebarProps> = ({
   title = "Dashboard",
   logoIcon = <TruckIcon className="w-6 h-6 text-purple-600" />,
   userInfo,
+  onLogout,
 }) => (
   <aside
     className={clsx(
@@ -35,6 +37,7 @@ export const SideBar: React.FC<SidebarProps> = ({
       open ? "w-64" : "w-16"
     )}
   >
+    {/* Toggle button */}
     <button
       onClick={toggle}
       className="absolute top-4 right-4 p-1 rounded bg-gray-100 hover:bg-gray-200 focus:outline-none"
@@ -46,6 +49,7 @@ export const SideBar: React.FC<SidebarProps> = ({
       )}
     </button>
 
+    {/* Title / Logo */}
     <div
       className={clsx(
         "flex items-center px-4 mb-10 pt-12",
@@ -61,6 +65,7 @@ export const SideBar: React.FC<SidebarProps> = ({
       )}
     </div>
 
+    {/* Nav items */}
     <nav className="flex-1 px-2 space-y-2">
       {navItems.map((item) => (
         <a
@@ -81,14 +86,28 @@ export const SideBar: React.FC<SidebarProps> = ({
       ))}
     </nav>
 
+    {/* Bottom Section: User Info & Logout */}
     <div className="px-4 py-4 border-t border-gray-200">
       {open ? (
-        userInfo ? (
-          <>
-            <p className="text-sm font-medium text-gray-600">{userInfo.name}</p>
-            <p className="text-xs text-gray-500">{userInfo.email}</p>
-          </>
-        ) : null
+        <>
+          {userInfo && (
+            <div className="mb-3">
+              <p className="text-sm font-medium text-gray-600">
+                {userInfo.name}
+              </p>
+              <p className="text-xs text-gray-500">{userInfo.email}</p>
+            </div>
+          )}
+          <button
+            onClick={onLogout}
+            className="group flex items-center w-full p-2 text-left rounded hover:bg-gray-100 transition-colors"
+          >
+            <UserIcon className="w-5 h-5 text-gray-700 group-hover:text-purple-600" />
+            <span className="ml-3 text-sm font-medium text-gray-700 group-hover:text-purple-600">
+              Logout
+            </span>
+          </button>
+        </>
       ) : (
         <UserIcon className="w-6 h-6 text-gray-500 mx-auto" />
       )}

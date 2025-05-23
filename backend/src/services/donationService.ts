@@ -35,3 +35,14 @@ export const getAllDonations = async (page: number, rowsPerPage: number) => {
     take: rowsPerPage,
   });
 };
+
+export const deleteDonationById = async (donationId: string) => {
+  return await prisma.donation.delete({
+    where: { id: donationId },
+  });
+};
+
+export const getDonationsCount = async () => {
+  const result = await prisma.donation.count();
+  return result;
+};

@@ -11,3 +11,13 @@ export interface DonationCardProps {
 }
 
 export type DonationStatus = "in_transit" | "completed";
+
+export interface Donation {
+  id: number;
+  foodType: string;
+  quantity: string;
+  location: string;
+  expiryDate: string;
+  notes: string;
+  status: "matched" | "pending" | "in-process";
+}
