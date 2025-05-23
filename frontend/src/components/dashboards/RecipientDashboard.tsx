@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "../Header";
 import { StatCard } from "../StatCard";
 import { SearchBar } from "../SearchBar";
 import { FilterSelect } from "../FilterSelect";
 import { DonationSection } from "../DonationSection";
 import { DonationStatus } from "../../types";
-import clsx from "clsx";
 import { SideBar } from "../SideBar";
+import clsx from "clsx";
 import {
   HomeIcon,
   PackageIcon,
@@ -15,6 +15,9 @@ import {
   SettingsIcon,
   ClipboardListIcon,
 } from "lucide-react";
+import { donationService } from "../../services/donationService"; // use your refactored service
+import { useAuth } from "../../contexts/AuthContext";
+import PaginationControls from "../PaginationControl";
 
 const recipientNavItems = [
   { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "#" },
@@ -32,47 +35,88 @@ const recipientNavItems = [
   { label: "Profile", icon: <UserIcon className="w-5 h-5" />, href: "#" },
   { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "#" },
 ];
+
+const stats = [
+  { label: "Total Food Received (lbs)", value: 486 },
+  { label: "Meals Served", value: 1458 },
+  { label: "Community Members Helped", value: 324 },
+];
+
 const RecipientDashboard: React.FC = () => {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All Types");
   const [distanceFilter, setDistanceFilter] = useState("All Distances");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [availableDonations, setAvailableDonations] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const stats = [
-    { label: "Total Food Received (lbs)", value: 486 },
-    { label: "Meals Served", value: 1458 },
-    { label: "Community Members Helped", value: 324 },
-  ];
+  const [currentPage, setCurrentPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const rowsPerPage = 6;
 
-  const availableDonations = [
-    {
-      title: "Fresh Produce",
-      donor: "Local Farm Co",
-      quantity: "50 lbs",
-      location: "123 Main St",
-      expires: "2024-02-10",
-      distance: "0.8 miles",
-      onClaim: () => alert("Claimed!"),
-    },
-    {
-      title: "Bread",
-      donor: "City Bakery",
-      quantity: "30 loaves",
-      location: "456 Oak Ave",
-      expires: "2024-02-08",
-      distance: "1.2 miles",
-      onClaim: () => alert("Claimed!"),
-    },
-    {
-      title: "Canned Goods",
-      donor: "Food Market",
-      quantity: "100 units",
-      location: "789 Pine St",
-      expires: "2024-03-15",
-      distance: "2.5 miles",
-      onClaim: () => alert("Claimed!"),
-    },
-  ];
+  const { user } = useAuth();
+
+  const fetchAvailableDonations = async () => {
+    setLoading(true);
+    try {
+      const res = await donationService.getFilteredDonations(
+        user?.token || "",
+        {
+          page: currentPage,
+          rowsPerPage,
+          donorName: search,
+          foodType: typeFilter !== "All Types" ? typeFilter : undefined,
+          status: "pending",
+        }
+      );
+
+      const mapped = res.data.data.map((d: any) => ({
+        title: d.title || d.donationType,
+        donor:
+          `${d.donor?.user?.firstName || ""} ${
+            d.donor?.user?.lastName || ""
+          }`.trim() || "Unknown Donor",
+        quantity: d.quantity || "",
+        location: d.location || "",
+        expires: new Date(d.expiryDate).toLocaleDateString(),
+        onClaim: () => alert(`Claimed donation ID: ${d.id}`),
+      }));
+
+      setTotal(res.data.total);
+
+      setAvailableDonations(mapped);
+    } catch (err) {
+      console.error("Failed to fetch donations:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAvailableDonations();
+  }, [search, typeFilter, currentPage]);
+
+  const controls = (
+    <>
+      <SearchBar
+        value={search}
+        onChange={setSearch}
+        placeholder="Search by food or donor"
+      />
+      <FilterSelect
+        options={[
+          "All Types",
+          "Baked Goods",
+          "Canned Goods",
+          "Fresh Produce",
+          "Dairy",
+          "Meat & Poultry",
+        ]}
+        value={typeFilter}
+        onChange={setTypeFilter}
+      />
+    </>
+  );
 
   const claimedDonations = [
     {
@@ -92,26 +136,6 @@ const RecipientDashboard: React.FC = () => {
       onFeedback: () => alert("Feedback requested"),
     },
   ];
-
-  const controls = (
-    <>
-      <SearchBar
-        value={search}
-        onChange={setSearch}
-        placeholder="Search by food or donor"
-      />
-      <FilterSelect
-        options={["All Types", "Fresh Produce", "Bread", "Canned Goods"]}
-        value={typeFilter}
-        onChange={setTypeFilter}
-      />
-      <FilterSelect
-        options={["All Distances", "0-1 miles", "1-2 miles", "2+ miles"]}
-        value={distanceFilter}
-        onChange={setDistanceFilter}
-      />
-    </>
-  );
 
   return (
     <>
@@ -146,6 +170,13 @@ const RecipientDashboard: React.FC = () => {
             controls={controls}
             type="available"
             layout="grid"
+            loading={loading}
+          />
+          <PaginationControls
+            page={currentPage}
+            rowsPerPage={rowsPerPage}
+            total={total || 0}
+            onPageChange={(newPage) => setCurrentPage(newPage)}
           />
 
           <DonationSection
