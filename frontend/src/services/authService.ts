@@ -71,12 +71,15 @@ export const authService = {
     });
   },
 
-  getDonations: async (token: string) => {
-    return axios.get(`${BASE_URL}/donations`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  getDonations: (token: string, page = 1, rowsPerPage = 5) => {
+    return axios.get(
+      `${BASE_URL}/donations?page=${page}&rowsPerPage=${rowsPerPage}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   },
 
   updateDonationStatus: async (

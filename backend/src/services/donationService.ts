@@ -41,3 +41,8 @@ export const deleteDonationById = async (donationId: string) => {
     where: { id: donationId },
   });
 };
+
+export const getDonationsCount = async () => {
+  const result = await prisma.donation.count();
+  return result;
+};
