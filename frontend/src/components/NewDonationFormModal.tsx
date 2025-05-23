@@ -15,11 +15,13 @@ import { useAuth } from "../contexts/AuthContext";
 interface NewDonationFormModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onDonationCreated?: () => void;
 }
 
 export const NewDonationFormModal: React.FC<NewDonationFormModalProps> = ({
   isOpen,
   onClose,
+  onDonationCreated,
 }) => {
   const [availableFrom, setAvailableFrom] = useState("");
   const [availableTo, setAvailableTo] = useState("");
@@ -77,6 +79,9 @@ export const NewDonationFormModal: React.FC<NewDonationFormModalProps> = ({
       );
 
       // Success toast
+      if (onDonationCreated) {
+        onDonationCreated();
+      }
       toast.success("Donation created successfully!");
       onClose();
     } catch (error) {
@@ -88,7 +93,7 @@ export const NewDonationFormModal: React.FC<NewDonationFormModalProps> = ({
     }
   };
   return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
       <div className="bg-white w-full max-w-3xl rounded-2xl shadow-xl p-6 relative overflow-auto max-h-[90vh]">
         <button
           onClick={onClose}
@@ -248,3 +253,4 @@ export const NewDonationFormModal: React.FC<NewDonationFormModalProps> = ({
     </div>
   );
 };
+// update this modal to accept ondonationcreated props and fetch donation after successful donation creation
