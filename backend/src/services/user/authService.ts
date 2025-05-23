@@ -6,6 +6,7 @@ import { PrismaClient, Role } from "@prisma/client";
 import sendEmail from "../../utils/email";
 
 const prisma = new PrismaClient();
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const register = async (
   firstName: string,
@@ -145,7 +146,7 @@ const login = async (email: string, password: string, role: string) => {
 
     const jwt_token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
-      "secret",
+      `${JWT_SECRET}`,
       { expiresIn: "1h" }
     );
 
