@@ -86,7 +86,7 @@ const register = async (
 
     const jwt_token = jwt.sign(
       { id: newUser.id, email: newUser.email, role: newUser.role },
-      "secret"
+      `${JWT_SECRET}`
     );
     return { token: jwt_token };
   } catch (error) {

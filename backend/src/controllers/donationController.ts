@@ -4,6 +4,8 @@ import {
   getAllDonations,
   deleteDonationById,
   getDonationsCount,
+  getFilteredDonations,
+  getFilteredDonationsCount,
 } from "../services/donationService";
 import { AuthenticatedRequest } from "../types";
 
@@ -42,6 +44,38 @@ export const handleGetAllDonations = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch donations" });
+  }
+};
+
+export const handleGetFilteredDonations = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { page = "0", rowsPerPage = "10", foodType, status } = req.query;
+
+    const filters = {
+      foodType: foodType?.toString(),
+      status: status?.toString(),
+    };
+
+    const donations = await getFilteredDonations(
+      Number(page),
+      Number(rowsPerPage),
+      filters
+    );
+
+    const total = await getFilteredDonationsCount(filters);
+
+    res.status(200).json({
+      data: donations,
+      total,
+      page: Number(page),
+      rowsPerPage: Number(rowsPerPage),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch filtered donations" });
   }
 };
 

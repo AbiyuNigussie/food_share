@@ -31,7 +31,7 @@ export const DonorDashboard: React.FC = () => {
     null
   );
 
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const navItems: NavItem[] = [
     { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "#" },
@@ -106,7 +106,6 @@ export const DonorDashboard: React.FC = () => {
         logoIcon={<GiftIcon className="w-6 h-6 text-purple-600" />}
         navItems={navItems}
         userInfo={{ name: "Jane Doe", email: "jane@donorx.org" }}
-        onLogout={logout}
       />
       <main
         className={clsx(
