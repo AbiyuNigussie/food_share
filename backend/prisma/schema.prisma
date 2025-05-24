@@ -73,15 +73,17 @@ model LogisticsStaff {
 }
 
 model RecipientNeed {
-  id             String     @id @default(uuid())
+  id             String         @id @default(uuid())
   recipientId    String
-  itemName       String
-  category       String
-  quantityNeeded Int
-  requestedAt    DateTime   @default(now())
-  status         NeedStatus
-  recipient      Recipient  @relation(fields: [recipientId], references: [userId])
+  foodType       String
+  quantity       String
+  pickupAddress  String
+  notes          String?        // optional additional instructions
+  requestedAt    DateTime       @default(now())
+  status         NeedStatus     @default(pending)
+  recipient      Recipient      @relation(fields: [recipientId], references: [userId])
 }
+
 
 model Notification {
   id         String   @id @default(uuid())
