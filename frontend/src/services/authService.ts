@@ -114,8 +114,6 @@ getNeeds: (token: string, page = 1, limit = 5) => {
   });
 },
 
-
-  // Create a new need
   createNeed: (
     data: {
       foodType: string;
@@ -129,7 +127,6 @@ getNeeds: (token: string, page = 1, limit = 5) => {
       headers: { Authorization: `Bearer ${token}` },
     }),
 
-  // Delete a need
   deleteNeed: (id: string, token: string) =>
     axios.delete(`${BASE_URL}/needs/${id}`, {
       headers: { Authorization: `Bearer ${token}` },

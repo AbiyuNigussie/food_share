@@ -1,4 +1,3 @@
-// src/pages/RecipientNeeds.tsx
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -25,7 +24,6 @@ export const RecipientNeeds: React.FC = () => {
   const { user } = useAuth();
   const token = user?.token || '';
 
-  // State for list and form
   const [needs, setNeeds] = useState<RecipientNeed[]>([]);
   const [foodType, setFoodType] = useState('');
   const [quantity, setQuantity] = useState('');
@@ -37,11 +35,9 @@ export const RecipientNeeds: React.FC = () => {
   const [page, setPage] = useState(1);
   const [rowsPerPage] = useState(5);    const [total, setTotal] = useState(0);
 
-  // State for edit modal
   const [editNeed, setEditNeed] = useState<RecipientNeed | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
 
-  // Fetch
 const fetchNeeds = async () => {
   setLoading(true);
   try {
@@ -59,9 +55,8 @@ const fetchNeeds = async () => {
 
 useEffect(() => {
   fetchNeeds();
-}, [page]); // Only depends on page now
+}, [page]); 
 
-  // Validation
   const validate = () => {
     const errs: Record<string,string> = {};
     if (!foodType) errs.foodType = 'Required';
@@ -70,7 +65,6 @@ useEffect(() => {
     return errs;
   };
 
-  // Add
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
@@ -93,7 +87,6 @@ useEffect(() => {
     }
   };
 
-  // Delete
   const handleDelete = async (id: string) => {
     try {
       await authService.deleteNeed(id, token);
@@ -105,7 +98,6 @@ useEffect(() => {
     }
   };
 
-  // Filtered list
   const filtered = useMemo(() => {
     if (!query) return needs;
     return needs.filter(n =>
@@ -117,7 +109,6 @@ useEffect(() => {
    const pages = Math.ceil(total / rowsPerPage);
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white flex items-stretch">
-      {/* Edit Modal */}
       <EditNeedModal
         need={editNeed}
         isOpen={editModalOpen}
@@ -126,10 +117,9 @@ useEffect(() => {
       />
 
       <div className="flex-1 flex flex-col">
-        {/* Header */}
         <div className="flex items-center px-8 py-6 bg-white shadow">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/dashboard')}
             className="p-2 bg-purple-100 rounded-full hover:bg-purple-200 focus:outline-none"
           >
             <ChevronLeftIcon className="w-5 h-5 text-purple-600" />
@@ -138,10 +128,8 @@ useEffect(() => {
           <h1 className="ml-4 text-2xl font-bold text-gray-900">My Needs</h1>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
-            {/* Add Form */}
             <div className="p-8 overflow-auto">
               <form
                 onSubmit={handleAdd}
@@ -149,7 +137,6 @@ useEffect(() => {
               >
                 <h2 className="text-lg font-semibold text-gray-900">Add New Need</h2>
 
-                {/* Food Type */}
                 <div>
                   <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
                     <ClipboardListIcon className="w-5 h-5 mr-2 text-purple-600" />
@@ -172,7 +159,6 @@ useEffect(() => {
                   )}
                 </div>
 
-                {/* Quantity */}
                 <div>
                   <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
                     <FileTextIcon className="w-5 h-5 mr-2 text-purple-600" />
@@ -190,7 +176,6 @@ useEffect(() => {
                   )}
                 </div>
 
-                {/* Pickup Address */}
                 <div>
                   <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
                     <MapPinIcon className="w-5 h-5 mr-2 text-purple-600" />
@@ -208,7 +193,6 @@ useEffect(() => {
                   )}
                 </div>
 
-                {/* Notes */}
                 <div className="flex-1 flex flex-col">
                   <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
                     <InfoIcon className="w-5 h-5 mr-2 text-purple-600" />
@@ -223,7 +207,6 @@ useEffect(() => {
                   />
                 </div>
 
-                {/* Submit */}
                 <div className="text-right">
                   <button
                     type="submit"
@@ -236,7 +219,6 @@ useEffect(() => {
               </form>
             </div>
 
-            {/* List */}
             <div className="p-8 overflow-auto flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <div className="relative w-full max-w-sm">
@@ -302,7 +284,7 @@ useEffect(() => {
                   )}
                 </div>
               )}
-                      <div className="flex items-center justify-between py-4">
+        <div className="flex items-center justify-between py-4">
           <span className="text-sm text-gray-700">
             Showing {(page - 1) * rowsPerPage + 1}–
             {Math.min(page * rowsPerPage, total)} of {total}

@@ -1,4 +1,3 @@
-// src/components/EditNeedModal.tsx
 import React, { useState, useEffect } from "react";
 import { Dialog } from "@headlessui/react";
 import { toast } from "react-toastify";
@@ -27,7 +26,6 @@ export const EditNeedModal: React.FC<EditNeedModalProps> = ({
   const [pickupAddress, setPickupAddress] = useState("");
   const [notes, setNotes] = useState("");
 
-  // Populate form when modal opens
   useEffect(() => {
     if (need) {
       setFoodType(need.foodType);
@@ -65,7 +63,6 @@ export const EditNeedModal: React.FC<EditNeedModalProps> = ({
             Edit Need
           </Dialog.Title>
 
-          {/* Food Type */}
           <div className="mb-3">
             <label className="block text-sm font-medium">Food Type</label>
             <input
@@ -75,7 +72,6 @@ export const EditNeedModal: React.FC<EditNeedModalProps> = ({
             />
           </div>
 
-          {/* Quantity */}
           <div className="mb-3">
             <label className="block text-sm font-medium">Quantity</label>
             <input
@@ -85,7 +81,6 @@ export const EditNeedModal: React.FC<EditNeedModalProps> = ({
             />
           </div>
 
-          {/* Pickup Address */}
           <div className="mb-3">
             <label className="block text-sm font-medium">Pickup Address</label>
             <input
@@ -95,7 +90,6 @@ export const EditNeedModal: React.FC<EditNeedModalProps> = ({
             />
           </div>
 
-          {/* Notes */}
           <div className="mb-4">
             <label className="block text-sm font-medium">Notes</label>
             <textarea
@@ -105,7 +99,6 @@ export const EditNeedModal: React.FC<EditNeedModalProps> = ({
             />
           </div>
 
-          {/* Actions */}
           <div className="flex justify-end space-x-2">
             <button
               onClick={onClose}
