@@ -105,4 +105,47 @@ export const authService = {
       },
     });
   },
+
+getNeeds: (token: string, page = 1, limit = 5) => {
+  return axios.get(`${BASE_URL}/needs?page=${page}&limit=${limit}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+},
+
+
+  // Create a new need
+  createNeed: (
+    data: {
+      foodType: string;
+      quantity: string;
+      pickupAddress: string;
+      notes?: string;
+    },
+    token: string
+  ) =>
+    axios.post(`${BASE_URL}/needs`, data, {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+
+  // Delete a need
+  deleteNeed: (id: string, token: string) =>
+    axios.delete(`${BASE_URL}/needs/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+
+  updateNeed: (
+    needId: string,
+    data: {
+      foodType?: string;
+      quantity?: string;
+      pickupAddress?: string;
+      notes?: string;
+    },
+    token: string
+  ) =>
+    axios.put(`${BASE_URL}/needs/${needId}`, data, {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
 };

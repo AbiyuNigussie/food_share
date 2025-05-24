@@ -21,3 +21,12 @@ export interface Donation {
   notes: string;
   status: "matched" | "pending" | "in-process";
 }
+
+export interface RecipientNeed{
+  id: string;
+  foodType: string;
+  quantity: string;
+  pickupAddress: string;
+  notes: string;
+  status: "matched" | "pending" | "in-process";
+}
