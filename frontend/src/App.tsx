@@ -15,6 +15,8 @@ import { LiveTrackingPage } from "./pages/LiveTrackingPage";
 import AdminLogin from "./pages/auth/admin/AdminLogin";
 import AdminRegister from "./pages/auth/admin/AdminRegister";
 import { RecipientNeeds } from "./pages/RecipientNeeds";
+import FeedbackPage from "./pages/Feedback/Feedbackpage";
+
 function App() {
   return (
     <AuthProvider>
@@ -113,6 +115,13 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route
+             path="/feedback" 
+             element={
+             <FeedbackPage />
+             } 
+             />
+
 
             {/* Other pages with Main Layout
           {/* <Route path="/" element={<Home />} /> */}
