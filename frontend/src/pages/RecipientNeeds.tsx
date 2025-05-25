@@ -4,7 +4,6 @@ import {
   ChevronLeftIcon,
   ClipboardListIcon,
   FileTextIcon,
-  HomeIcon,
   InfoIcon,
   MapPinIcon,
   TruckIcon,
@@ -27,7 +26,7 @@ export const RecipientNeeds: React.FC = () => {
   const [needs, setNeeds] = useState<RecipientNeed[]>([]);
   const [foodType, setFoodType] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [pickupAddress, setPickupAddress] = useState('');
+  const [DropOffAddress, setDropOffAddress] = useState('');
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<Record<string,string>>({});
   const [query, setQuery] = useState('');
@@ -43,7 +42,7 @@ const fetchNeeds = async () => {
   try {
     const res = await authService.getNeeds(token, page, rowsPerPage);
     setNeeds(res.data.data);
-    setTotal(res.data.total); // <-- Make sure backend returns this
+    setTotal(res.data.total); 
   } catch (err: any) {
     console.error(err);
     toast.error('Failed to load needs');
@@ -61,7 +60,7 @@ useEffect(() => {
     const errs: Record<string,string> = {};
     if (!foodType) errs.foodType = 'Required';
     if (!quantity) errs.quantity = 'Required';
-    if (!pickupAddress) errs.pickupAddress = 'Required';
+    if (!DropOffAddress) errs.DropOffAddress = 'Required';
     return errs;
   };
 
@@ -73,11 +72,11 @@ useEffect(() => {
       return;
     }
     try {
-      await authService.createNeed({ foodType, quantity, pickupAddress, notes }, token);
+      await authService.createNeed({ foodType, quantity, DropOffAddress, notes }, token);
       toast.success('Need added');
       setFoodType('');
       setQuantity('');
-      setPickupAddress('');
+      setDropOffAddress('');
       setNotes('');
       setErrors({});
       fetchNeeds();
@@ -102,7 +101,7 @@ useEffect(() => {
     if (!query) return needs;
     return needs.filter(n =>
       n.foodType.toLowerCase().includes(query.toLowerCase()) ||
-      n.pickupAddress.toLowerCase().includes(query.toLowerCase())
+      n.DropOffAddress.toLowerCase().includes(query.toLowerCase())
     );
   }, [needs, query]);
 
@@ -124,7 +123,7 @@ useEffect(() => {
           >
             <ChevronLeftIcon className="w-5 h-5 text-purple-600" />
           </button>
-          <HomeIcon className="w-8 h-8 text-purple-600 ml-6" />
+          <ClipboardListIcon className="w-8 h-8 text-purple-600 ml-6" />
           <h1 className="ml-4 text-2xl font-bold text-gray-900">My Needs</h1>
         </div>
 
@@ -179,17 +178,17 @@ useEffect(() => {
                 <div>
                   <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
                     <MapPinIcon className="w-5 h-5 mr-2 text-purple-600" />
-                    Pickup Address *
+                    DropOff Address *
                   </label>
                   <input
                     type="text"
-                    value={pickupAddress}
-                    onChange={e => setPickupAddress(e.target.value)}
+                    value={DropOffAddress}
+                    onChange={e => setDropOffAddress(e.target.value)}
                     placeholder="123 Main St, City"
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500"
                   />
-                  {errors.pickupAddress && (
-                    <p className="mt-1 text-sm text-red-600">{errors.pickupAddress}</p>
+                  {errors.DropOffAddress && (
+                    <p className="mt-1 text-sm text-red-600">{errors.DropOffAddress}</p>
                   )}
                 </div>
 
@@ -250,7 +249,7 @@ useEffect(() => {
                           <p className="font-medium text-gray-900">{need.foodType}</p>
                           <p className="text-sm text-gray-600">Qty: {need.quantity}</p>
                           <p className="text-sm text-gray-600">
-                            Pickup: {need.pickupAddress}
+                            DropOff: {need.DropOffAddress}
                           </p>
                           {need.notes && (
                             <p className="mt-1 text-sm text-gray-500 italic">

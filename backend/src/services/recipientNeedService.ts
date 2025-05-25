@@ -8,7 +8,7 @@ export const createNeed = async (
   data: {
     foodType: string;
     quantity: string;
-    pickupAddress: string;
+    DropOffAddress: string;
     notes?: string;
   }
 ) => {
@@ -17,7 +17,7 @@ export const createNeed = async (
       recipientId,
       foodType: data.foodType,
       quantity: data.quantity,
-      pickupAddress: data.pickupAddress,
+      DropOffAddress: data.DropOffAddress,
       notes: data.notes,
     },
   });
@@ -59,7 +59,7 @@ export const updateNeed = async (
   data: {
     foodType?: string;
     quantity?: string;
-    pickupAddress?: string;
+    DropOffAddress?: string;
     notes?: string;
   }
 ) => {

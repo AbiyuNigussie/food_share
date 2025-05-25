@@ -118,7 +118,7 @@ getNeeds: (token: string, page = 1, limit = 5) => {
     data: {
       foodType: string;
       quantity: string;
-      pickupAddress: string;
+      DropOffAddress: string;
       notes?: string;
     },
     token: string
@@ -137,7 +137,7 @@ getNeeds: (token: string, page = 1, limit = 5) => {
     data: {
       foodType?: string;
       quantity?: string;
-      pickupAddress?: string;
+      DropOffAddress?: string;
       notes?: string;
     },
     token: string

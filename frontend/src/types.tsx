@@ -26,7 +26,7 @@ export interface RecipientNeed{
   id: string;
   foodType: string;
   quantity: string;
-  pickupAddress: string;
+  DropOffAddress: string;
   notes: string;
   status: "matched" | "pending" | "in-process";
 }

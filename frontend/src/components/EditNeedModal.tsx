@@ -23,14 +23,14 @@ export const EditNeedModal: React.FC<EditNeedModalProps> = ({
 
   const [foodType, setFoodType] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [pickupAddress, setPickupAddress] = useState("");
+  const [DropOffAddress, setDropOffAddress] = useState("");
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
     if (need) {
       setFoodType(need.foodType);
       setQuantity(need.quantity);
-      setPickupAddress(need.pickupAddress);
+      setDropOffAddress(need.DropOffAddress);
       setNotes(need.notes || "");
     }
   }, [need]);
@@ -40,7 +40,7 @@ export const EditNeedModal: React.FC<EditNeedModalProps> = ({
     try {
       await authService.updateNeed(
         need.id.toString(),
-        { foodType, quantity, pickupAddress, notes },
+        { foodType, quantity, DropOffAddress, notes },
         token
       );
       toast.success("Need updated");
@@ -82,10 +82,10 @@ export const EditNeedModal: React.FC<EditNeedModalProps> = ({
           </div>
 
           <div className="mb-3">
-            <label className="block text-sm font-medium">Pickup Address</label>
+            <label className="block text-sm font-medium">DropOff Address</label>
             <input
-              value={pickupAddress}
-              onChange={(e) => setPickupAddress(e.target.value)}
+              value={DropOffAddress}
+              onChange={(e) => setDropOffAddress(e.target.value)}
               className="mt-1 w-full border rounded px-3 py-2"
             />
           </div>
