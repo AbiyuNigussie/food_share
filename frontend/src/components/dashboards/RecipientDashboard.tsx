@@ -15,9 +15,12 @@ import {
   SettingsIcon,
   ClipboardListIcon,
 } from "lucide-react";
-import { donationService } from "../../services/donationService"; // use your refactored service
+import { donationService } from "../../services/donationService";
 import { useAuth } from "../../contexts/AuthContext";
 import PaginationControls from "../PaginationControl";
+import ClaimDonationModal from "../ClaimDonationModal";
+import { Donation } from "../../types";
+import { toast } from "react-toastify";
 
 const recipientNavItems = [
   { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "#" },
@@ -45,7 +48,6 @@ const stats = [
 const RecipientDashboard: React.FC = () => {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All Types");
-  const [distanceFilter, setDistanceFilter] = useState("All Distances");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [availableDonations, setAvailableDonations] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -53,6 +55,9 @@ const RecipientDashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
   const rowsPerPage = 6;
+  const [selectedDonation, setSelectedDonation] = useState<Donation | null>(
+    null
+  );
 
   const { user } = useAuth();
 
@@ -70,17 +75,40 @@ const RecipientDashboard: React.FC = () => {
         }
       );
 
-      const mapped = res.data.data.map((d: any) => ({
-        title: d.title || d.donationType,
-        donor:
-          `${d.donor?.user?.firstName || ""} ${
-            d.donor?.user?.lastName || ""
-          }`.trim() || "Unknown Donor",
-        quantity: d.quantity || "",
-        location: d.location || "",
-        expires: new Date(d.expiryDate).toLocaleDateString(),
-        onClaim: () => alert(`Claimed donation ID: ${d.id}`),
-      }));
+      const mapped = res.data.data.map((d: any) => {
+        const donation: Donation = {
+          id: d.id,
+          title: d.title || d.donationType,
+          donor: {
+            user: {
+              firstName: d.donor?.user?.firstName || "",
+              lastName: d.donor?.user?.lastName || "",
+            },
+          },
+          foodType: d.foodType,
+          quantity: d.quantity || "",
+          location: d.location || "",
+          expires: d.expiryDate,
+          notes: d.notes,
+          availableFrom: d.availableFrom,
+          availableTo: d.availableTo,
+        };
+
+        return {
+          title: donation.title,
+          donor:
+            `${donation.donor.user.firstName} ${donation.donor.user.lastName}`.trim() ||
+            "Unknown Donor",
+          foodType: donation.foodType,
+          quantity: donation.quantity,
+          location: donation.location,
+          expires: new Date(donation.expires).toLocaleDateString(),
+          availableFrom: new Date(donation.availableFrom).toLocaleDateString(),
+          availableTo: new Date(donation.availableTo).toLocaleDateString(),
+          notes: donation.notes,
+          onClaim: () => setSelectedDonation(donation),
+        };
+      });
 
       setTotal(res.data.total);
 
@@ -186,6 +214,16 @@ const RecipientDashboard: React.FC = () => {
             layout="row"
           />
         </div>
+        <ClaimDonationModal
+          open={!!selectedDonation}
+          donation={selectedDonation}
+          onClose={() => setSelectedDonation(null)}
+          onSuccess={() => {
+            toast.success("Donation claimed successfully!");
+            setSelectedDonation(null);
+            fetchAvailableDonations(); // Refresh the available list
+          }}
+        />
       </div>
     </>
   );

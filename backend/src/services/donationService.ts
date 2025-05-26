@@ -100,3 +100,88 @@ export const getFilteredDonationsCount = async (filters: DonationFilters) => {
     where: whereClause,
   });
 };
+
+export const getDonationById = async (donationId: string) => {
+  return await prisma.donation.findUnique({
+    where: { id: donationId },
+    include: {
+      donor: {
+        include: {
+          user: { select: { firstName: true, lastName: true } },
+        },
+      },
+      claimedBy: {
+        include: {
+          user: { select: { firstName: true, lastName: true } },
+        },
+      },
+    },
+  });
+};
+
+export const claimDonationById = async (
+  donationId: string,
+  recipientUserId: string,
+  deliveryDetails: {
+    recipientPhone: string;
+    dropoffLocation: string;
+    deliveryNotes?: string;
+  }
+) => {
+  return await prisma.$transaction(async (tx) => {
+    // 1️⃣ Verify donation exists & is claimable
+    const donation = await tx.donation.findUnique({
+      where: { id: donationId },
+    });
+
+    if (!donation) {
+      throw new Error("Donation not found.");
+    }
+
+    if (donation.status !== "pending") {
+      throw new Error("Donation is not available to claim.");
+    }
+
+    // 2️⃣ Ensure the recipient exists
+    const recipient = await tx.recipient.findUnique({
+      where: { userId: recipientUserId },
+    });
+
+    if (!recipient) {
+      throw new Error("Recipient not found.");
+    }
+
+    // 3️⃣ Update donation → claimed
+    const updatedDonation = await tx.donation.update({
+      where: { id: donationId },
+      data: {
+        status: "claimed",
+        claimedById: recipientUserId,
+      },
+    });
+
+    // 4️⃣ Create delivery record with full details
+    await tx.delivery.create({
+      data: {
+        donationId,
+        deliveryStatus: "PENDING",
+        recipientPhone: deliveryDetails.recipientPhone,
+        deliveryInstructions: deliveryDetails.deliveryNotes,
+        dropoffLocation: deliveryDetails.dropoffLocation,
+        pickupLocation: donation.location,
+      },
+    });
+
+    return updatedDonation;
+  });
+};
+
+export const updateDonationStatus = async (
+  donationId: string,
+  status: string
+) => {
+  return await prisma.donation.update({
+    where: { id: donationId },
+    data: { status },
+  });
+};

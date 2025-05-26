@@ -98,7 +98,7 @@ export const authService = {
     );
   },
 
-  deleteDonation: async (donationId: number, token: string) => {
+  deleteDonation: async (donationId: string, token: string) => {
     return axios.delete(`${BASE_URL}/donations/${donationId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -106,13 +106,13 @@ export const authService = {
     });
   },
 
-getNeeds: (token: string, page = 1, limit = 5) => {
-  return axios.get(`${BASE_URL}/needs?page=${page}&limit=${limit}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-},
+  getNeeds: (token: string, page = 1, limit = 5) => {
+    return axios.get(`${BASE_URL}/needs?page=${page}&limit=${limit}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  },
 
   createNeed: (
     data: {

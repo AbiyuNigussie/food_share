@@ -6,6 +6,7 @@ import {
   getDonationsCount,
   getFilteredDonations,
   getFilteredDonationsCount,
+  claimDonationById,
 } from "../services/donationService";
 import { AuthenticatedRequest } from "../types";
 
@@ -93,5 +94,40 @@ export const handleDeleteDonation = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error deleting donation:", error);
     res.status(500).json({ message: "Failed to delete donation" });
+  }
+};
+
+export const handleClaimDonation = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    const donationId = req.params.id;
+    const recipientId = req.recipientId;
+
+    if (!recipientId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const { dropoffLocation, recipientPhone, deliveryNotes } = req.body;
+
+    if (!dropoffLocation || !recipientPhone) {
+      res.status(400).json({
+        message: "Missing required delivery information",
+      });
+      return;
+    }
+
+    const updatedDonation = await claimDonationById(donationId, recipientId, {
+      dropoffLocation,
+      recipientPhone,
+      deliveryNotes,
+    });
+
+    res.status(200).json(updatedDonation);
+  } catch (error) {
+    console.error("Error claiming donation:", error);
+    res.status(500).json({ message: "Failed to claim donation" });
   }
 };

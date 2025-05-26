@@ -29,4 +29,20 @@ export const donationService = {
       },
     });
   },
+
+  claimDonation: async (
+    donationId: string,
+    token: string,
+    data: {
+      dropoffLocation: string;
+      recipientPhone: string;
+      deliveryNotes?: string;
+    }
+  ) => {
+    return axios.post(`${BASE_URL}/donations/${donationId}/claim`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  },
 };

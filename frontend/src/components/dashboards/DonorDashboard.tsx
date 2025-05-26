@@ -83,7 +83,7 @@ export const DonorDashboard: React.FC = () => {
     setViewModalOpen(true);
   };
 
-  const handleDeleteDonation = async (donationId: number) => {
+  const handleDeleteDonation = async (donationId: string) => {
     try {
       const token = user?.token || "";
       await authService.deleteDonation(donationId, token);
@@ -213,7 +213,7 @@ export const DonorDashboard: React.FC = () => {
                         {row.location}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800">
-                        {row.expiryDate}
+                        {row.expires}
                       </td>
                       <td className="px-6 py-4">
                         <span

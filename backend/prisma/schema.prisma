@@ -35,6 +35,7 @@ model Recipient {
   Donation           Donation[]
   user               User               @relation(fields: [userId], references: [id])
   needs              RecipientNeed[]
+  claimedDonations   Donation[]         @relation("RecipientClaimedDonations")
 }
 
 model Donor {
@@ -45,23 +46,25 @@ model Donor {
 }
 
 model Donation {
-  id            String     @id @default(cuid())
-  donorId       String
-  availableFrom DateTime
-  availableTo   DateTime
-  expiryDate    DateTime
-  foodType      String
-  quantity      String
-  location      String
-  notes         String?
-  createdAt     DateTime   @default(now())
-  status        String
-  claimedById   String?
-  Delivery      Delivery?
-  Recipient     Recipient? @relation(fields: [claimedById], references: [userId])
-  donor         Donor      @relation(fields: [donorId], references: [userId])
-  matchedNeedId String?      @unique
-  matchedNeed   RecipientNeed? @relation("NeedDonationMatch", fields: [matchedNeedId], references: [id])
+  id              String         @id @default(cuid())
+  donorId         String
+  availableFrom   DateTime
+  availableTo     DateTime
+  expiryDate      DateTime
+  foodType        String
+  quantity        String
+  location        String
+  notes           String?
+  createdAt       DateTime       @default(now())
+  status          String
+  claimedById     String?
+  Delivery        Delivery?
+  donor           Donor          @relation(fields: [donorId], references: [userId])
+  matchedNeedId   String?        @unique
+  matchedNeed     RecipientNeed? @relation("NeedDonationMatch", fields: [matchedNeedId], references: [id])
+  claimedBy       Recipient?     @relation("RecipientClaimedDonations", fields: [claimedById], references: [userId])
+  Recipient       Recipient?     @relation(fields: [recipientUserId], references: [userId])
+  recipientUserId String?
 }
 
 model Admin {
@@ -79,16 +82,16 @@ model LogisticsStaff {
 }
 
 model RecipientNeed {
-  id            String     @id @default(uuid())
-  recipientId   String
-  requestedAt   DateTime   @default(now())
-  status        NeedStatus @default(pending)
-  foodType      String
-  notes         String?
-  DropOffAddress String
-  quantity      String
-  recipient     Recipient  @relation(fields: [recipientId], references: [userId])
-  matchedDonation Donation?    @relation("NeedDonationMatch")
+  id              String     @id @default(uuid())
+  recipientId     String
+  requestedAt     DateTime   @default(now())
+  status          NeedStatus @default(pending)
+  foodType        String
+  notes           String?
+  DropOffAddress  String
+  quantity        String
+  recipient       Recipient  @relation(fields: [recipientId], references: [userId])
+  matchedDonation Donation?  @relation("NeedDonationMatch")
 }
 
 model Notification {
@@ -110,17 +113,26 @@ model DeliveryTracking {
 }
 
 model Delivery {
-  id               String             @id @default(uuid())
+  id               String  @id @default(uuid())
+  donationId       String  @unique
   logisticsStaffId String?
-  scheduledDate    DateTime?
-  deliveredAt      DateTime?
-  deliveryStatus   DeliveryStatus     @default(PENDING)
-  createdAt        DateTime           @default(now())
-  donationId       String             @unique
-  updatedAt        DateTime
-  Donation         Donation           @relation(fields: [donationId], references: [id])
-  logisticsStaff   LogisticsStaff?    @relation(fields: [logisticsStaffId], references: [userId])
-  trackingUpdates  DeliveryTracking[]
+
+  pickupLocation       String
+  dropoffLocation      String
+  recipientPhone       String
+  deliveryInstructions String?
+
+  scheduledDate DateTime?
+  deliveredAt   DateTime?
+
+  deliveryStatus DeliveryStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  donation        Donation           @relation(fields: [donationId], references: [id])
+  logisticsStaff  LogisticsStaff?    @relation(fields: [logisticsStaffId], references: [userId])
+  trackingUpdates DeliveryTracking[]
 }
 
 enum Role {
