@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { CustomError } from "../../utils/CustomError";
 
 const prisma = new PrismaClient();
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const register = async (
   firstName: string,
@@ -74,7 +75,7 @@ const login = async (email: string, password: string) => {
 
     const jwt_token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
-      "secret"
+      `${JWT_SECRET}`
     );
     return {
       user: { id: user.id, email: user.email, role: user.role },

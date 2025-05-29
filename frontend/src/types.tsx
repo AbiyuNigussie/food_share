@@ -46,3 +46,10 @@ export interface RecipientNeed {
   notes: string;
   status: "matched" | "pending" | "in-process";
 }
+export interface AppNotification {
+  id: string;
+  message: string;
+  meta: any; // Adjust type as needed
+  readStatus: boolean;
+  createdAt: string;
+}

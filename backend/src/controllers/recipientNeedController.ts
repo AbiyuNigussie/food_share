@@ -6,6 +6,8 @@ import {
   getNeedsCount,
   deleteNeedById,
   updateNeed,
+  findMatchesForNeed,
+  claimMatch,
 } from "../services/recipientNeedService";
 import { AuthenticatedRequest } from "../types"; // your custom interface
 
@@ -97,3 +99,34 @@ export const handleUpdateNeed = async (
     res.status(500).json({ message: "Failed to update need" });
   }
 };
+
+export async function handleFindMatchesForNeed(
+  req: AuthenticatedRequest,
+  res: Response
+) {
+  try {
+    const needId = req.params.needId;
+    const matches = await findMatchesForNeed(needId);
+    res.json({ data: matches });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+/**
+ * POST /api/matches
+ * Body: { needId, donationId }
+ * Claims the given donation for the given need.
+ */
+export async function handleClaimMatch(
+  req: AuthenticatedRequest,
+  res: Response
+) {
+  try {
+    const { needId, donationId } = req.body;
+    const result = await claimMatch(needId, donationId);
+    res.json({ data: result });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+}

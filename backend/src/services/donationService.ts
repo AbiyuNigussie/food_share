@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { DonationFilters } from "../types";
+import { scoreAndSortNeeds } from "../utils/match"; 
 
 const prisma = new PrismaClient();
 
@@ -15,9 +16,10 @@ export const createDonation = async (
     notes?: string;
   }
 ) => {
-  return await prisma.donation.create({
+  // 1) Create the donation as pending
+  const donation = await prisma.donation.create({
     data: {
-      status: "pending",
+      status: "pending",  // leave as pending until claimed
       availableFrom: new Date(data.availableFrom),
       availableTo: new Date(data.availableTo),
       expiryDate: new Date(data.expiryDate),
@@ -28,6 +30,33 @@ export const createDonation = async (
       donor: { connect: { userId: donorId } },
     },
   });
+
+  // 2) Find all pending needs for this same foodType
+  const pendingNeeds = await prisma.recipientNeed.findMany({
+    where: {
+      foodType: donation.foodType,
+      status: "pending",
+    },
+  });
+
+  // 3) Use fuzzy‐matching to pick the top 5 needs
+  const topNeeds = scoreAndSortNeeds(donation, pendingNeeds);
+
+  // 4) Notify each recipient about the matching donation
+  for (const need of topNeeds) {
+  await prisma.notification.create({
+  data: {
+    userId: need.recipientId,
+    message: `A new donation (${donation.quantity} ${donation.foodType}) matches your need.`,
+    meta: {
+      needId: need.id,
+      donationId: donation.id,
+    },
+  },
+});
+  }
+
+  return donation;
 };
 
 export const getAllDonations = async (page: number, rowsPerPage: number) => {

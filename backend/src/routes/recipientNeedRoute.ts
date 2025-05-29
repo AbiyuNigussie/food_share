@@ -4,6 +4,8 @@ import {
   handleGetAllNeeds,
   handleDeleteNeed,
   handleUpdateNeed,
+  handleFindMatchesForNeed,
+  handleClaimMatch,
 } from "../controllers/recipientNeedController";
 import { authenticateRecipient } from "../middlewares/authenticateRecipient";
 
@@ -16,5 +18,17 @@ Needrouter.post("/needs", authenticateRecipient, handleCreateNeed);
 Needrouter.delete("/needs/:id", authenticateRecipient, handleDeleteNeed);
 
 Needrouter.put("/needs/:id", authenticateRecipient, handleUpdateNeed);
+
+Needrouter.get(
+  "/needs/:id/matches",
+  authenticateRecipient,
+  handleFindMatchesForNeed
+);
+
+Needrouter.post(
+  "/matches",
+  authenticateRecipient,
+  handleClaimMatch
+);
 
 export default Needrouter;

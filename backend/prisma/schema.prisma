@@ -84,20 +84,21 @@ model LogisticsStaff {
 model RecipientNeed {
   id              String     @id @default(uuid())
   recipientId     String
+  foodType        String
+  quantity        String
+  notes           String?
   requestedAt     DateTime   @default(now())
   status          NeedStatus @default(pending)
-  foodType        String
-  notes           String?
   DropOffAddress  String
-  quantity        String
-  recipient       Recipient  @relation(fields: [recipientId], references: [userId])
   matchedDonation Donation?  @relation("NeedDonationMatch")
+  recipient       Recipient  @relation(fields: [recipientId], references: [userId])
 }
 
 model Notification {
   id         String   @id @default(uuid())
   userId     String
   message    String
+  meta       Json?     // new: store { needId, donationId }
   readStatus Boolean  @default(false)
   createdAt  DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id])
