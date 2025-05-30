@@ -16,6 +16,8 @@ import AdminLogin from "./pages/auth/admin/AdminLogin";
 import AdminRegister from "./pages/auth/admin/AdminRegister";
 import { RecipientNeeds } from "./pages/RecipientNeeds";
 import FeedbackPage from "./pages/Feedback/Feedbackpage";
+import LandingPage from "./pages/landing/LandingPage";
+import FAQPage from "./pages/FAQPage";
 
 function App() {
   return (
@@ -121,6 +123,19 @@ function App() {
              <FeedbackPage />
              } 
              />
+
+             <Route 
+             path="/"
+             element={
+             <LandingPage />
+             } 
+             />
+             <Route 
+             path="/faq/:role" 
+             element={<FAQPage />
+             } 
+             />
+
 
 
             {/* Other pages with Main Layout
