@@ -1,21 +1,34 @@
 import React, { useState, useEffect, useRef } from "react";
 import { geocodeService } from "../services/geocodeService";
 
-type Place = {
+export type Place = {
   label: string;
   lat: number;
   lon: number;
 };
 
-const GeoAutoComplete: React.FC = () => {
-  const [inputValue, setInputValue] = useState("");
+interface GeoAutoCompleteProps {
+  value: string;
+  onChange: (value: string, selectedPlace?: Place) => void;
+  label?: string;
+  placeholder?: string;
+  className?: string;
+}
+
+const GeoAutoComplete: React.FC<GeoAutoCompleteProps> = ({
+  value,
+  onChange,
+  label = "Location",
+  placeholder = "Search for a location",
+  className = "",
+}) => {
   const [options, setOptions] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!inputValue.trim()) {
+    if (!value.trim()) {
       setOptions([]);
       return;
     }
@@ -24,7 +37,7 @@ const GeoAutoComplete: React.FC = () => {
 
     const fetchSuggestions = async () => {
       try {
-        const res = await geocodeService.getAutoComplete(inputValue);
+        const res = await geocodeService.getAutoComplete(value);
         const features = res.data.features || [];
         const places = features.map((f: any) => ({
           label: f.properties.formatted,
@@ -41,7 +54,7 @@ const GeoAutoComplete: React.FC = () => {
     };
 
     fetchSuggestions();
-  }, [inputValue]);
+  }, [value]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -57,28 +70,29 @@ const GeoAutoComplete: React.FC = () => {
   }, []);
 
   const handleSelect = (place: Place) => {
-    setInputValue(place.label);
+    onChange(place.label, place);
     setShowDropdown(false);
-    console.log("Selected place:", place);
   };
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-lg">
-      <label
-        htmlFor="location"
-        className="block text-sm font-semibold text-gray-700 mb-2"
-      >
-        Location
-      </label>
+    <div ref={containerRef} className={`relative w-full ${className}`}>
+      {label && (
+        <label
+          htmlFor="geo-location"
+          className="block text-sm font-semibold text-gray-700 mb-2"
+        >
+          {label}
+        </label>
+      )}
       <div className="relative">
         <input
-          id="location"
+          id="geo-location"
           type="text"
-          value={inputValue}
-          placeholder="Search for a location"
+          value={value}
+          placeholder={placeholder}
           autoComplete="off"
           onChange={(e) => {
-            setInputValue(e.target.value);
+            onChange(e.target.value);
             setShowDropdown(true);
           }}
           className="w-full text-base px-5 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none hover:border-gray-400 transition"

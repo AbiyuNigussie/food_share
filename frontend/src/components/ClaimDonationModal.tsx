@@ -13,6 +13,12 @@ interface ClaimDonationModalProps {
   onSuccess: () => void;
 }
 
+type Place = {
+  label: string;
+  lat: number;
+  lon: number;
+};
+
 const ClaimDonationModal: React.FC<ClaimDonationModalProps> = ({
   open,
   onClose,
@@ -22,6 +28,7 @@ const ClaimDonationModal: React.FC<ClaimDonationModalProps> = ({
   const { user } = useAuth();
 
   const [dropoffLocation, setDropOffLocation] = useState("");
+  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [recipientPhone, setRecipientPhone] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
   const [loading, setLoading] = useState(false);
@@ -119,7 +126,14 @@ const ClaimDonationModal: React.FC<ClaimDonationModalProps> = ({
             }}
             className="space-y-6"
           >
-            <GeoAutoComplete />
+            <GeoAutoComplete
+              value={dropoffLocation}
+              onChange={(val, place) => {
+                setDropOffLocation(val);
+                if (place) setSelectedPlace(place);
+              }}
+              label="Delivery Address"
+            />
             {/* <div>
               <label
                 htmlFor="deliveryAddress"
