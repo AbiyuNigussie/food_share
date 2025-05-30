@@ -4,6 +4,7 @@ import { donationService } from "../services/donationService";
 import { Donation } from "../types";
 import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
+import GeoAutoComplete from "./GeoAutoComplete";
 
 interface ClaimDonationModalProps {
   open: boolean;
@@ -118,7 +119,8 @@ const ClaimDonationModal: React.FC<ClaimDonationModalProps> = ({
             }}
             className="space-y-6"
           >
-            <div>
+            <GeoAutoComplete />
+            {/* <div>
               <label
                 htmlFor="deliveryAddress"
                 className="mb-2 block text-base font-medium text-gray-800"
@@ -134,8 +136,7 @@ const ClaimDonationModal: React.FC<ClaimDonationModalProps> = ({
                 required
                 className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
               />
-            </div>
-
+            </div> */}
             <div>
               <label
                 htmlFor="contactPhone"
@@ -150,7 +151,7 @@ const ClaimDonationModal: React.FC<ClaimDonationModalProps> = ({
                 onChange={(e) => setRecipientPhone(e.target.value)}
                 placeholder="Recipient phone number"
                 required
-                className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 placeholder-gray-400 shadow-sm focus:outline-none hover:border-gray-400"
               />
             </div>
             <div>
@@ -166,10 +167,9 @@ const ClaimDonationModal: React.FC<ClaimDonationModalProps> = ({
                 onChange={(e) => setAdditionalNotes(e.target.value)}
                 rows={3}
                 placeholder="Any special instructions?"
-                className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 placeholder-gray-400 shadow-sm focus:outline-none hover:border-gray-400"
               />
             </div>
-
             <div className="flex gap-4">
               <button
                 type="button"
