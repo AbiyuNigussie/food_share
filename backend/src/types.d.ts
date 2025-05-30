@@ -10,3 +10,7 @@ interface DonationFilters {
   foodType?: string;
   status?: string;
 }
+
+interface DeliveryFilters {
+  status?: string;
+}

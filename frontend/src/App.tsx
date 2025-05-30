@@ -15,6 +15,7 @@ import { LiveTrackingPage } from "./pages/LiveTrackingPage";
 import AdminLogin from "./pages/auth/admin/AdminLogin";
 import AdminRegister from "./pages/auth/admin/AdminRegister";
 import { RecipientNeeds } from "./pages/RecipientNeeds";
+import { Deliveries } from "./pages/logistic_staff/Deliveries";
 function App() {
   return (
     <AuthProvider>
@@ -89,10 +90,19 @@ function App() {
               }
             />
             <Route
-              path="/dashboard/delivery-details"
+              path="/dashboard/deliveries/delivery-details/:id"
               element={
                 <PrivateRoute>
                   <DeliveryDetails />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/dashboard/deliveries"
+              element={
+                <PrivateRoute>
+                  <Deliveries />
                 </PrivateRoute>
               }
             />
@@ -105,7 +115,7 @@ function App() {
                 </PrivateRoute>
               }
             />
-           <Route
+            <Route
               path="/dashboard/Recipient-Needs"
               element={
                 <PrivateRoute>

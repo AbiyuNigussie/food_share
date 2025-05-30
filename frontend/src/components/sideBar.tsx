@@ -2,6 +2,7 @@ import React from "react";
 import { MenuIcon, ChevronLeftIcon, UserIcon, TruckIcon } from "lucide-react";
 import clsx from "clsx";
 import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router";
 
 export interface NavItem {
   label: string;
@@ -30,7 +31,7 @@ export const SideBar: React.FC<SidebarProps> = ({
   userInfo,
 }) => {
   const { logout } = useAuth();
-
+  const navigate = useNavigate();
   return (
     <aside
       className={clsx(
@@ -70,10 +71,11 @@ export const SideBar: React.FC<SidebarProps> = ({
       {/* Nav items */}
       <nav className="flex-1 px-2 space-y-2">
         {navItems.map((item) => (
-          <a
+          <div
             key={item.label}
-            href={item.href}
-            className="group flex items-center p-2 rounded hover:bg-gray-100 transition-colors"
+            // href={item.href}
+            onClick={() => navigate(item.href || "")}
+            className="cursor-pointer group flex items-center p-2 rounded hover:bg-gray-100 transition-colors"
             title={!open ? item.label : undefined}
           >
             <div className="text-gray-700 group-hover:text-purple-600">
@@ -84,7 +86,7 @@ export const SideBar: React.FC<SidebarProps> = ({
                 {item.label}
               </span>
             )}
-          </a>
+          </div>
         ))}
       </nav>
 

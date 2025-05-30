@@ -3,12 +3,19 @@ import {
   handleAssignDeliveryStaff,
   handleUpdateDeliveryStatus,
   handleGetAllDeliveries,
+  handleGetDeliveryById,
 } from "../controllers/deliveryControlller";
 import { authenticateLogisticsStaff } from "../middlewares/authenticateLogisticsStaff";
 
 const router = express.Router();
 
 router.get("/deliveries", authenticateLogisticsStaff, handleGetAllDeliveries);
+
+router.get(
+  "/deliveries/:deliveryId",
+  authenticateLogisticsStaff,
+  handleGetDeliveryById
+);
 
 router.post(
   "/deliveries/assign",
