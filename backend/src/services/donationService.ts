@@ -139,7 +139,7 @@ export const getDonationById = async (donationId: string) => {
           user: { select: { firstName: true, lastName: true } },
         },
       },
-      claimedBy: {
+      recipient: {
         include: {
           user: { select: { firstName: true, lastName: true } },
         },
@@ -185,8 +185,7 @@ export const claimDonationById = async (
       where: { id: donationId },
       data: {
         status: "claimed",
-        claimedById: recipientUserId,
-        recipientUserId: recipient.userId,
+        recipientId: recipient.userId,
       },
     });
 

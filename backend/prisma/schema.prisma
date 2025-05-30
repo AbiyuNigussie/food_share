@@ -34,37 +34,34 @@ model Donor {
 }
 
 model Recipient {
-  userId                                       String             @id
-  address                                      String
-  subscriptionStatus                           SubscriptionStatus
-  subscriptionDate                             DateTime
-  organization                                 String?
-  Donation_Donation_claimedByIdToRecipient     Donation[]         @relation("Donation_claimedByIdToRecipient")
-  Donation_Donation_recipientUserIdToRecipient Donation[]         @relation("Donation_recipientUserIdToRecipient")
-  user                                         User               @relation(fields: [userId], references: [id])
-  needs                                        RecipientNeed[]    @relation("RecipientNeeds")
+  userId               String         @id
+  address              String
+  subscriptionStatus   SubscriptionStatus
+  subscriptionDate     DateTime
+  organization         String?
+  donations            Donation[]     @relation("RecipientDonations") // ⬅ matches above
+  user                 User           @relation(fields: [userId], references: [id])
+  needs                RecipientNeed[] @relation("RecipientNeeds")
 }
 
 model Donation {
-  id                                            String         @id @default(cuid())
-  donorId                                       String
-  claimedById                                   String?
-  status                                        String
-  availableFrom                                 DateTime
-  availableTo                                   DateTime
-  expiryDate                                    DateTime
-  foodType                                      String
-  quantity                                      String
-  location                                      String
-  notes                                         String?
-  createdAt                                     DateTime       @default(now())
-  matchedNeedId                                 String?        @unique
-  recipientUserId                               String?
-  delivery                                      Delivery?
-  Recipient_Donation_claimedByIdToRecipient     Recipient?     @relation("Donation_claimedByIdToRecipient", fields: [claimedById], references: [userId])
-  donor                                         Donor          @relation("DonorDonations", fields: [donorId], references: [userId])
-  matchedNeed                                   RecipientNeed? @relation("NeedDonationMatch", fields: [matchedNeedId], references: [id])
-  Recipient_Donation_recipientUserIdToRecipient Recipient?     @relation("Donation_recipientUserIdToRecipient", fields: [recipientUserId], references: [userId])
+  id              String         @id @default(cuid())
+  donorId         String
+  recipientId     String?
+  status          String
+  availableFrom   DateTime
+  availableTo     DateTime
+  expiryDate      DateTime
+  foodType        String
+  quantity        String
+  location        String
+  notes           String?
+  createdAt       DateTime       @default(now())
+  matchedNeedId   String?        @unique
+  delivery        Delivery?
+  donor           Donor          @relation("DonorDonations", fields: [donorId], references: [userId])
+  matchedNeed     RecipientNeed? @relation("NeedDonationMatch", fields: [matchedNeedId], references: [id])
+  recipient       Recipient?     @relation("RecipientDonations", fields: [recipientId], references: [userId])
 }
 
 model RecipientNeed {
@@ -107,18 +104,6 @@ model LogisticsStaff {
   user         User       @relation(fields: [userId], references: [id])
 }
 
-model RecipientNeed {
-  id              String     @id @default(uuid())
-  recipientId     String
-  foodType        String
-  quantity        String
-  notes           String?
-  requestedAt     DateTime   @default(now())
-  status          NeedStatus @default(pending)
-  DropOffAddress  String
-  matchedDonation Donation?  @relation("NeedDonationMatch")
-  recipient       Recipient  @relation(fields: [recipientId], references: [userId])
-}
 model Admin {
   userId String @id
   user   User   @relation(fields: [userId], references: [id])
@@ -131,7 +116,6 @@ model Notification {
   meta       Json?     // new: store { needId, donationId }
   readStatus Boolean  @default(false)
   createdAt  DateTime @default(now())
-  meta       Json?
   user       User     @relation(fields: [userId], references: [id])
 }
 

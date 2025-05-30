@@ -127,7 +127,7 @@ const login = async (email: string, password: string, role: string) => {
       include: {
         donor: true,
         recipient: true,
-        logistics_staff: true,
+        logisticsStaff: true,
       },
     });
 
