@@ -71,7 +71,11 @@ const statusColors: Record<Delivery["status"], string> = {
 
 const navItems: NavItem[] = [
   { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "#" },
-  { label: "Deliveries", icon: <TruckIcon className="w-5 h-5" />, href: "#" },
+  {
+    label: "Deliveries",
+    icon: <TruckIcon className="w-5 h-5" />,
+    href: "deliveries",
+  },
   { label: "Routes", icon: <MapPinIcon className="w-5 h-5" />, href: "#" },
   { label: "Drivers", icon: <UserIcon className="w-5 h-5" />, href: "#" },
   { label: "Reports", icon: <BarChart2Icon className="w-5 h-5" />, href: "#" },
@@ -119,14 +123,13 @@ export const Logistics: React.FC = () => {
           <h2 className="text-xl font-semibold mb-4">Active Deliveries</h2>
           <div className="space-y-6">
             {deliveries.map((d, idx) => (
-              <div
-                key={idx}
-                className="border border-gray-200 rounded-lg p-4"
-              >
+              <div key={idx} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-2">
                     <span
-                      className={`w-2 h-2 rounded-full ${statusColors[d.status]}`}
+                      className={`w-2 h-2 rounded-full ${
+                        statusColors[d.status]
+                      }`}
                     />
                     <span className="text-gray-700 font-medium">
                       {d.status}
@@ -147,21 +150,15 @@ export const Logistics: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <p className="text-gray-500 text-xs uppercase">Pickup</p>
-                    <p className="font-medium text-gray-900">
-                      {d.pickup.name}
-                    </p>
-                    <p className="text-gray-500 text-sm">
-                      {d.pickup.address}
-                    </p>
+                    <p className="font-medium text-gray-900">{d.pickup.name}</p>
+                    <p className="text-gray-500 text-sm">{d.pickup.address}</p>
                   </div>
                   <div>
                     <p className="text-gray-500 text-xs uppercase">Dropoff</p>
                     <p className="font-medium text-gray-900">
                       {d.dropoff.name}
                     </p>
-                    <p className="text-gray-500 text-sm">
-                      {d.dropoff.address}
-                    </p>
+                    <p className="text-gray-500 text-sm">{d.dropoff.address}</p>
                   </div>
                 </div>
 

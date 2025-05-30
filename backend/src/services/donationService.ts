@@ -186,6 +186,7 @@ export const claimDonationById = async (
       data: {
         status: "claimed",
         claimedById: recipientUserId,
+        recipientUserId: recipient.userId,
       },
     });
 
