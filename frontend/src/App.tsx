@@ -19,6 +19,7 @@ import FeedbackPage from "./pages/Feedback/Feedbackpage";
 import LandingPage from "./pages/landing/LandingPage";
 import FAQPage from "./pages/FAQPage";
 
+import { Deliveries } from "./pages/logistic_staff/Deliveries";
 function App() {
   return (
     <AuthProvider>
@@ -93,10 +94,19 @@ function App() {
               }
             />
             <Route
-              path="/dashboard/delivery-details"
+              path="/dashboard/deliveries/delivery-details/:id"
               element={
                 <PrivateRoute>
                   <DeliveryDetails />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/dashboard/deliveries"
+              element={
+                <PrivateRoute>
+                  <Deliveries />
                 </PrivateRoute>
               }
             />
@@ -109,7 +119,7 @@ function App() {
                 </PrivateRoute>
               }
             />
-           <Route
+            <Route
               path="/dashboard/Recipient-Needs"
               element={
                 <PrivateRoute>

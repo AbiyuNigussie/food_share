@@ -27,7 +27,7 @@ export const AvailableDonationCard: React.FC<DonationCardProps> = ({
       </div>
       <div className="space-y-1 text-right">
         <p>{quantity}</p>
-        <p>{location}</p>
+        <p>{location.label}</p>
         {expires && <p className="text-gray-500">{expires}</p>}
       </div>
     </div>

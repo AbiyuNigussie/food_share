@@ -98,11 +98,85 @@ export const authService = {
     );
   },
 
-  deleteDonation: async (donationId: number, token: string) => {
+  deleteDonation: async (donationId: string, token: string) => {
     return axios.delete(`${BASE_URL}/donations/${donationId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
   },
+
+  getNeeds: (token: string, page = 1, limit = 5) => {
+    return axios.get(`${BASE_URL}/needs?page=${page}&limit=${limit}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  },
+
+  createNeed: (
+    data: {
+      foodType: string;
+      quantity: string;
+      DropOffAddress: string;
+      notes?: string;
+    },
+    token: string
+  ) =>
+    axios.post(`${BASE_URL}/needs`, data, {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+
+  deleteNeed: (id: string, token: string) =>
+    axios.delete(`${BASE_URL}/needs/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+
+  updateNeed: (
+    needId: string,
+    data: {
+      foodType?: string;
+      quantity?: string;
+      DropOffAddress?: string;
+      notes?: string;
+    },
+    token: string
+  ) =>
+    axios.put(`${BASE_URL}/needs/${needId}`, data, {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+
+  claimMatch: (token: string, needId: string, donationId: string) => {
+  return axios.post(
+    `${BASE_URL}/matches`,
+    { needId, donationId },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+},
+  
+// Fetches Notification[] directly
+getNotifications: async (token: string) => {
+  const res = await axios.get(
+    `${BASE_URL}/notifications`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  // res.data === { data: Notification[] }
+  return res.data.data as Notification[];
+},
+
+// Marks a notification read, returns the updated record
+markNotificationRead: async (id: string, token: string) => {
+  const res = await axios.put(
+    `${BASE_URL}/notifications/${id}/read`,
+    {},
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  // res.data === { data: Notification }
+  return res.data.data as Notification;
+},
+
 };
