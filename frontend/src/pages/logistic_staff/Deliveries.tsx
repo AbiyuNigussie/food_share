@@ -175,7 +175,7 @@ export const Deliveries: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-800">
                       <div className="text-sm text-gray-500">
-                        {row.pickupLocation.label}
+                        {row.dropoffLocation.label}
                       </div>
                     </td>
                     <td className="px-6 py-4">
