@@ -1,15 +1,21 @@
-// src/utils/match.ts
 import { Donation, RecipientNeed } from "@prisma/client";
+
+type DonationWithLocation = Donation & {
+  locationLabel: string; // the string to match against for location
+};
 
 /**
  * Score and pick the top 5 candidate donations for a given need,
- * using a simple “fuzzy” algorithm on type, quantity, location, and expiry.
+ * using a simple fuzzy algorithm on type, quantity, location, and expiry.
+ *
+ * @param need RecipientNeed object
+ * @param donations Array of Donation objects with locationLabel included
  */
 export function scoreAndSort(
   need: RecipientNeed,
-  donations: Donation[]
+  donations: DonationWithLocation[]
 ): Donation[] {
-  type Scored = { donation: Donation; score: number };
+  type Scored = { donation: DonationWithLocation; score: number };
 
   const scored: Scored[] = donations.map((d) => {
     let score = 0;
@@ -26,16 +32,15 @@ export function scoreAndSort(
       score += 2;
     }
 
-    // 3) Simple “same city” location check (assumes pickupAddress includes city)
+    // 3) Simple “same city” location check (assumes DropOffAddress includes city)
     const needCity = need.DropOffAddress.split(",")[1]?.trim().toLowerCase();
-    if (needCity && d.location.toLowerCase().includes(needCity)) {
+    if (needCity && d.locationLabel.toLowerCase().includes(needCity)) {
       score += 3;
     }
 
     // 4) Sooner expiry gets a higher boost
     const daysToExpiry =
       (new Date(d.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
-    // if it expires in under 5 days, boost proportionally
     if (daysToExpiry > 0) {
       score += Math.max(0, 5 - daysToExpiry);
     }
@@ -43,7 +48,6 @@ export function scoreAndSort(
     return { donation: d, score };
   });
 
-  // Sort descending by score, take top 5, then return just the Donation objects
   return scored
     .sort((a, b) => b.score - a.score)
     .slice(0, 5)
@@ -52,9 +56,12 @@ export function scoreAndSort(
 
 /**
  * Score and pick top 5 candidate needs for a given donation.
+ *
+ * @param donation Donation object with locationLabel included
+ * @param needs Array of RecipientNeed objects
  */
 export function scoreAndSortNeeds(
-  donation: Donation,
+  donation: DonationWithLocation,
   needs: RecipientNeed[]
 ): RecipientNeed[] {
   type Scored = { need: RecipientNeed; score: number };
@@ -71,9 +78,9 @@ export function scoreAndSortNeeds(
     if (dQty >= nQty) score += 5;
     else if (Math.abs(dQty - nQty) / nQty < 0.1) score += 2;
 
-    // 3) Location match (donation.location vs dropOffAddress)
+    // 3) Location match (donation location vs dropOffAddress)
     const needCity = n.DropOffAddress.split(",")[1]?.trim().toLowerCase();
-    if (needCity && donation.location.toLowerCase().includes(needCity)) {
+    if (needCity && donation.locationLabel.toLowerCase().includes(needCity)) {
       score += 3;
     }
 

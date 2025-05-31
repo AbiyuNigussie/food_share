@@ -15,6 +15,7 @@ import {
 import { useAuth } from "../../contexts/AuthContext";
 import { deliveryService } from "../../services/deliveryService";
 import { useNavigate } from "react-router";
+import { Location } from "../../types";
 
 type DeliveryStatus = "PENDING" | "IN_PROGRESS" | "DELIVERED";
 
@@ -22,8 +23,8 @@ interface Delivery {
   id: string;
   deliveryStatus: DeliveryStatus;
   createdAt: string;
-  pickupLocation: string;
-  dropoffLocation: string;
+  pickupLocation: Location;
+  dropoffLocation: Location;
   updatedAt: string;
 }
 
@@ -168,15 +169,13 @@ export const Deliveries: React.FC = () => {
                       {new Date(row.createdAt).toLocaleString()}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-800">
-                      <div className="font-medium">{row.pickupLocation}</div>
                       <div className="text-sm text-gray-500">
-                        {row.pickupLocation}
+                        {row.pickupLocation.label}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-800">
-                      <div className="font-medium">{row.dropoffLocation}</div>
                       <div className="text-sm text-gray-500">
-                        {row.pickupLocation}
+                        {row.pickupLocation.label}
                       </div>
                     </td>
                     <td className="px-6 py-4">

@@ -25,10 +25,6 @@ Needrouter.get(
   handleFindMatchesForNeed
 );
 
-Needrouter.post(
-  "/matches",
-  authenticateRecipient,
-  handleClaimMatch
-);
+Needrouter.post("/matches", authenticateRecipient, handleClaimMatch);
 
 export default Needrouter;

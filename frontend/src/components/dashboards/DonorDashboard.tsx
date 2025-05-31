@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { SideBar, NavItem } from "../SideBar";
 import { Header } from "../Header";
-import { NewDonationFormModal } from "../NewDonationFormModal";
+import NewDonationFormModal from "../NewDonationFormModal";
 import { authService } from "../../services/authService";
 import { ViewDonationModal } from "../ViewDonationModal";
 import { useAuth } from "../../contexts/AuthContext";
@@ -72,7 +72,7 @@ export const DonorDashboard: React.FC = () => {
     return donations.filter((d) => {
       const matchesSearch =
         d.foodType?.toLowerCase().includes(search.toLowerCase()) ||
-        d.location?.toLowerCase().includes(search.toLowerCase());
+        d.location.label?.toLowerCase().includes(search.toLowerCase());
       const matchesStatus = filterStatus === "all" || d.status === filterStatus;
       return matchesSearch && matchesStatus;
     });
@@ -159,9 +159,9 @@ export const DonorDashboard: React.FC = () => {
         </div>
 
         <NewDonationFormModal
-          isOpen={isModalOpen}
+          open={isModalOpen} // ❌ This should be `open`
           onClose={() => setModalOpen(false)}
-          onDonationCreated={fetchDonations}
+          onSuccess={fetchDonations}
         />
 
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Donations</h2>
@@ -210,10 +210,10 @@ export const DonorDashboard: React.FC = () => {
                         {row.quantity}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800">
-                        {row.location}
+                        {row.location.label}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800">
-                        {row.expires}
+                        {row.expiryDate}
                       </td>
                       <td className="px-6 py-4">
                         <span

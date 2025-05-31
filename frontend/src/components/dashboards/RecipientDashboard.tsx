@@ -5,7 +5,7 @@ import { SearchBar } from "../SearchBar";
 import { FilterSelect } from "../FilterSelect";
 import { DonationSection } from "../DonationSection";
 import { DonationStatus } from "../../types";
-import { SideBar } from "../SideBar";
+import { SideBar } from "../sideBar";
 import clsx from "clsx";
 import {
   HomeIcon,
@@ -88,7 +88,7 @@ const RecipientDashboard: React.FC = () => {
           foodType: d.foodType,
           quantity: d.quantity || "",
           location: d.location || "",
-          expires: d.expiryDate,
+          expiryDate: d.expiryDate,
           notes: d.notes,
           availableFrom: d.availableFrom,
           availableTo: d.availableTo,
@@ -102,7 +102,7 @@ const RecipientDashboard: React.FC = () => {
           foodType: donation.foodType,
           quantity: donation.quantity,
           location: donation.location,
-          expires: new Date(donation.expires).toLocaleDateString(),
+          expiryDate: new Date(donation.expiryDate).toLocaleDateString(),
           availableFrom: new Date(donation.availableFrom).toLocaleDateString(),
           availableTo: new Date(donation.availableTo).toLocaleDateString(),
           notes: donation.notes,
@@ -174,7 +174,7 @@ const RecipientDashboard: React.FC = () => {
         navItems={recipientNavItems}
         userInfo={{
           name: "Recipient User",
-          email: "recipient@foodshare.org",
+          email: user?.email || "",
         }}
       />
 
@@ -207,12 +207,12 @@ const RecipientDashboard: React.FC = () => {
             onPageChange={(newPage) => setCurrentPage(newPage)}
           />
 
-          <DonationSection
+          {/* <DonationSection
             title="Claimed Donations"
             donations={claimedDonations}
             type="claimed"
             layout="row"
-          />
+          /> */}
         </div>
         <ClaimDonationModal
           open={!!selectedDonation}

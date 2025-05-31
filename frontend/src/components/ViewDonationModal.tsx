@@ -41,7 +41,7 @@ export const ViewDonationModal: React.FC<ViewDonationModalProps> = ({
               <strong>Quantity:</strong> {donation.quantity}
             </div>
             <div>
-              <strong>Location:</strong> {donation.location}
+              <strong>Location:</strong> {donation.location.label}
             </div>
             <div>
               <strong>Expiry Date:</strong> {donation.expiryDate}

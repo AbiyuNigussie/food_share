@@ -3,6 +3,26 @@ import { useParams } from "react-router-dom";
 import { deliveryService } from "../services/deliveryService";
 import { useAuth } from "../contexts/AuthContext";
 import { toast } from "react-toastify";
+import { Phone, MapPin, Truck, User, Clock } from "lucide-react";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+
+const formatDateTime = (iso: string | null) => {
+  if (!iso) return "TBD";
+  return new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(iso));
+};
+
+const mapContainerStyle = {
+  width: "100%",
+  height: "100%",
+};
+
+const fallbackCenter = {
+  lat: 9.03,
+  lng: 38.74,
+};
 
 export const DeliveryDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,7 +37,6 @@ export const DeliveryDetails: React.FC = () => {
         setLoading(true);
         const token = user?.token || "";
         const res = await deliveryService.getDeliveryById(token, id);
-        console.log("Fetched delivery:", res.data);
         setDelivery(res.data);
       } catch (err) {
         console.error(err);
@@ -29,19 +48,10 @@ export const DeliveryDetails: React.FC = () => {
     fetchDelivery();
   }, [id, user?.token]);
 
-  // Debug: show raw JSON if loaded but UI blank
-  if (!loading && delivery && Object.keys(delivery).length === 0) {
-    return (
-      <pre className="p-4 bg-red-100 text-red-800">
-        Empty delivery object received: {JSON.stringify(delivery, null, 2)}
-      </pre>
-    );
-  }
-
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
-        <div className="animate-spin h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full mb-4"></div>
+        <div className="animate-spin h-12 w-12 border-4 border-indigo-600 border-t-transparent rounded-full mb-4" />
         <p className="text-lg text-gray-600">Loading delivery details...</p>
       </div>
     );
@@ -55,162 +65,186 @@ export const DeliveryDetails: React.FC = () => {
     );
   }
 
+  const pickupCoords = {
+    lat: delivery.pickupLocation.latitude || fallbackCenter.lat,
+    lng: delivery.pickupLocation.longitude || fallbackCenter.lng,
+  };
+
+  const dropoffCoords = {
+    lat: delivery.dropoffLocation.latitude || fallbackCenter.lat,
+    lng: delivery.dropoffLocation.longitude || fallbackCenter.lng,
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-6">
-      <div className="max-w-7xl mx-auto space-y-12">
-        {/* Header */}
-        <header className="flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50 py-16 text-gray-800">
+      <div className="max-w-[90rem] mx-auto space-y-16 px-4 sm:px-6 lg:px-8">
+        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-semibold text-gray-800">
+            <h1 className="text-4xl font-bold tracking-tight">
               Delivery Details
             </h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-2 text-base text-gray-500">
               Tracking ID:{" "}
               <span className="font-medium text-gray-700">{delivery.id}</span>
             </p>
           </div>
-          <div className="flex space-x-4">
-            <button className="flex items-center gap-2 px-6 py-3 text-sm font-medium bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 transition">
-              📞 Contact Driver
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              type="button"
+              aria-label="Contact Driver"
+              className="flex items-center gap-2 justify-center px-5 py-2.5 text-sm font-medium bg-white border border-gray-200 rounded-xl shadow hover:bg-gray-100 transition"
+            >
+              <Phone className="w-4 h-4" /> Contact Driver
             </button>
-            <button className="px-6 py-3 text-sm font-medium bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">
-              View Route
+            <button
+              type="button"
+              aria-label="View Route"
+              className="flex items-center gap-2 justify-center px-5 py-2.5 text-sm font-medium bg-indigo-600 text-white rounded-xl shadow hover:bg-indigo-700 transition"
+            >
+              <MapPin className="w-4 h-4" /> View Route
             </button>
           </div>
         </header>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:auto-rows-fr items-stretch">
           {/* Status Card */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 space-y-4">
-            <h2 className="text-sm font-semibold uppercase text-gray-500">
-              Status
-            </h2>
-            <span className="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full">
-              {delivery.status}
+          <div className="min-h-[260px] flex flex-col justify-between bg-white rounded-2xl shadow-lg p-6">
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 uppercase">
+              <Clock className="w-4 h-4" /> Status
+            </div>
+            <span className="self-start bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1 rounded-full">
+              {delivery.deliveryStatus}
             </span>
-            <div>
-              <p className="text-sm text-gray-500">Estimated Arrival</p>
-              <p className="mt-1 text-lg font-semibold text-gray-800">
-                {new Date(
-                  delivery.estimatedArrival || delivery.date
-                ).toLocaleString()}
+            <div className="space-y-1">
+              <p className="text-sm text-gray-500">Scheduled For</p>
+              <p className="text-lg font-semibold">
+                {formatDateTime(delivery.scheduledDate)}
               </p>
             </div>
           </div>
 
-          {/* Driver Card */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 space-y-4">
-            <h2 className="text-sm font-semibold uppercase text-gray-500">
-              Driver Info
-            </h2>
-            <div className="flex items-center space-x-4">
-              <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 font-bold">
-                🚚
+          {/* Driver Info Card */}
+          <div className="min-h-[260px] flex flex-col justify-between bg-white rounded-2xl shadow-lg p-6">
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 uppercase">
+              <Truck className="w-4 h-4" /> Driver Info
+            </div>
+            {delivery.logisticsStaff ? (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center h-12 w-12 rounded-full bg-gray-100">
+                  <Truck className="w-5 h-5 text-gray-500" />
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-lg font-semibold">
+                    {delivery.logisticsStaff.user.firstName}{" "}
+                    {delivery.logisticsStaff.user.lastName}
+                  </p>
+                  <p className="text-sm text-indigo-600 flex items-center gap-1">
+                    <Phone className="w-3 h-3" />{" "}
+                    {delivery.logisticsStaff.user.phoneNumber}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-lg font-semibold text-gray-800">
-                  {delivery.driver?.name}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {delivery.driver?.vehicle}
-                </p>
-                <p className="text-sm text-indigo-600">
-                  {delivery.driver?.phone}
-                </p>
+            ) : (
+              <p className="text-sm text-gray-500">No driver assigned</p>
+            )}
+          </div>
+
+          {/* Route Information Card */}
+          <div className="lg:row-span-2 flex flex-col bg-white rounded-2xl shadow-lg p-6">
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
+              <MapPin className="w-4 h-4" /> Route Information
+            </div>
+
+            <div className="flex-grow rounded-lg overflow-hidden">
+              <LoadScript
+                googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
+              >
+                <GoogleMap
+                  mapContainerStyle={mapContainerStyle}
+                  center={pickupCoords}
+                  zoom={10}
+                  options={{
+                    fullscreenControl: false,
+                    streetViewControl: false,
+                  }}
+                >
+                  <Marker position={pickupCoords} label="P" title="Pickup" />
+                  <Marker position={dropoffCoords} label="D" title="Dropoff" />
+                </GoogleMap>
+              </LoadScript>
+            </div>
+
+            <div className="flex flex-col gap-4 text-sm text-gray-700 mt-6">
+              <div className="flex items-start gap-3">
+                <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
+                <div>
+                  <p className="font-medium text-gray-600">Pickup Location</p>
+                  <p>{delivery.pickupLocation.label}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
+                <div>
+                  <p className="font-medium text-gray-600">Dropoff Location</p>
+                  <p>{delivery.dropoffLocation.label}</p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Route Card */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 space-y-4">
-            <h2 className="text-sm font-semibold uppercase text-gray-500">
-              Route Information
-            </h2>
-            <div className="bg-gray-100 h-40 rounded-lg" />
-            <div className="flex justify-between text-sm text-gray-600">
-              <span>{delivery.route?.distance || 0} miles</span>
-              <span>{delivery.route?.duration || 0} mins</span>
+          {/* Donation Details */}
+          <div className="lg:col-span-2 flex flex-col bg-white rounded-2xl shadow-lg p-6 gap-8">
+            <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 uppercase">
+              <User className="w-4 h-4" /> Donation Details
             </div>
-            <ul className="space-y-2 text-sm">
-              <li>
-                📍 <strong>{delivery.route?.origin?.name}</strong> -{" "}
-                {delivery.route?.origin?.address}
-              </li>
-              <li>
-                🏁 <strong>{delivery.route?.destination?.name}</strong> -{" "}
-                {delivery.route?.destination?.address}
-              </li>
-            </ul>
-            <div className="space-y-1 text-sm">
-              {delivery.checkpoints?.map((cp: any, idx: number) => (
-                <p key={idx} className="flex items-center gap-2">
-                  <span
-                    className={`h-2 w-2 rounded-full ${
-                      cp.status === "completed"
-                        ? "bg-purple-600"
-                        : cp.status === "in_progress"
-                        ? "bg-yellow-500"
-                        : "bg-gray-400"
-                    }`}
-                  />
-                  {cp.name} -{" "}
-                  <span className="capitalize text-gray-600">
-                    {cp.status.replace("_", " ")}
-                  </span>
-                </p>
-              ))}
-            </div>
-          </div>
 
-          {/* Timeline Card (span 2 cols) */}
-          <div className="lg:col-span-2 bg-white rounded-2xl shadow-xl p-8 space-y-6">
-            <h2 className="text-sm font-semibold uppercase text-gray-500">
-              Delivery Timeline
-            </h2>
-            <ul className="space-y-6">
-              {delivery.timeline?.map((event: any, i: number) => (
-                <li key={i} className="flex space-x-4">
-                  <div className="h-3 w-3 mt-1 rounded-full bg-indigo-600" />
-                  <div>
-                    <p className="text-sm font-semibold text-gray-800">
-                      {event.title}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {event.time} - {event.details}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Donation Card */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
-            <h2 className="text-sm font-semibold uppercase text-gray-500">
-              Donation Details
-            </h2>
-            <div className="space-y-2">
-              <p className="text-sm">
-                <strong>Type:</strong> {delivery.donation.foodType}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+              <p>
+                <span className="font-medium text-gray-700">Type:</span>{" "}
+                {delivery.donation.foodType}
               </p>
-              <p className="text-sm">
-                <strong>Quantity:</strong> {delivery.donation.quantity}
+              <p>
+                <span className="font-medium text-gray-700">Quantity:</span>{" "}
+                {delivery.donation.quantity}
               </p>
             </div>
-            <div className="flex justify-between text-sm">
-              <div>
-                <p className="text-gray-500">Donor</p>
-                <p className="text-gray-800 font-medium">
-                  {`${delivery.donation.donor?.user.firstName} ${delivery.donation.donor?.user.firstName}`}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-sm">
+              <div className="flex flex-col gap-1">
+                <p className="text-gray-500 font-medium flex items-center gap-2">
+                  <User className="w-4 h-4" /> Donor
+                </p>
+                <p className="text-gray-900 text-base font-medium">
+                  {delivery.donation.donor.user.firstName}{" "}
+                  {delivery.donation.donor.user.lastName}
+                </p>
+                <p className="text-gray-600 flex items-center gap-1">
+                  <Phone className="w-3 h-3" />{" "}
+                  {delivery.donation.donor.user.phoneNumber}
                 </p>
               </div>
-              <div>
-                <p className="text-gray-500">Recipient</p>
-                <p className="text-gray-800 font-medium">
-                  {delivery.recipient?.name}
+
+              <div className="flex flex-col gap-1">
+                <p className="text-gray-500 font-medium flex items-center gap-2">
+                  <User className="w-4 h-4" /> Recipient
+                </p>
+                <p className="text-gray-900 text-base font-medium">
+                  {delivery.donation.recipient.user.firstName}{" "}
+                  {delivery.donation.recipient.user.lastName}
+                </p>
+                <p className="text-gray-600 flex items-center gap-1">
+                  <Phone className="w-3 h-3" />{" "}
+                  {delivery.donation.recipient.user.phoneNumber}
                 </p>
               </div>
+            </div>
+
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700">
+              <p className="font-medium text-gray-600 mb-1">Additional Notes</p>
+              <p className="text-gray-800">
+                {delivery.donation.notes?.trim() ||
+                  "No additional notes provided."}
+              </p>
             </div>
           </div>
         </div>

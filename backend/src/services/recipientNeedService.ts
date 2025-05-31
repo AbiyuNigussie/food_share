@@ -9,7 +9,13 @@ const prisma = new PrismaClient();
  */
 export async function createNeed(
   recipientId: string,
-  data: { foodType: string; quantity: string; DropOffAddress: string; notes?: string }
+  data: {
+    foodType: string;
+    quantity: string;
+    DropOffAddress: string;
+    contactPhone: string; // Add this here
+    notes?: string;
+  }
 ) {
   // 1) Create the need
   const newNeed = await prisma.recipientNeed.create({
@@ -18,6 +24,7 @@ export async function createNeed(
       foodType: data.foodType,
       quantity: data.quantity,
       DropOffAddress: data.DropOffAddress,
+      contactPhone: data.contactPhone,
       notes: data.notes,
     },
   });
@@ -28,18 +35,17 @@ export async function createNeed(
   // 3) Notify the recipient about each match
   //    (you can choose to notify only the top 1, or all 5)
   for (const donation of matches) {
-  await prisma.notification.create({
-  data: {
-    userId: recipientId,
-    message: `We found a matching donation of ${donation.quantity} ${donation.foodType} for your need.`,
-    meta: {
-      needId: newNeed.id,
-      donationId: donation.id,
-    },
-  },
-});
+    await prisma.notification.create({
+      data: {
+        userId: recipientId,
+        message: `We found a matching donation of ${donation.quantity} ${donation.foodType} for your need.`,
+        meta: {
+          needId: newNeed.id,
+          donationId: donation.id,
+        },
+      },
+    });
   }
-
 
   // 4) Return the freshly created need
   return newNeed;
@@ -73,10 +79,7 @@ export async function getNeedsCount(recipientId: string) {
 /**
  * Delete a need (must belong to this recipient).
  */
-export async function deleteNeedById(
-  recipientId: string,
-  needId: string
-) {
+export async function deleteNeedById(recipientId: string, needId: string) {
   return prisma.recipientNeed.deleteMany({
     where: { id: needId, recipientId },
   });
@@ -113,36 +116,36 @@ export async function findMatchesForNeed(needId: string) {
     throw new Error("Need not found");
   }
 
-  // Fetch all available candidates
+  // Fetch all available candidates including location
   const candidates = await prisma.donation.findMany({
     where: {
       foodType: need.foodType,
       status: "pending",
       expiryDate: { gt: new Date() },
     },
+    include: {
+      location: true,
+    },
   });
 
+  // Add locationLabel field for each candidate
+  const candidatesWithLocationLabel = candidates.map((candidate) => ({
+    ...candidate,
+    locationLabel: candidate.location.label,
+  }));
+
   // Return top 5 by your fuzzy-scoring algorithm
-  return scoreAndSort(need, candidates);
+  return scoreAndSort(need, candidatesWithLocationLabel);
 }
 
-/**
- * Claim a donation for a need:
- * 1. Mark RecipientNeed.status = "matched" and link via matchedDonation
- * 2. Mark Donation.status = "matched" and set matchedNeedId
- * 3. Create a Notification for the recipient
- */
-export async function claimMatch(
-  needId: string,
-  donationId: string
-) {
+export async function claimMatch(needId: string, donationId: string) {
   return prisma.$transaction(async (tx) => {
     // 1) Update the need
     const updatedNeed = await tx.recipientNeed.update({
       where: { id: needId },
       data: {
         status: "matched",
-        matchedDonation: { connect: { id: donationId } }, 
+        matchedDonation: { connect: { id: donationId } },
       },
     });
 
@@ -151,21 +154,20 @@ export async function claimMatch(
       where: { id: donationId },
       data: {
         status: "matched",
-        matchedNeedId: needId, 
+        matchedNeedId: needId,
       },
     });
 
-await tx.notification.create({
-  data: {
-    userId: updatedNeed.recipientId,
-    message: `A donation of ${updatedDonation.quantity} ${updatedDonation.foodType} has been reserved for your need.`,
-    meta: {
-      needId,
-      donationId,
-    },
-  },
-});
-
+    await tx.notification.create({
+      data: {
+        userId: updatedNeed.recipientId,
+        message: `A donation of ${updatedDonation.quantity} ${updatedDonation.foodType} has been reserved for your need.`,
+        meta: {
+          needId,
+          donationId,
+        },
+      },
+    });
 
     return { updatedNeed, updatedDonation };
   });

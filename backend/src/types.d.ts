@@ -14,3 +14,9 @@ interface DonationFilters {
 interface DeliveryFilters {
   status?: string;
 }
+
+interface Address {
+  label: string;
+  lat: number;
+  lon: number;
+}

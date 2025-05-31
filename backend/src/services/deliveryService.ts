@@ -66,10 +66,8 @@ export const getAllDeliveries = async (
       skip,
       take,
       include: {
-        donation: true,
-        logisticsStaff: {
-          include: { user: true },
-        },
+        pickupLocation: true,
+        dropoffLocation: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -97,11 +95,16 @@ export const getDeliveryById = async (deliveryId: string) => {
           donor: {
             include: { user: true },
           },
+          recipient: {
+            include: { user: true },
+          },
         },
       },
       logisticsStaff: {
         include: { user: true },
       },
+      pickupLocation: true,
+      dropoffLocation: true,
     },
   });
 };

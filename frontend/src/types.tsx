@@ -2,7 +2,7 @@ export interface DonationCardProps {
   title: string;
   donor: string;
   quantity: string;
-  location: string;
+  location: Location;
   expires?: string;
   distance?: string;
   status?: DonationStatus;
@@ -24,14 +24,19 @@ export interface Donor {
   organizationName?: string;
 }
 
+export interface Location {
+  label: string;
+  latitude: number;
+  longitude: number;
+}
 export interface Donation {
   id: string;
   title: string;
   donor: Donor;
   foodType: string;
   quantity: string;
-  location: string;
-  expires: string;
+  location: Location;
+  expiryDate: string;
   availableFrom: string;
   availableTo: string;
   status?: string;

@@ -27,21 +27,35 @@ const ClaimDonationModal: React.FC<ClaimDonationModalProps> = ({
 }) => {
   const { user } = useAuth();
 
-  const [dropoffLocation, setDropOffLocation] = useState("");
+  const [form, setForm] = useState({
+    dropoffText: "",
+    recipientPhone: "",
+    additionalNotes: "",
+  });
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
-  const [recipientPhone, setRecipientPhone] = useState("");
-  const [additionalNotes, setAdditionalNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
   if (!open || !donation) return null;
 
+  const handleChange =
+    (key: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setForm((prev) => ({ ...prev, [key]: e.target.value }));
+    };
+
   const handleConfirm = async () => {
-    if (!dropoffLocation.trim()) {
+    const { dropoffText, recipientPhone, additionalNotes } = form;
+
+    if (!dropoffText.trim()) {
       toast.error("Please provide a delivery address.");
       return;
     }
     if (!recipientPhone.trim()) {
       toast.error("Please provide a contact phone number.");
+      return;
+    }
+    if (!selectedPlace) {
+      toast.error("Please select a location from the suggestions.");
       return;
     }
 
@@ -50,10 +64,15 @@ const ClaimDonationModal: React.FC<ClaimDonationModalProps> = ({
       const token = user?.token || "";
 
       await donationService.claimDonation(donation.id, token, {
-        dropoffLocation,
+        dropoffLocation: {
+          label: selectedPlace.label,
+          latitude: selectedPlace.lat,
+          longitude: selectedPlace.lon,
+        },
         recipientPhone,
         deliveryNotes: additionalNotes.trim() || undefined,
       });
+
       onSuccess();
       onClose();
     } catch (err: any) {
@@ -64,6 +83,13 @@ const ClaimDonationModal: React.FC<ClaimDonationModalProps> = ({
       setLoading(false);
     }
   };
+
+  const renderDetail = (label: string, value: string | number) => (
+    <div className="flex flex-col border-b border-gray-200 pb-3">
+      <span className="font-semibold text-gray-900">{label}</span>
+      <span>{value}</span>
+    </div>
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -78,35 +104,21 @@ const ClaimDonationModal: React.FC<ClaimDonationModalProps> = ({
             Donation Details
           </h3>
           <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-gray-700 text-sm leading-relaxed">
-            <div className="flex flex-col border-b border-gray-200 pb-3">
-              <span className="font-semibold text-gray-900">Food Type</span>
-              <span>{donation.foodType}</span>
-            </div>
-            <div className="flex flex-col border-b border-gray-200 pb-3">
-              <span className="font-semibold text-gray-900">Quantity</span>
-              <span>{donation.quantity}</span>
-            </div>
-
-            <div className="flex flex-col border-b border-gray-200 pb-3">
-              <span className="font-semibold text-gray-900">Location</span>
-              <span>{donation.location}</span>
-            </div>
-            <div className="flex flex-col border-b border-gray-200 pb-3">
-              <span className="font-semibold text-gray-900">Expires</span>
-              <span>{new Date(donation.expires).toLocaleString()}</span>
-            </div>
-
-            <div className="flex flex-col border-b border-gray-200 pb-3">
-              <span className="font-semibold text-gray-900">
-                Available From
-              </span>
-              <span>{new Date(donation.availableFrom).toLocaleString()}</span>
-            </div>
-            <div className="flex flex-col border-b border-gray-200 pb-3">
-              <span className="font-semibold text-gray-900">Available To</span>
-              <span>{new Date(donation.availableTo).toLocaleString()}</span>
-            </div>
-
+            {renderDetail("Food Type", donation.foodType)}
+            {renderDetail("Quantity", donation.quantity)}
+            {renderDetail("Location", donation.location.label)}
+            {renderDetail(
+              "Expires",
+              new Date(donation.expiryDate).toLocaleString()
+            )}
+            {renderDetail(
+              "Available From",
+              new Date(donation.availableFrom).toLocaleString()
+            )}
+            {renderDetail(
+              "Available To",
+              new Date(donation.availableTo).toLocaleString()
+            )}
             <div className="flex flex-col col-span-2 pt-3">
               <span className="font-semibold text-gray-900">Note</span>
               <span>{donation.notes || "N/A"}</span>
@@ -127,30 +139,14 @@ const ClaimDonationModal: React.FC<ClaimDonationModalProps> = ({
             className="space-y-6"
           >
             <GeoAutoComplete
-              value={dropoffLocation}
+              value={form.dropoffText}
               onChange={(val, place) => {
-                setDropOffLocation(val);
+                setForm((prev) => ({ ...prev, dropoffText: val }));
                 if (place) setSelectedPlace(place);
               }}
               label="Delivery Address"
             />
-            {/* <div>
-              <label
-                htmlFor="deliveryAddress"
-                className="mb-2 block text-base font-medium text-gray-800"
-              >
-                Delivery Address
-              </label>
-              <textarea
-                id="deliveryAddress"
-                value={dropoffLocation}
-                onChange={(e) => setDropOffLocation(e.target.value)}
-                rows={3}
-                placeholder="Enter the delivery address"
-                required
-                className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-              />
-            </div> */}
+
             <div>
               <label
                 htmlFor="contactPhone"
@@ -161,13 +157,14 @@ const ClaimDonationModal: React.FC<ClaimDonationModalProps> = ({
               <input
                 id="contactPhone"
                 type="tel"
-                value={recipientPhone}
-                onChange={(e) => setRecipientPhone(e.target.value)}
+                value={form.recipientPhone}
+                onChange={handleChange("recipientPhone")}
                 placeholder="Recipient phone number"
                 required
                 className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 placeholder-gray-400 shadow-sm focus:outline-none hover:border-gray-400"
               />
             </div>
+
             <div>
               <label
                 htmlFor="additionalNotes"
@@ -177,13 +174,14 @@ const ClaimDonationModal: React.FC<ClaimDonationModalProps> = ({
               </label>
               <textarea
                 id="additionalNotes"
-                value={additionalNotes}
-                onChange={(e) => setAdditionalNotes(e.target.value)}
+                value={form.additionalNotes}
+                onChange={handleChange("additionalNotes")}
                 rows={3}
                 placeholder="Any special instructions?"
                 className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 placeholder-gray-400 shadow-sm focus:outline-none hover:border-gray-400"
               />
             </div>
+
             <div className="flex gap-4">
               <button
                 type="button"

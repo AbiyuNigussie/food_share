@@ -29,12 +29,15 @@ export const donationService = {
       },
     });
   },
-
   claimDonation: async (
     donationId: string,
     token: string,
     data: {
-      dropoffLocation: string;
+      dropoffLocation: {
+        label: string;
+        latitude: number;
+        longitude: number;
+      };
       recipientPhone: string;
       deliveryNotes?: string;
     }

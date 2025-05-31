@@ -1,8 +1,14 @@
 import { PrismaClient } from "@prisma/client";
 import { DonationFilters } from "../types";
-import { scoreAndSortNeeds } from "../utils/match"; 
+import { scoreAndSortNeeds } from "../utils/match";
 
 const prisma = new PrismaClient();
+
+interface Address {
+  label: string;
+  latitude: number;
+  longitude: number;
+}
 
 export const createDonation = async (
   donorId: string,
@@ -12,26 +18,33 @@ export const createDonation = async (
     expiryDate: string;
     foodType: string;
     quantity: string;
-    location: string;
+    location: Address;
     notes?: string;
   }
 ) => {
-  // 1) Create the donation as pending
+  const pickupLocation = await prisma.location.create({
+    data: {
+      label: data.location.label,
+      latitude: data.location.latitude,
+      longitude: data.location.longitude,
+    },
+  });
+
   const donation = await prisma.donation.create({
     data: {
-      status: "pending",  // leave as pending until claimed
+      status: "pending",
       availableFrom: new Date(data.availableFrom),
       availableTo: new Date(data.availableTo),
       expiryDate: new Date(data.expiryDate),
       foodType: data.foodType,
       quantity: data.quantity,
-      location: data.location,
+      locationId: pickupLocation.id,
       notes: data.notes,
-      donor: { connect: { userId: donorId } },
+      donorId: donorId,
     },
   });
 
-  // 2) Find all pending needs for this same foodType
+  // 3) Find all pending needs for this same foodType
   const pendingNeeds = await prisma.recipientNeed.findMany({
     where: {
       foodType: donation.foodType,
@@ -39,21 +52,36 @@ export const createDonation = async (
     },
   });
 
-  // 3) Use fuzzy‐matching to pick the top 5 needs
-  const topNeeds = scoreAndSortNeeds(donation, pendingNeeds);
-
-  // 4) Notify each recipient about the matching donation
-  for (const need of topNeeds) {
-  await prisma.notification.create({
-  data: {
-    userId: need.recipientId,
-    message: `A new donation (${donation.quantity} ${donation.foodType}) matches your need.`,
-    meta: {
-      needId: need.id,
-      donationId: donation.id,
+  const donationWithLocation = await prisma.donation.findUnique({
+    where: { id: donation.id },
+    include: {
+      location: true,
     },
-  },
-});
+  });
+
+  if (!donationWithLocation) throw new Error("Donation not found");
+
+  // Prepare the object in the expected shape
+  const donationForMatching = {
+    ...donationWithLocation,
+    locationLabel: donationWithLocation.location.label,
+  };
+
+  // 4) Use fuzzy‐matching to pick the top 5 needs
+  const topNeeds = scoreAndSortNeeds(donationForMatching, pendingNeeds);
+
+  // 5) Notify each recipient about the matching donation
+  for (const need of topNeeds) {
+    await prisma.notification.create({
+      data: {
+        userId: need.recipientId,
+        message: `A new donation (${donation.quantity} ${donation.foodType}) matches your need.`,
+        meta: {
+          needId: need.id,
+          donationId: donation.id,
+        },
+      },
+    });
   }
 
   return donation;
@@ -63,6 +91,22 @@ export const getAllDonations = async (page: number, rowsPerPage: number) => {
   return await prisma.donation.findMany({
     skip: (page - 1) * rowsPerPage,
     take: rowsPerPage,
+    include: {
+      location: true, // include location details
+      donor: {
+        include: {
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 };
 
@@ -86,6 +130,7 @@ export const getFilteredDonations = async (
     skip: (page - 1) * rowsPerPage,
     take: rowsPerPage,
     include: {
+      location: true,
       donor: {
         include: {
           user: {
@@ -134,6 +179,7 @@ export const getDonationById = async (donationId: string) => {
   return await prisma.donation.findUnique({
     where: { id: donationId },
     include: {
+      location: true,
       donor: {
         include: {
           user: { select: { firstName: true, lastName: true } },
@@ -153,14 +199,17 @@ export const claimDonationById = async (
   recipientUserId: string,
   deliveryDetails: {
     recipientPhone: string;
-    dropoffLocation: string;
+    dropoffLocation: Address;
     deliveryNotes?: string;
   }
 ) => {
   return await prisma.$transaction(async (tx) => {
-    // 1️⃣ Verify donation exists & is claimable
+    // 1️⃣ Verify donation exists & is claimable (include location info)
     const donation = await tx.donation.findUnique({
       where: { id: donationId },
+      include: {
+        location: true,
+      },
     });
 
     if (!donation) {
@@ -189,15 +238,24 @@ export const claimDonationById = async (
       },
     });
 
-    // 4️⃣ Create delivery record with full details
+    // 4️⃣ Create dropoff location record
+    const dropoffLocation = await tx.location.create({
+      data: {
+        label: deliveryDetails.dropoffLocation.label,
+        latitude: deliveryDetails.dropoffLocation.latitude,
+        longitude: deliveryDetails.dropoffLocation.longitude,
+      },
+    });
+
+    // 5️⃣ Create delivery record with pickupLocationId from donation.locationId
     await tx.delivery.create({
       data: {
         donationId,
         deliveryStatus: "PENDING",
         recipientPhone: deliveryDetails.recipientPhone,
         deliveryInstructions: deliveryDetails.deliveryNotes,
-        dropoffLocation: deliveryDetails.dropoffLocation,
-        pickupLocation: donation.location,
+        pickupLocationId: donation.locationId,
+        dropoffLocationId: dropoffLocation.id,
       },
     });
 

@@ -18,7 +18,7 @@ interface GeoAutoCompleteProps {
 const GeoAutoComplete: React.FC<GeoAutoCompleteProps> = ({
   value,
   onChange,
-  label = "Location",
+  label = "",
   placeholder = "Search for a location",
   className = "",
 }) => {
