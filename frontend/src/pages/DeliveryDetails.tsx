@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { deliveryService } from "../services/deliveryService";
 import { useAuth } from "../contexts/AuthContext";
 import { toast } from "react-toastify";
-import { Phone, MapPin, Truck, User, Clock } from "lucide-react";
+import { Phone, MapPin, Truck, User, Clock, ArrowLeftIcon } from "lucide-react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
 const formatDateTime = (iso: string | null) => {
@@ -29,7 +29,7 @@ export const DeliveryDetails: React.FC = () => {
   const [delivery, setDelivery] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchDelivery = async () => {
       if (!id) return;
@@ -80,9 +80,18 @@ export const DeliveryDetails: React.FC = () => {
       <div className="max-w-[90rem] mx-auto space-y-16 px-4 sm:px-6 lg:px-8">
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">
-              Delivery Details
-            </h1>
+            <div>
+              <button
+                className="p-2 rounded hover:bg-gray-100"
+                onClick={() => navigate("/dashboard/deliveries")}
+              >
+                <ArrowLeftIcon className="w-5 h-5 text-gray-700" />
+              </button>
+              <span className="text-4xl font-bold tracking-tight ml-5">
+                Delivery Details
+              </span>
+            </div>
+
             <p className="mt-2 text-base text-gray-500">
               Tracking ID:{" "}
               <span className="font-medium text-gray-700">{delivery.id}</span>
@@ -97,6 +106,7 @@ export const DeliveryDetails: React.FC = () => {
               <Phone className="w-4 h-4" /> Contact Driver
             </button>
             <button
+              onClick={() => navigate(`/tracking/${delivery.id}`)}
               type="button"
               aria-label="View Route"
               className="flex items-center gap-2 justify-center px-5 py-2.5 text-sm font-medium bg-indigo-600 text-white rounded-xl shadow hover:bg-indigo-700 transition"
@@ -156,22 +166,28 @@ export const DeliveryDetails: React.FC = () => {
             </div>
 
             <div className="flex-grow rounded-lg overflow-hidden">
-              <LoadScript
-                googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
-              >
-                <GoogleMap
-                  mapContainerStyle={mapContainerStyle}
-                  center={pickupCoords}
-                  zoom={10}
-                  options={{
-                    fullscreenControl: false,
-                    streetViewControl: false,
-                  }}
+              {delivery?.pickupLocation && delivery?.dropoffLocation && (
+                <LoadScript
+                  googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
                 >
-                  <Marker position={pickupCoords} label="P" title="Pickup" />
-                  <Marker position={dropoffCoords} label="D" title="Dropoff" />
-                </GoogleMap>
-              </LoadScript>
+                  <GoogleMap
+                    mapContainerStyle={mapContainerStyle}
+                    center={pickupCoords}
+                    zoom={10}
+                    options={{
+                      fullscreenControl: false,
+                      streetViewControl: false,
+                    }}
+                  >
+                    <Marker position={pickupCoords} label="P" title="Pickup" />
+                    <Marker
+                      position={dropoffCoords}
+                      label="D"
+                      title="Dropoff"
+                    />
+                  </GoogleMap>
+                </LoadScript>
+              )}
             </div>
 
             <div className="flex flex-col gap-4 text-sm text-gray-700 mt-6">

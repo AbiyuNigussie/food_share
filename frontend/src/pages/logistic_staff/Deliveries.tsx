@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import clsx from "clsx";
 import PaginationControls from "../../components/PaginationControl";
 import { Header } from "../../components/Header";
-import { NavItem, SideBar } from "../../components/SideBar";
+import { NavItem, SideBar } from "../../components/sideBar";
 import {
   BarChart2Icon,
   GiftIcon,

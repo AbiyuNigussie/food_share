@@ -107,14 +107,7 @@ function App() {
               }
             />
 
-            <Route
-              path="/dashboard/live-tracking"
-              element={
-                <PrivateRoute>
-                  <LiveTrackingPage />
-                </PrivateRoute>
-              }
-            />
+            <Route path="/tracking/:id" element={<LiveTrackingPage />} />
             <Route
               path="/dashboard/Recipient-Needs"
               element={
