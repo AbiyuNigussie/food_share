@@ -44,13 +44,21 @@ export const createDonation = async (
     },
   });
 
-  // 3) Find all pending needs for this same foodType
+  // 🔁 Include dropoffLocation for matching needs
   const pendingNeeds = await prisma.recipientNeed.findMany({
     where: {
       foodType: donation.foodType,
       status: "pending",
     },
+    include: {
+      dropoffLocation: true,
+    },
   });
+
+  const needsWithLocation = pendingNeeds.map((need) => ({
+    ...need,
+    dropoffLabel: need.dropoffLocation.label,
+  }));
 
   const donationWithLocation = await prisma.donation.findUnique({
     where: { id: donation.id },
@@ -61,16 +69,13 @@ export const createDonation = async (
 
   if (!donationWithLocation) throw new Error("Donation not found");
 
-  // Prepare the object in the expected shape
   const donationForMatching = {
     ...donationWithLocation,
     locationLabel: donationWithLocation.location.label,
   };
 
-  // 4) Use fuzzy‐matching to pick the top 5 needs
-  const topNeeds = scoreAndSortNeeds(donationForMatching, pendingNeeds);
+  const topNeeds = scoreAndSortNeeds(donationForMatching, needsWithLocation);
 
-  // 5) Notify each recipient about the matching donation
   for (const need of topNeeds) {
     await prisma.notification.create({
       data: {
@@ -86,6 +91,7 @@ export const createDonation = async (
 
   return donation;
 };
+
 
 export const getAllDonations = async (page: number, rowsPerPage: number) => {
   return await prisma.donation.findMany({

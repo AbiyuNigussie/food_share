@@ -24,7 +24,7 @@ import { toast } from "react-toastify";
 
 const recipientNavItems = [
   { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "#" },
-  { label: "Donations", icon: <PackageIcon className="w-5 h-5" />, href: "#" },
+  { label: "Donations", icon: <PackageIcon className="w-5 h-5" />, href: "/dashboard/my-donations" },
   {
     label: "Nearby Locations",
     icon: <MapPinIcon className="w-5 h-5" />,

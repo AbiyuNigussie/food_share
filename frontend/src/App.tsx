@@ -16,6 +16,7 @@ import AdminLogin from "./pages/auth/admin/AdminLogin";
 import AdminRegister from "./pages/auth/admin/AdminRegister";
 import { RecipientNeeds } from "./pages/RecipientNeeds";
 import { Deliveries } from "./pages/logistic_staff/Deliveries";
+import { RecipientDonationsPage } from "./pages/RecipientDonation";
 function App() {
   return (
     <AuthProvider>
@@ -113,6 +114,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <RecipientNeeds />
+                </PrivateRoute>
+              }
+            />
+           <Route
+              path="/dashboard/my-donations"
+              element={
+                <PrivateRoute>
+                  <RecipientDonationsPage />
                 </PrivateRoute>
               }
             />

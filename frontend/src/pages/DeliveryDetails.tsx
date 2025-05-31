@@ -1,3 +1,5 @@
+// src/pages/DeliveryDetails.tsx
+
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { deliveryService } from "../services/deliveryService";
@@ -65,14 +67,15 @@ export const DeliveryDetails: React.FC = () => {
     );
   }
 
+  // Compute coordinates for the map. If no lat/lng, use fallback.
   const pickupCoords = {
-    lat: delivery.pickupLocation.latitude || fallbackCenter.lat,
-    lng: delivery.pickupLocation.longitude || fallbackCenter.lng,
+    lat: delivery.pickupLocation?.latitude ?? fallbackCenter.lat,
+    lng: delivery.pickupLocation?.longitude ?? fallbackCenter.lng,
   };
 
   const dropoffCoords = {
-    lat: delivery.dropoffLocation.latitude || fallbackCenter.lat,
-    lng: delivery.dropoffLocation.longitude || fallbackCenter.lng,
+    lat: delivery.dropoffLocation?.latitude ?? fallbackCenter.lat,
+    lng: delivery.dropoffLocation?.longitude ?? fallbackCenter.lng,
   };
 
   return (
@@ -102,8 +105,12 @@ export const DeliveryDetails: React.FC = () => {
               type="button"
               aria-label="Contact Driver"
               className="flex items-center gap-2 justify-center px-5 py-2.5 text-sm font-medium bg-white border border-gray-200 rounded-xl shadow hover:bg-gray-100 transition"
+              disabled={!delivery.logisticsStaff?.user?.phoneNumber}
             >
-              <Phone className="w-4 h-4" /> Contact Driver
+              <Phone className="w-4 h-4" />{" "}
+              {delivery.logisticsStaff?.user?.phoneNumber
+                ? "Contact Driver"
+                : "No Driver Yet"}
             </button>
             <button
               onClick={() => navigate(`/tracking/${delivery.id}`)}
@@ -138,7 +145,7 @@ export const DeliveryDetails: React.FC = () => {
             <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 uppercase">
               <Truck className="w-4 h-4" /> Driver Info
             </div>
-            {delivery.logisticsStaff ? (
+            {delivery.logisticsStaff?.user ? (
               <div className="flex items-center gap-4">
                 <div className="flex items-center justify-center h-12 w-12 rounded-full bg-gray-100">
                   <Truck className="w-5 h-5 text-gray-500" />
@@ -195,14 +202,14 @@ export const DeliveryDetails: React.FC = () => {
                 <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
                 <div>
                   <p className="font-medium text-gray-600">Pickup Location</p>
-                  <p>{delivery.pickupLocation.label}</p>
+                  <p>{delivery.pickupLocation?.label ?? "Unknown"}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
                 <div>
                   <p className="font-medium text-gray-600">Dropoff Location</p>
-                  <p>{delivery.dropoffLocation.label}</p>
+                  <p>{delivery.dropoffLocation?.label ?? "Unknown"}</p>
                 </div>
               </div>
             </div>
@@ -231,12 +238,12 @@ export const DeliveryDetails: React.FC = () => {
                   <User className="w-4 h-4" /> Donor
                 </p>
                 <p className="text-gray-900 text-base font-medium">
-                  {delivery.donation.donor.user.firstName}{" "}
-                  {delivery.donation.donor.user.lastName}
+                  {delivery.donation.donor?.user?.firstName ?? "N/A"}{" "}
+                  {delivery.donation.donor?.user?.lastName ?? ""}
                 </p>
                 <p className="text-gray-600 flex items-center gap-1">
                   <Phone className="w-3 h-3" />{" "}
-                  {delivery.donation.donor.user.phoneNumber}
+                  {delivery.donation.donor?.user?.phoneNumber ?? "N/A"}
                 </p>
               </div>
 
@@ -245,12 +252,12 @@ export const DeliveryDetails: React.FC = () => {
                   <User className="w-4 h-4" /> Recipient
                 </p>
                 <p className="text-gray-900 text-base font-medium">
-                  {delivery.donation.recipient.user.firstName}{" "}
-                  {delivery.donation.recipient.user.lastName}
+                  {delivery.donation.recipient?.user?.firstName ?? "N/A"}{" "}
+                  {delivery.donation.recipient?.user?.lastName ?? ""}
                 </p>
                 <p className="text-gray-600 flex items-center gap-1">
                   <Phone className="w-3 h-3" />{" "}
-                  {delivery.donation.recipient.user.phoneNumber}
+                  {delivery.donation.recipient?.user?.phoneNumber ?? "N/A"}
                 </p>
               </div>
             </div>

@@ -48,8 +48,10 @@ export interface RecipientNeed {
   foodType: string;
   quantity: string;
   DropOffAddress: string;
+  dropoffLocation: { label: string; latitude: number; longitude: number };
   notes: string;
   status: "matched" | "pending" | "in-process";
+  contactPhone: string;
 }
 export interface AppNotification {
   id: string;
@@ -57,4 +59,44 @@ export interface AppNotification {
   meta: any; // Adjust type as needed
   readStatus: boolean;
   createdAt: string;
+}
+
+export interface MatchedDonation {
+  id: string;
+  foodType: string;
+  quantity: string;
+  createdAt: string;
+  donor: {
+    user: {
+      firstName: string;
+      lastName: string;
+    };
+  };
+  // We included no delivery info here because a delivered‐by‐notification donation
+  // simply got a Delivery created invisibly. If you need it, add: delivery?: { ... }
+}
+
+// -------------
+/** 
+ * A donation that the recipient “claimed” explicitly (via the “Claim Donation” flow). 
+ * Comes from `getClaimedDonationsForRecipient`.
+ */
+export interface ClaimedDonation {
+  id: string;
+  foodType: string;
+  quantity: string;
+  createdAt: string;
+  donor: {
+    user: {
+      firstName: string;
+      lastName: string;
+    };
+  };
+  delivery?: {
+    deliveryStatus: string;
+    pickupLocation: string;
+    dropoffLocation: string;
+    recipientPhone: string;
+    // (add any other fields you like from your Prisma Delivery model)
+  };
 }

@@ -7,6 +7,7 @@ import donationRoutes from "./routes/donationRoute";
 import recipientNeedRoute from "./routes/recipientNeedRoute";
 import deliveryRoute from "./routes/deliveryRoute";
 import notificationRoute from "./routes/notificationRoute";
+import recipientDonationRoutes from "./routes/recipientDonationRoute";
 import { GeoMapRoutes } from "./routes/geomapRoute";
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use("/api", donationRoutes);
 app.use("/api", recipientNeedRoute);
 app.use("/api", deliveryRoute);
 app.use("/api", notificationRoute);
+app.use("/api", recipientDonationRoutes);
 app.use("/api/geocode", GeoMapRoutes);
 
 app.get("/", (req, res) => {

@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { authService } from "../services/authService";
 import { toast } from "react-toastify";
 import { AppNotification } from "../types";
+import { ChangeMatchModal } from "./changeModal"; // adjust path if needed
 
 export interface HeaderProps {
   title: string;
@@ -14,14 +15,21 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
   const { user } = useAuth();
   const token = user?.token || "";
 
+  // Notifications state
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Fetch notifications on mount and poll every 10s
+  // For Change modal
+  const [changeModalOpen, setChangeModalOpen] = useState(false);
+  const [selectedDonationId, setSelectedDonationId] = useState<string>("");
+  // Optional: you could store initial values here:
+  const [initialAddress, setInitialAddress] = useState<string>("");
+  const [initialPhone, setInitialPhone] = useState<string>("");
+
+  // Fetch notifications on mount & poll every 10s
   useEffect(() => {
     if (!token) return;
-
     const fetchNotifications = async () => {
       try {
         const data = await authService.getNotifications(token);
@@ -32,19 +40,17 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
           readStatus: n.readStatus,
           createdAt: n.createdAt,
         }));
-
         setNotifications(formatted);
       } catch (err) {
         console.error("Failed to fetch notifications", err);
       }
     };
-
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
   }, [token]);
 
-  // Close dropdown when clicking outside
+  // Close dropdown on outside click
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -55,11 +61,10 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  // Remove notification on dismiss or accept
-  const removeNotification = (id: string) => {
+  const removeNotification = (id: string) =>
     setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
 
+  // Accept (immediate claim)
   const handleAccept = async (n: AppNotification) => {
     try {
       if (n.meta?.needId && n.meta?.donationId) {
@@ -74,6 +79,17 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     }
   };
 
+  // Open Change modal
+  const handleChange = (n: AppNotification) => {
+    // store the donationId
+    setSelectedDonationId(n.meta.donationId);
+    // optionally prefill with existing need details if you store them in meta
+    // setInitialAddress(n.meta.initialAddress || "");
+    // setInitialPhone(n.meta.initialPhone || "");
+    setChangeModalOpen(true);
+  };
+
+  // Dismiss (mark read)
   const handleDismiss = async (id: string) => {
     try {
       await authService.markNotificationRead(id, token);
@@ -89,6 +105,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
   return (
     <div className="flex items-center justify-between mb-6 relative" ref={ref}>
       <h1 className="text-2xl font-semibold text-gray-900">{title}</h1>
+
       <div className="relative">
         <button
           onClick={() => setOpen((o) => !o)}
@@ -96,12 +113,12 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         >
           <BellIcon className="w-6 h-6 text-gray-700" />
           {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 block w-2 h-2 bg-red-500 rounded-full" />
+            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
           )}
         </button>
 
         {open && (
-          <div className="absolute right-0 mt-3 w-96 max-h-[400px] overflow-y-auto rounded-xl bg-white border border-gray-200 shadow-xl z-50 animate-fade-in">
+          <div className="absolute right-0 mt-3 w-96 max-h-[400px] overflow-y-auto rounded-xl bg-white border border-gray-200 shadow-xl z-50">
             <div className="px-4 py-3 border-b text-base font-semibold text-gray-700">
               Notifications
             </div>
@@ -133,6 +150,14 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
                           Accept
                         </button>
                       )}
+                      {!n.readStatus && (
+                        <button
+                          onClick={() => handleChange(n)}
+                          className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-md text-xs font-medium hover:bg-yellow-200 focus:outline-none"
+                        >
+                          Change
+                        </button>
+                      )}
                       <button
                         onClick={() => handleDismiss(n.id)}
                         className="px-3 py-1 bg-gray-100 text-gray-700 rounded-md text-xs font-medium hover:bg-gray-200 focus:outline-none"
@@ -147,6 +172,21 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
           </div>
         )}
       </div>
+
+      {/* Change Match Modal */}
+      <ChangeMatchModal
+        isOpen={changeModalOpen}
+        onClose={() => setChangeModalOpen(false)}
+        donationId={selectedDonationId}
+        initialAddress={initialAddress}
+        initialPhone={initialPhone}
+        token={token}
+        onClaimed={() => {
+          // after saving & claiming
+          authService.markNotificationRead(selectedDonationId, token);
+          removeNotification(selectedDonationId);
+        }}
+      />
     </div>
   );
 };

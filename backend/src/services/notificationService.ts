@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
  */
 export async function getNotificationsForUser(userId: string) {
   return prisma.notification.findMany({
-    where: { userId },
+    where: { userId, readStatus: false,},
     orderBy: { createdAt: "desc" },
   });
 }
