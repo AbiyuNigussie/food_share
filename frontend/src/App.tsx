@@ -17,6 +17,9 @@ import AdminRegister from "./pages/auth/admin/AdminRegister";
 import { RecipientNeeds } from "./pages/RecipientNeeds";
 import { Deliveries } from "./pages/logistic_staff/Deliveries";
 import { RecipientDonationsPage } from "./pages/RecipientDonation";
+import SubscriptionPage from "./pages/SubscripitionPage";
+import PaymentSuccess from "./pages/PaymentSuccess";
+
 function App() {
   return (
     <AuthProvider>
@@ -41,6 +44,7 @@ function App() {
                 </AuthLayout>
               }
             />
+
             <Route
               path="/verify-email"
               element={
@@ -57,7 +61,8 @@ function App() {
                 </AuthLayout>
               }
             />
-
+            <Route path="/subscribe" element={<SubscriptionPage />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route
               path="/admin/login"
               element={
@@ -117,7 +122,7 @@ function App() {
                 </PrivateRoute>
               }
             />
-           <Route
+            <Route
               path="/dashboard/my-donations"
               element={
                 <PrivateRoute>

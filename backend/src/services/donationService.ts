@@ -92,7 +92,6 @@ export const createDonation = async (
   return donation;
 };
 
-
 export const getAllDonations = async (page: number, rowsPerPage: number) => {
   return await prisma.donation.findMany({
     skip: (page - 1) * rowsPerPage,
