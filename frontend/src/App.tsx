@@ -19,6 +19,7 @@ import { Deliveries } from "./pages/logistic_staff/Deliveries";
 import { RecipientDonationsPage } from "./pages/RecipientDonation";
 import SubscriptionPage from "./pages/SubscripitionPage";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import FeedbackPage from "./pages/Feedback/Feedbackpage";
 
 function App() {
   return (
@@ -130,6 +131,7 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route path="/feedback" element={<FeedbackPage />} />
 
             {/* Other pages with Main Layout
           {/* <Route path="/" element={<Home />} /> */}
