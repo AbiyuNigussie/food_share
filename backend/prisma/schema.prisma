@@ -21,9 +21,16 @@ model User {
   phoneNumber       String
   admin             Admin?
   donor             Donor?
-  logistics_staff   LogisticsStaff?
+  logisticsStaff    LogisticsStaff?
   notifications     Notification[]
   recipient         Recipient?
+}
+
+model Donor {
+  userId    String     @id
+  address   String
+  donations Donation[] @relation("DonorDonations")
+  user      User       @relation(fields: [userId], references: [id])
 }
 
 model Recipient {
@@ -32,19 +39,13 @@ model Recipient {
   subscriptionStatus SubscriptionStatus
   subscriptionDate   DateTime
   organization       String?
+  donations          Donation[]         @relation("RecipientDonations")
   user               User               @relation(fields: [userId], references: [id])
-  needs              RecipientNeed[]
-}
-
-model Donor {
-  userId    String     @id
-  address   String
-  user      User       @relation(fields: [userId], references: [id])
-  Donations Donation[]
+  needs              RecipientNeed[]    @relation("RecipientNeeds")
 }
 
 model Donation {
-  id            String   @id @default(cuid())
+  id            String         @id @default(cuid())
   donorId       String
   status        String
   availableFrom DateTime
@@ -52,15 +53,61 @@ model Donation {
   expiryDate    DateTime
   foodType      String
   quantity      String
-  location      String
   notes         String?
-  createdAt     DateTime @default(now())
-  donor         Donor    @relation(fields: [donorId], references: [userId])
+  createdAt     DateTime       @default(now())
+  matchedNeedId String?        @unique
+  recipientId   String?
+  locationId    String
+  delivery      Delivery?
+  donor         Donor          @relation("DonorDonations", fields: [donorId], references: [userId])
+  location      Location       @relation(fields: [locationId], references: [id])
+  matchedNeed   RecipientNeed? @relation("NeedDonationMatch", fields: [matchedNeedId], references: [id])
+  recipient     Recipient?     @relation("RecipientDonations", fields: [recipientId], references: [userId])
 }
 
-model Admin {
-  userId String @id
-  user   User   @relation(fields: [userId], references: [id])
+model RecipientNeed {
+  id              String     @id @default(uuid())
+  recipientId     String
+  foodType        String
+  quantity        String
+  notes           String?
+  requestedAt     DateTime   @default(now())
+  status          NeedStatus @default(pending)
+  dropoffLocationId  String
+  contactPhone    String
+  matchedDonation Donation?  @relation("NeedDonationMatch")
+  recipient       Recipient  @relation("RecipientNeeds", fields: [recipientId], references: [userId])
+  dropoffLocation    Location   @relation(fields: [dropoffLocationId], references: [id])
+}
+
+model Delivery {
+  id                   String          @id @default(uuid())
+  donationId           String          @unique
+  logisticsStaffId     String?
+  recipientPhone       String
+  deliveryInstructions String?
+  scheduledDate        DateTime?
+  deliveredAt          DateTime?
+  deliveryStatus       DeliveryStatus  @default(PENDING)
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  dropoffLocationId    String
+  pickupLocationId     String
+  donation             Donation        @relation(fields: [donationId], references: [id])
+  dropoffLocation      Location        @relation("DropoffLocation", fields: [dropoffLocationId], references: [id])
+  logisticsStaff       LogisticsStaff? @relation(fields: [logisticsStaffId], references: [userId])
+  pickupLocation       Location        @relation("PickupLocation", fields: [pickupLocationId], references: [id])
+}
+
+model Location {
+  id                String     @id @default(uuid())
+  label             String
+  latitude          Float
+  longitude         Float
+  dropoffDeliveries Delivery[] @relation("DropoffLocation")
+  pickupDeliveries  Delivery[] @relation("PickupLocation")
+  Donation          Donation[]
+  recipientNeeds    RecipientNeed[]
 }
 
 model LogisticsStaff {
@@ -72,15 +119,9 @@ model LogisticsStaff {
   user         User       @relation(fields: [userId], references: [id])
 }
 
-model RecipientNeed {
-  id             String     @id @default(uuid())
-  recipientId    String
-  itemName       String
-  category       String
-  quantityNeeded Int
-  requestedAt    DateTime   @default(now())
-  status         NeedStatus
-  recipient      Recipient  @relation(fields: [recipientId], references: [userId])
+model Admin {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Notification {
@@ -89,27 +130,8 @@ model Notification {
   message    String
   readStatus Boolean  @default(false)
   createdAt  DateTime @default(now())
+  meta       Json?
   user       User     @relation(fields: [userId], references: [id])
-}
-
-model DeliveryTracking {
-  id           String   @id @default(uuid())
-  deliveryId   String
-  location     String
-  statusUpdate String
-  timestamp    DateTime @default(now())
-  delivery     Delivery @relation(fields: [deliveryId], references: [id])
-}
-
-model Delivery {
-  id               String             @id @default(uuid())
-  matchId          String             @unique
-  logisticsStaffId String
-  scheduledDate    DateTime
-  deliveredAt      DateTime?
-  deliveryStatus   DeliveryStatus     @default(pending)
-  logisticsStaff   LogisticsStaff     @relation(fields: [logisticsStaffId], references: [userId])
-  trackingUpdates  DeliveryTracking[]
 }
 
 enum Role {
@@ -125,13 +147,6 @@ enum SubscriptionStatus {
   pending
 }
 
-enum FoodStatus {
-  available
-  matched
-  delivered
-  expired
-}
-
 enum NeedStatus {
   pending
   matched
@@ -139,8 +154,17 @@ enum NeedStatus {
 }
 
 enum DeliveryStatus {
-  pending
-  in_transit
-  completed
-  failed
+  PENDING
+  SCHEDULED
+  IN_PROGRESS
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+enum FoodStatus {
+  available
+  matched
+  delivered
+  expired
 }

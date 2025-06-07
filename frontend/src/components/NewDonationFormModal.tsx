@@ -1,251 +1,296 @@
 import React, { useState } from "react";
-import {
-  CalendarIcon,
-  ClipboardListIcon,
-  FileTextIcon,
-  InfoIcon,
-  MapPinIcon,
-  HomeIcon,
-  XIcon,
-} from "lucide-react";
 import { toast } from "react-toastify";
+import GeoAutoComplete, { Place } from "../components/GeoAutoComplete";
 import { authService } from "../services/authService";
 import { useAuth } from "../contexts/AuthContext";
 
-interface NewDonationFormModalProps {
-  isOpen: boolean;
+interface NewDonationModalProps {
+  open: boolean;
   onClose: () => void;
-  onDonationCreated?: () => void;
+  onSuccess: () => void;
 }
 
-export const NewDonationFormModal: React.FC<NewDonationFormModalProps> = ({
-  isOpen,
+const NewDonationFormModal: React.FC<NewDonationModalProps> = ({
+  open,
   onClose,
-  onDonationCreated,
+  onSuccess,
 }) => {
-  const [availableFrom, setAvailableFrom] = useState("");
-  const [availableTo, setAvailableTo] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [foodType, setFoodType] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [location, setLocation] = useState("");
-  const [notes, setNotes] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [form, setForm] = useState({
+    title: "",
+    foodType: "",
+    quantity: "",
+    expiryDate: "",
+    availableFrom: "",
+    availableTo: "",
+    notes: "",
+  });
+
+  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  const [locationInput, setLocationInput] = useState(""); // text input for GeoAutoComplete
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
-  if (!isOpen) return null;
+  if (!open) return null;
 
-  const validate = () => {
-    const errs: Record<string, string> = {};
-    if (!availableFrom) errs.availableFrom = "Required";
-    if (!availableTo) errs.availableTo = "Required";
-    if (availableFrom && availableTo && availableFrom >= availableTo)
-      errs.availableTo = "End must be after start";
-    if (!expiryDate) errs.expiryDate = "Required";
-    if (!foodType) errs.foodType = "Required";
-    if (!quantity) errs.quantity = "Required";
-    if (!location) errs.location = "Required";
-    return errs;
+  const handleChange =
+    (key: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setForm((prev) => ({ ...prev, [key]: e.target.value }));
+    };
+
+  const handleLocationChange = (val: string, place?: Place) => {
+    setLocationInput(val);
+    if (place) {
+      setSelectedPlace(place);
+    } else {
+      setSelectedPlace(null);
+    }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const errs = validate();
-    if (Object.keys(errs).length) {
-      setErrors(errs);
+  const handleSubmit = async () => {
+    const {
+      title,
+      foodType,
+      quantity,
+      expiryDate,
+      availableFrom,
+      availableTo,
+      notes,
+    } = form;
+
+    if (!title.trim()) {
+      toast.error("Please provide a title.");
+      return;
+    }
+    if (!foodType.trim()) {
+      toast.error("Please specify the food type.");
+      return;
+    }
+    if (!quantity.trim()) {
+      toast.error("Please specify the quantity.");
+      return;
+    }
+    if (!expiryDate.trim()) {
+      toast.error("Please specify expiry date.");
+      return;
+    }
+    if (!availableFrom.trim()) {
+      toast.error("Please specify available from date.");
+      return;
+    }
+    if (!availableTo.trim()) {
+      toast.error("Please specify available to date.");
+      return;
+    }
+    if (!selectedPlace) {
+      toast.error("Please select a location from the suggestions.");
       return;
     }
 
-    setLoading(true);
     try {
-      const donationData = {
-        availableFrom,
-        availableTo,
-        expiryDate,
-        foodType,
-        quantity,
-        location,
-        notes,
+      setLoading(true);
+
+      // Example payload structure - replace with your actual API call
+      const payload = {
+        title: title.trim(),
+        foodType: foodType.trim(),
+        quantity: quantity.trim(),
+        expiryDate: new Date(expiryDate).toISOString(),
+        availableFrom: new Date(availableFrom).toISOString(),
+        availableTo: new Date(availableTo).toISOString(),
+        notes: notes.trim() || undefined,
+        location: {
+          label: selectedPlace.label,
+          latitude: selectedPlace.lat,
+          longitude: selectedPlace.lon,
+        },
       };
-      if (!user?.token) {
-        toast.error("Authentication required. Please log in.");
-        return;
-      }
+      const token = user?.token || "";
+      await authService.createDonation(payload, token);
+      console.log("Submitting donation:", payload);
 
-      // Call the createDonation method from authService
-      const response = await authService.createDonation(
-        donationData,
-        user.token
-      );
-
-      // Success toast
-      if (onDonationCreated) {
-        onDonationCreated();
-      }
       toast.success("Donation created successfully!");
+      onSuccess();
       onClose();
-    } catch (error) {
-      console.error(error);
-      // Error toast
-      toast.error("There was an error submitting the form.");
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error || "Failed to create donation. Try again."
+      );
     } finally {
       setLoading(false);
     }
   };
-  return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-      <div className="bg-white w-full max-w-3xl rounded-2xl shadow-xl p-6 relative overflow-auto max-h-[90vh]">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-        >
-          <XIcon className="w-6 h-6" />
-        </button>
 
-        <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
-          <HomeIcon className="w-6 h-6 mr-2 text-purple-600" />
-          New Donation
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="w-full max-w-2xl rounded-lg bg-white p-8 shadow-xl max-h-[90vh] overflow-y-auto">
+        <h2 className="mb-8 text-2xl font-semibold text-gray-900">
+          Create New Donation
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+          className="space-y-6"
+          noValidate
+        >
+          <div>
+            <label
+              htmlFor="title"
+              className="mb-2 block text-base font-medium text-gray-800"
+            >
+              Title
+            </label>
+            <input
+              id="title"
+              type="text"
+              value={form.title}
+              onChange={handleChange("title")}
+              placeholder="Donation title"
+              required
+              className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 placeholder-gray-400 shadow-sm focus:outline-none hover:border-gray-400"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="foodType"
+              className="mb-2 block text-base font-medium text-gray-800"
+            >
+              Food Type
+            </label>
+            <select
+              id="foodType"
+              value={form.foodType}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, foodType: e.target.value }))
+              }
+              required
+              className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 shadow-sm focus:outline-none hover:border-gray-400"
+            >
+              <option value="">Select type…</option>
+              <option value="Fresh Produce">Fresh Produce</option>
+              <option value="Canned Goods">Canned Goods</option>
+              <option value="Dairy">Dairy</option>
+              <option value="Baked Goods">Baked Goods</option>
+              <option value="Meat & Poultry">Meat & Poultry</option>
+            </select>
+          </div>
+
+          <div>
+            <label
+              htmlFor="quantity"
+              className="mb-2 block text-base font-medium text-gray-800"
+            >
+              Quantity
+            </label>
+            <input
+              id="quantity"
+              type="text"
+              value={form.quantity}
+              onChange={handleChange("quantity")}
+              placeholder="E.g. 10 loaves, 5 kg"
+              required
+              className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 placeholder-gray-400 shadow-sm focus:outline-none hover:border-gray-400"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="expiryDate"
+              className="mb-2 block text-base font-medium text-gray-800"
+            >
+              Expires
+            </label>
+            <input
+              id="expiryDate"
+              type="datetime-local"
+              value={form.expiryDate}
+              onChange={handleChange("expiryDate")}
+              required
+              className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 shadow-sm focus:outline-none hover:border-gray-400"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                <CalendarIcon className="w-5 h-5 mr-2 text-purple-600" />
+              <label
+                htmlFor="availableFrom"
+                className="mb-2 block text-base font-medium text-gray-800"
+              >
                 Available From
               </label>
               <input
+                id="availableFrom"
                 type="datetime-local"
-                value={availableFrom}
-                onChange={(e) => setAvailableFrom(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500"
+                value={form.availableFrom}
+                onChange={handleChange("availableFrom")}
+                required
+                className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 shadow-sm focus:outline-none hover:border-gray-400"
               />
-              {errors.availableFrom && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.availableFrom}
-                </p>
-              )}
             </div>
+
             <div>
-              <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                <CalendarIcon className="w-5 h-5 mr-2 text-purple-600" />
+              <label
+                htmlFor="availableTo"
+                className="mb-2 block text-base font-medium text-gray-800"
+              >
                 Available To
               </label>
               <input
+                id="availableTo"
                 type="datetime-local"
-                value={availableTo}
-                onChange={(e) => setAvailableTo(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500"
+                value={form.availableTo}
+                onChange={handleChange("availableTo")}
+                required
+                className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 shadow-sm focus:outline-none hover:border-gray-400"
               />
-              {errors.availableTo && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.availableTo}
-                </p>
-              )}
             </div>
           </div>
 
           <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-              <CalendarIcon className="w-5 h-5 mr-2 text-purple-600" />
-              Expiry Date
-            </label>
-            <input
-              type="date"
-              value={expiryDate}
-              onChange={(e) => setExpiryDate(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500"
+            <GeoAutoComplete
+              label="Location"
+              value={locationInput}
+              onChange={handleLocationChange}
+              placeholder="Search for location"
+              className=""
             />
-            {errors.expiryDate && (
-              <p className="mt-1 text-sm text-red-600">{errors.expiryDate}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                <ClipboardListIcon className="w-5 h-5 mr-2 text-purple-600" />
-                Food Type
-              </label>
-              <select
-                value={foodType}
-                onChange={(e) => setFoodType(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500"
-              >
-                <option value="">Select type…</option>
-                <option>Fresh Produce</option>
-                <option>Canned Goods</option>
-                <option>Dairy</option>
-                <option>Baked Goods</option>
-                <option>Meat & Poultry</option>
-              </select>
-              {errors.foodType && (
-                <p className="mt-1 text-sm text-red-600">{errors.foodType}</p>
-              )}
-            </div>
-            <div>
-              <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                <FileTextIcon className="w-5 h-5 mr-2 text-purple-600" />
-                Quantity
-              </label>
-              <input
-                type="text"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                placeholder="e.g. 20 lbs"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500"
-              />
-              {errors.quantity && (
-                <p className="mt-1 text-sm text-red-600">{errors.quantity}</p>
-              )}
-            </div>
           </div>
 
           <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-              <MapPinIcon className="w-5 h-5 mr-2 text-purple-600" />
-              Pickup Address
-            </label>
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="123 Main St, City"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500"
-            />
-            {errors.location && (
-              <p className="mt-1 text-sm text-red-600">{errors.location}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-              <InfoIcon className="w-5 h-5 mr-2 text-purple-600" />
-              Additional Notes
+            <label
+              htmlFor="notes"
+              className="mb-2 block text-base font-medium text-gray-800"
+            >
+              Additional Notes (optional)
             </label>
             <textarea
+              id="notes"
+              value={form.notes}
+              onChange={handleChange("notes")}
               rows={3}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Any special instructions…"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500"
+              placeholder="Any special instructions or info"
+              className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 placeholder-gray-400 shadow-sm focus:outline-none hover:border-gray-400"
             />
           </div>
 
-          <div className="text-right">
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="flex-1 rounded-lg bg-gray-300 py-3 text-gray-900 font-semibold hover:bg-gray-400 transition disabled:opacity-50"
+            >
+              Cancel
+            </button>
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition"
+              className="flex-1 rounded-lg bg-indigo-600 py-3 text-white font-semibold hover:bg-indigo-700 transition disabled:opacity-50"
             >
-              {loading ? (
-                "Submitting..."
-              ) : (
-                <>
-                  <HomeIcon className="w-5 h-5 mr-2" />
-                  Create Donation
-                </>
-              )}
+              {loading ? "Submitting..." : "Create Donation"}
             </button>
           </div>
         </form>
@@ -253,4 +298,5 @@ export const NewDonationFormModal: React.FC<NewDonationFormModalProps> = ({
     </div>
   );
 };
-// update this modal to accept ondonationcreated props and fetch donation after successful donation creation
+
+export default NewDonationFormModal;

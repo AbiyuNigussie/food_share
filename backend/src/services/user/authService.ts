@@ -127,7 +127,7 @@ const login = async (email: string, password: string, role: string) => {
       include: {
         donor: true,
         recipient: true,
-        logistics_staff: true,
+        logisticsStaff: true,
       },
     });
 
@@ -147,7 +147,7 @@ const login = async (email: string, password: string, role: string) => {
     const jwt_token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       `${JWT_SECRET}`,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" }
     );
 
     return {

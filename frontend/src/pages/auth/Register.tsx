@@ -1,10 +1,13 @@
+// Register.tsx
 import React, { useState } from "react";
-import { authService } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import axios from "axios";
+import { authService } from "../../services/authService";
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,7 +31,8 @@ const Register: React.FC = () => {
     }
 
     try {
-      const res = await authService.register(
+      // Register user
+      await authService.register(
         firstName,
         lastName,
         email,
@@ -38,14 +42,23 @@ const Register: React.FC = () => {
         organization
       );
 
-      toast.success("Registered successfully! Please verify your email.");
-      setTimeout(() => navigate("/login"), 3000);
-    } catch (err: any) {
-      if (err.response && err.response.data?.message) {
-        toast.error(err.response.data.message);
+      toast.success("Registration successful! Please verify your email.");
+
+      if (role === "RECIPIENT") {
+        // Save user data to localStorage or state and redirect to subscription
+        localStorage.setItem(
+          "subscriptionUser",
+          JSON.stringify({ email, firstName, lastName })
+        );
+        setTimeout(() => navigate("/subscribe"), 1000);
       } else {
-        console.error(err);
-        toast.error("An unexpected error occurred.");
+        setTimeout(() => navigate("/login"), 2000);
+      }
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Registration failed.");
       }
     }
   };

@@ -15,6 +15,10 @@ import { LiveTrackingPage } from "./pages/LiveTrackingPage";
 import AdminLogin from "./pages/auth/admin/AdminLogin";
 import AdminRegister from "./pages/auth/admin/AdminRegister";
 import { RecipientNeeds } from "./pages/RecipientNeeds";
+import { Deliveries } from "./pages/logistic_staff/Deliveries";
+import { RecipientDonationsPage } from "./pages/RecipientDonation";
+import SubscriptionPage from "./pages/SubscripitionPage";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import FeedbackPage from "./pages/Feedback/Feedbackpage";
 
 function App() {
@@ -41,6 +45,7 @@ function App() {
                 </AuthLayout>
               }
             />
+
             <Route
               path="/verify-email"
               element={
@@ -57,7 +62,8 @@ function App() {
                 </AuthLayout>
               }
             />
-
+            <Route path="/subscribe" element={<SubscriptionPage />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route
               path="/admin/login"
               element={
@@ -91,7 +97,7 @@ function App() {
               }
             />
             <Route
-              path="/dashboard/delivery-details"
+              path="/dashboard/deliveries/delivery-details/:id"
               element={
                 <PrivateRoute>
                   <DeliveryDetails />
@@ -100,14 +106,16 @@ function App() {
             />
 
             <Route
-              path="/dashboard/live-tracking"
+              path="/dashboard/deliveries"
               element={
                 <PrivateRoute>
-                  <LiveTrackingPage />
+                  <Deliveries />
                 </PrivateRoute>
               }
             />
-           <Route
+
+            <Route path="/tracking/:id" element={<LiveTrackingPage />} />
+            <Route
               path="/dashboard/Recipient-Needs"
               element={
                 <PrivateRoute>
@@ -116,12 +124,14 @@ function App() {
               }
             />
             <Route
-             path="/feedback" 
-             element={
-             <FeedbackPage />
-             } 
-             />
-
+              path="/dashboard/my-donations"
+              element={
+                <PrivateRoute>
+                  <RecipientDonationsPage />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/feedback" element={<FeedbackPage />} />
 
             {/* Other pages with Main Layout
           {/* <Route path="/" element={<Home />} /> */}
