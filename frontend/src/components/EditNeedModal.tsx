@@ -26,16 +26,18 @@ export const EditNeedModal: React.FC<EditNeedModalProps> = ({
 
   const [foodType, setFoodType] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [DropOffAddress, setDropOffAddress] = useState("");
+  const [inputAddress, setInputAddress] = useState("");
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [notes, setNotes] = useState("");
   const [contactPhone, setContactPhone] = useState("");
 
+  // initialize form when `need` changes
   useEffect(() => {
     if (need) {
       setFoodType(need.foodType);
       setQuantity(need.quantity);
-      setDropOffAddress(need.DropOffAddress);
+      // display the current drop-off label
+      setInputAddress(need.dropoffLocation.label);
       setSelectedPlace(null);
       setNotes(need.notes || "");
       setContactPhone(need.contactPhone);
@@ -45,17 +47,23 @@ export const EditNeedModal: React.FC<EditNeedModalProps> = ({
   const handleSave = async () => {
     if (!need) return;
     try {
-      await authService.updateNeed(
-        need.id.toString(),
-        {
-          foodType,
-          quantity,
-          DropOffAddress,
-          contactPhone,
-          notes,
-        },
-        token
-      );
+      // build payload
+      const updateData: any = {
+        foodType,
+        quantity,
+        contactPhone,
+        notes,
+      };
+      // if user picked a new place, include it
+      if (selectedPlace) {
+        updateData.dropoffLocation = {
+          label: selectedPlace.label,
+          latitude: selectedPlace.lat,
+          longitude: selectedPlace.lon,
+        };
+      }
+
+      await authService.updateNeed(need.id, updateData, token);
       toast.success("Need updated");
       onUpdated();
       onClose();
@@ -97,17 +105,17 @@ export const EditNeedModal: React.FC<EditNeedModalProps> = ({
               />
             </div>
 
-            {/* DropOff Address with GeoAutoComplete */}
+            {/* Drop-off Address */}
             <div>
               <label className="flex items-center text-sm font-medium mb-1">
                 <MapPinIcon className="w-5 h-5 mr-2 text-purple-600" />
                 Drop-Off Address
               </label>
               <GeoAutoComplete
-                value={DropOffAddress}
+                value={inputAddress}
                 onChange={(val, place) => {
-                  setDropOffAddress(val);
-                  if (place) setSelectedPlace(place);
+                  setInputAddress(val);
+                  setSelectedPlace(place || null);
                 }}
                 placeholder="Search for a location…"
                 className="w-full"
@@ -132,15 +140,22 @@ export const EditNeedModal: React.FC<EditNeedModalProps> = ({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 className="mt-1 w-full border rounded px-3 py-2"
+                rows={3}
               />
             </div>
           </div>
 
           <div className="mt-6 flex justify-end space-x-2">
-            <button onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-200 rounded"
+            >
               Cancel
             </button>
-            <button onClick={handleSave} className="px-4 py-2 bg-purple-600 text-white rounded">
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 bg-purple-600 text-white rounded"
+            >
               Save
             </button>
           </div>

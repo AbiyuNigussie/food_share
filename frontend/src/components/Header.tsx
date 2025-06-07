@@ -1,11 +1,10 @@
-// src/components/Header.tsx
 import React, { useState, useEffect, useRef } from "react";
 import { BellIcon } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { authService } from "../services/authService";
 import { toast } from "react-toastify";
 import { AppNotification } from "../types";
-import { ChangeMatchModal } from "./changeModal"; // adjust path if needed
+import { ChangeMatchModal } from "./changeModal"; 
 
 export interface HeaderProps {
   title: string;
@@ -14,20 +13,17 @@ export interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ title }) => {
   const { user } = useAuth();
   const token = user?.token || "";
+  const role = user?.role; 
 
-  // Notifications state
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // For Change modal
   const [changeModalOpen, setChangeModalOpen] = useState(false);
   const [selectedDonationId, setSelectedDonationId] = useState<string>("");
-  // Optional: you could store initial values here:
   const [initialAddress, setInitialAddress] = useState<string>("");
   const [initialPhone, setInitialPhone] = useState<string>("");
 
-  // Fetch notifications on mount & poll every 10s
   useEffect(() => {
     if (!token) return;
     const fetchNotifications = async () => {
@@ -50,7 +46,6 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     return () => clearInterval(interval);
   }, [token]);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -64,7 +59,6 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
   const removeNotification = (id: string) =>
     setNotifications((prev) => prev.filter((n) => n.id !== id));
 
-  // Accept (immediate claim)
   const handleAccept = async (n: AppNotification) => {
     try {
       if (n.meta?.needId && n.meta?.donationId) {
@@ -79,17 +73,11 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     }
   };
 
-  // Open Change modal
   const handleChange = (n: AppNotification) => {
-    // store the donationId
     setSelectedDonationId(n.meta.donationId);
-    // optionally prefill with existing need details if you store them in meta
-    // setInitialAddress(n.meta.initialAddress || "");
-    // setInitialPhone(n.meta.initialPhone || "");
     setChangeModalOpen(true);
   };
 
-  // Dismiss (mark read)
   const handleDismiss = async (id: string) => {
     try {
       await authService.markNotificationRead(id, token);
@@ -101,6 +89,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
   };
 
   const unreadCount = notifications.filter((n) => !n.readStatus).length;
+  const isRecipient = role === "RECIPIENT";
 
   return (
     <div className="flex items-center justify-between mb-6 relative" ref={ref}>
@@ -113,7 +102,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         >
           <BellIcon className="w-6 h-6 text-gray-700" />
           {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+            <span className="absolute top-1 right-1 w-2 h-2 bg-purple-500 rounded-full" />
           )}
         </button>
 
@@ -128,45 +117,50 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
                   No notifications
                 </li>
               ) : (
-                notifications.map((n) => (
-                  <li
-                    key={n.id}
-                    className={`px-4 py-3 border-b flex items-start justify-between gap-3 transition hover:bg-gray-50 ${
-                      n.readStatus ? "bg-white" : "bg-gray-50"
-                    }`}
-                  >
-                    <div className="flex-1 text-sm">
-                      <p className="text-gray-800">{n.message}</p>
-                      <span className="block text-xs text-gray-500 mt-1">
-                        {new Date(n.createdAt).toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex flex-col space-y-1">
-                      {!n.readStatus && (
+                notifications.map((n) => {
+                  const isMatchingAlert = n.message
+                    .toLowerCase()
+                    .includes("matching");
+                  return (
+                    <li
+                      key={n.id}
+                      className={`px-4 py-3 border-b flex items-start justify-between gap-3 transition hover:bg-gray-50 ${
+                        n.readStatus ? "bg-white" : "bg-gray-50"
+                      }`}
+                    >
+                      <div className="flex-1 text-sm">
+                        <p className="text-gray-800">{n.message}</p>
+                        <span className="block text-xs text-gray-500 mt-1">
+                          {new Date(n.createdAt).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex flex-col space-y-1">
+                        {isRecipient && !n.readStatus && isMatchingAlert && (
+                          <>
+                            <button
+                              onClick={() => handleAccept(n)}
+                              className="px-3 py-1 bg-green-100 text-green-700 rounded-md text-xs font-medium hover:bg-green-200 focus:outline-none"
+                            >
+                              Accept
+                            </button>
+                            <button
+                              onClick={() => handleChange(n)}
+                              className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-md text-xs font-medium hover:bg-yellow-200 focus:outline-none"
+                            >
+                              Change
+                            </button>
+                          </>
+                        )}
                         <button
-                          onClick={() => handleAccept(n)}
-                          className="px-3 py-1 bg-green-100 text-green-700 rounded-md text-xs font-medium hover:bg-green-200 focus:outline-none"
+                          onClick={() => handleDismiss(n.id)}
+                          className="px-3 py-1 bg-gray-100 text-gray-700 rounded-md text-xs font-medium hover:bg-gray-200 focus:outline-none"
                         >
-                          Accept
+                          Dismiss
                         </button>
-                      )}
-                      {!n.readStatus && (
-                        <button
-                          onClick={() => handleChange(n)}
-                          className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-md text-xs font-medium hover:bg-yellow-200 focus:outline-none"
-                        >
-                          Change
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleDismiss(n.id)}
-                        className="px-3 py-1 bg-gray-100 text-gray-700 rounded-md text-xs font-medium hover:bg-gray-200 focus:outline-none"
-                      >
-                        Dismiss
-                      </button>
-                    </div>
-                  </li>
-                ))
+                      </div>
+                    </li>
+                  );
+                })
               )}
             </ul>
           </div>
@@ -182,7 +176,6 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         initialPhone={initialPhone}
         token={token}
         onClaimed={() => {
-          // after saving & claiming
           authService.markNotificationRead(selectedDonationId, token);
           removeNotification(selectedDonationId);
         }}

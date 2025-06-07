@@ -72,8 +72,26 @@ export interface MatchedDonation {
       lastName: string;
     };
   };
-  // We included no delivery info here because a delivered‐by‐notification donation
-  // simply got a Delivery created invisibly. If you need it, add: delivery?: { ... }
+  delivery?: {
+    deliveryStatus: string;
+    recipientPhone: string;
+    deliveryInstructions?: string | null;
+    scheduledDate?: string | null;
+    deliveredAt?: string | null;
+    // Now include pickupLocation and dropoffLocation sub‐objects:
+    pickupLocation: {
+      id: string;
+      label: string;
+      latitude: number;
+      longitude: number;
+    };
+    dropoffLocation: {
+      id: string;
+      label: string;
+      latitude: number;
+      longitude: number;
+    };
+  };
 }
 
 // -------------

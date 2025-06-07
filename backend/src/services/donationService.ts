@@ -92,7 +92,6 @@ export const createDonation = async (
   return donation;
 };
 
-
 export const getAllDonations = async (page: number, rowsPerPage: number) => {
   return await prisma.donation.findMany({
     skip: (page - 1) * rowsPerPage,
@@ -254,7 +253,7 @@ export const claimDonationById = async (
     });
 
     // 5️⃣ Create delivery record with pickupLocationId from donation.locationId
-    await tx.delivery.create({
+    const delivery = await tx.delivery.create({
       data: {
         donationId,
         deliveryStatus: "PENDING",
@@ -264,6 +263,29 @@ export const claimDonationById = async (
         dropoffLocationId: dropoffLocation.id,
       },
     });
+
+    // 6️⃣ Notify the donor
+    await tx.notification.create({
+      data: {
+        userId: donation.donorId, // the original donor’s userId
+        message: `Your donation (${donation.foodType}, ${donation.quantity}) has been claimed by a recipient.`,
+        meta: { donationId, recipientId: recipient.userId },
+      },
+    });
+
+    // ⬅️ NEW: Notify all logistics‐staff users about the new delivery
+    const allStaff = await tx.logisticsStaff.findMany({ select: { userId: true } });
+    await Promise.all(
+      allStaff.map((s) =>
+        tx.notification.create({
+          data: {
+            userId: s.userId,
+            message: `New delivery created for ${donation.foodType} (${donation.quantity}).`,
+            meta: { donationId, deliveryId: delivery.id },
+          },
+        })
+      )
+    );
 
     return updatedDonation;
   });

@@ -1,34 +1,15 @@
-// src/services/user/recipientNeedService.ts
-
 import { PrismaClient, RecipientNeed, Donation, Location } from "@prisma/client";
 import { scoreAndSort } from "../utils/match";
 
 const prisma = new PrismaClient();
 
-/**
- * Exactly the same shape as DonationService’s Address:
- */
 interface Address {
   label: string;
   latitude: number;
   longitude: number;
 }
-
-/**
- * We’ll pass around this type in our fuzzy‐matching.
- * It’s just “Donation + locationLabel” so scoreAndSort can read the city name, etc.
- */
 type DonationWithLabel = Donation & { locationLabel: string };
 
-/**
- * Create a new need. Steps:
- *   1) Create a Location record for the drop‐off address
- *   2) Create the RecipientNeed itself, pointing at that Location
- *   3) Fetch all “pending” donations of this foodType (including each Donation’s `Location`)
- *   4) Build a DonationWithLabel[] (Donation + “locationLabel” = location.label)
- *   5) Run scoreAndSort(need, DonationWithLabel[])
- *   6) Notify the recipient about each top‐match
- */
 export async function createNeed(
   recipientId: string,
   data: {
@@ -39,7 +20,7 @@ export async function createNeed(
     notes?: string;
   }
 ) {
-  // 1) Create a Location for the drop‐off address
+
   const dropLoc = await prisma.location.create({
     data: {
       label: data.dropoffLocation.label,
@@ -48,7 +29,6 @@ export async function createNeed(
     },
   });
 
-  // 2) Create the RecipientNeed row (status defaults to "pending")
   const newNeed = await prisma.recipientNeed.create({
     data: {
       recipientId:      recipientId,
@@ -61,7 +41,6 @@ export async function createNeed(
     },
   });
 
-  // 3) Fetch all pending donations of the same foodType, along with their Location
   const donationCandidates = await prisma.donation.findMany({
     where: {
       foodType: data.foodType,
@@ -73,22 +52,21 @@ export async function createNeed(
     },
   });
 
-  // 4) Build DonationWithLabel[] by copying Donation fields + location.label
   const donationWithLabels: DonationWithLabel[] = donationCandidates.map((don) => ({
     ...don,
     locationLabel: don.location.label,
   }));
 
   const newNeedWithLocation = {
-  ...newNeed,
-  dropoffLabel: dropLoc.label, // ✅ Add this field
-};
+    ...newNeed,
+    dropoffLabel: dropLoc.label,
+  };
 
-  // 5) Run fuzzy‐matching.  scoreAndSort returns a plain Donation[],
-  //    but we know it came from DonationWithLabel[], so cast back:
-  const topMatches = scoreAndSort(newNeedWithLocation, donationWithLabels) as DonationWithLabel[];
+  const topMatches = scoreAndSort(
+    newNeedWithLocation as any,
+    donationWithLabels
+  ) as DonationWithLabel[];
 
-  // 6) Send a notification to this new need’s owner for each top match
   for (const matchedDonation of topMatches) {
     await prisma.notification.create({
       data: {
@@ -102,12 +80,22 @@ export async function createNeed(
     });
   }
 
+  for (const matchedDonation of topMatches) {
+    await prisma.notification.create({
+      data: {
+        userId: matchedDonation.donorId!,
+        message: `Your donation (${matchedDonation.quantity} ${matchedDonation.foodType}) was matched to a recipient need.`,
+        meta: {
+          needId: newNeed.id,
+          donationId: matchedDonation.id,
+        },
+      },
+    });
+  }
+
   return newNeed;
 }
 
-/**
- * Return all “pending” needs (for pagination).
- */
 export async function getAllNeeds(
   recipientId: string,
   page: number,
@@ -119,23 +107,17 @@ export async function getAllNeeds(
     skip:  (page - 1) * rowsPerPage,
     take:  rowsPerPage,
     include: {
-      dropoffLocation: true, // include the drop‐off Location row
+      dropoffLocation: true,
     },
   });
 }
 
-/**
- * Count total “pending” needs (for the pagination footer).
- */
 export async function getNeedsCount(recipientId: string) {
   return prisma.recipientNeed.count({
     where: { recipientId, status: "pending" },
   });
 }
 
-/**
- * Delete a need—only if it belongs to that recipient.
- */
 export async function deleteNeedById(
   recipientId: string,
   needId: string
@@ -145,9 +127,6 @@ export async function deleteNeedById(
   });
 }
 
-/**
- * Update an existing need’s fields. You can update any subset.
- */
 export async function updateNeed(
   recipientId: string,
   needId: string,
@@ -171,10 +150,6 @@ export async function updateNeed(
   });
 }
 
-/**
- * Given a `needId`, return the top‐5 fuzzy‐matched donations.
- * Notice we include the Donation→Location to get a `location.label`.
- */
 export async function findMatchesForNeed(needId: string) {
   const need = await prisma.recipientNeed.findUnique({
     where: { id: needId },
@@ -183,18 +158,15 @@ export async function findMatchesForNeed(needId: string) {
       foodType: true,
       quantity: true,
       dropoffLocation: true,
-      // We don’t actually need dropoffLocation here—scoreAndSort only
-      // uses the need’s foodType / quantity / dropoffAddress. If you want
-      // to fuzzy‐match by city, you could also fetch need.dropoffLocation.label.
     },
   });
   if (!need) throw new Error("Need not found");
 
   const needWithLabel = {
-  ...need,
-  dropoffLabel: need.dropoffLocation.label, // ✅ Fix here
-};
-  // Fetch all available candidate donations of that foodType
+    ...need,
+    dropoffLabel: need.dropoffLocation.label,
+  };
+
   const donationCandidates = await prisma.donation.findMany({
     where: {
       foodType: need.foodType,
@@ -206,34 +178,20 @@ export async function findMatchesForNeed(needId: string) {
     },
   });
 
-  // Build DonationWithLabel[] from those candidates:
   const donationWithLabels: DonationWithLabel[] = donationCandidates.map((don) => ({
     ...don,
     locationLabel: don.location.label,
   }));
 
-  // Return the top 5 by fuzzy‐scoring:
-  return scoreAndSort(need as any /*RecipientNeed*/, donationWithLabels) as DonationWithLabel[];
+  return scoreAndSort(needWithLabel as any, donationWithLabels) as DonationWithLabel[];
 }
 
-/**
- * Claim a donation for a “need.” Steps (all in one transaction):
- *  1) Load the need → get dropoffLocationId & contactPhone & recipientId
- *  2) Update the need → set status="matched", connect matchedDonation
- *  3) Update the donation → set status="matched", set matchedNeedId
- *  4) Use that same dropoffLocationId (which already has valid lat/lng)
- *  5) Create a Delivery row using:
- *       • pickupLocationId = (donation.locationId)
- *       • dropoffLocationId = (need.dropoffLocationId)
- *       • recipientPhone = (need.contactPhone)
- *  6) Notify the recipient that the reservation is done
- */
 export async function claimMatch(
   needId: string,
   donationId: string
 ) {
   return prisma.$transaction(async (tx) => {
-    // 1) Load the need → dropoffLocationId & contactPhone & recipientId
+    // 1) Load the need
     const need = await tx.recipientNeed.findUnique({
       where: { id: needId },
       select: {
@@ -244,7 +202,6 @@ export async function claimMatch(
     });
     if (!need) throw new Error("Need not found");
 
-    // 2) Update the need → set status="matched" & link donation
     const updatedNeed = await tx.recipientNeed.update({
       where: { id: needId },
       data: {
@@ -258,35 +215,32 @@ export async function claimMatch(
       },
     });
 
-    // 3) Update the donation → set status="matched" & matchedNeedId
-    //    Also capture locationId so we know pickup‐coords
     const updatedDonation = await tx.donation.update({
       where: { id: donationId },
       data: {
-        status:       "matched",
+        status:        "matched",
         matchedNeedId: needId,
       },
       select: {
         id:         true,
+        donorId:    true,
         locationId: true,
         quantity:   true,
         foodType:   true,
       },
     });
 
-    // 4) Create a Delivery record using the existing pickupLocation & dropoffLocation
-    await tx.delivery.create({
+    const delivery = await tx.delivery.create({
       data: {
-        donationId:        donationId,
-        recipientPhone:    updatedNeed.contactPhone,
-        deliveryStatus:    "PENDING",
-        pickupLocationId:  updatedDonation.locationId,
-        dropoffLocationId: updatedNeed.dropoffLocationId,
+        donationId:           donationId,
+        recipientPhone:       updatedNeed.contactPhone,
+        deliveryStatus:       "PENDING",
+        pickupLocationId:     updatedDonation.locationId,
+        dropoffLocationId:    updatedNeed.dropoffLocationId,
         deliveryInstructions: null,
       },
     });
 
-    // 5) Finally, notify the recipient that their matched donation is reserved
     await tx.notification.create({
       data: {
         userId:  updatedNeed.recipientId!,
@@ -297,6 +251,30 @@ export async function claimMatch(
         },
       },
     });
+
+    await tx.notification.create({
+      data: {
+        userId:  updatedDonation.donorId!,
+        message: `Your donation of ${updatedDonation.quantity} ${updatedDonation.foodType} has been reserved by a recipient.`,
+        meta: {
+          needId,
+          donationId: updatedDonation.id,
+        },
+      },
+    });
+
+    const allStaff = await tx.logisticsStaff.findMany({ select: { userId: true } });
+    await Promise.all(
+      allStaff.map(s =>
+        tx.notification.create({
+          data: {
+            userId: s.userId,
+            message: `New delivery scheduled for ${updatedDonation.foodType} (${updatedDonation.quantity}).`,
+            meta: { donationId: updatedDonation.id, deliveryId: delivery.id },
+          },
+        })
+      )
+    );
 
     return { updatedNeed, updatedDonation };
   });

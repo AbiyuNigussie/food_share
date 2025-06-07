@@ -2,11 +2,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-/**
- * 1) Matched Donations (accepted via notification):
- *    A donation that has matchedNeedId pointing at a need
- *    whose recipientId = this user, AND that need’s status = "matched".
- */
 export async function getMatchedDonationsForRecipient(
   recipientId: string,
   page: number,
@@ -14,9 +9,7 @@ export async function getMatchedDonationsForRecipient(
 ) {
   return prisma.donation.findMany({
     where: {
-      matchedNeed: {
-        recipientId: recipientId,
-      },
+      matchedNeed: { recipientId },
       status: "matched",
     },
     orderBy: { createdAt: "desc" },
@@ -24,27 +17,22 @@ export async function getMatchedDonationsForRecipient(
     take: rowsPerPage,
     include: {
       donor: {
-        include: {
-          user: {
-            select: { firstName: true, lastName: true },
-          },
-        },
+        include: { user: { select: { firstName: true, lastName: true } } },
       },
       matchedNeed: {
         select: { id: true, foodType: true, quantity: true },
+      },
+      // ↓ add this block ↓
+      delivery: {
+        include: {
+          pickupLocation: true,
+          dropoffLocation: true,
+        },
       },
     },
   });
 }
 
-/**
- * 2) Claimed Donations:
- *    A donation whose recipientId = this recipient’s userId,
- *    and status = "claimed".
- *
- *    (Originally you attempted to filter on `claimedById`, but the schema
- *     actually uses `recipientId` for “who claimed” a donation.)
- */
 export async function getClaimedDonationsForRecipient(
   recipientId: string,
   page: number,
