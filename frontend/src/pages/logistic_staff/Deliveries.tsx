@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import clsx from "clsx";
 import PaginationControls from "../../components/PaginationControl";
 import { Header } from "../../components/Header";
-import { NavItem, SideBar } from "../../components/sideBar";
+import { NavItem, SideBar } from "../../components/SideBar";
 import {
   BarChart2Icon,
   GiftIcon,
@@ -97,10 +97,10 @@ export const Deliveries: React.FC = () => {
       <SideBar
         open={sidebarOpen}
         toggle={() => setSidebarOpen((prev) => !prev)}
-        title="DonorX"
+        title="LogistiX"
         logoIcon={<GiftIcon className="w-6 h-6 text-purple-600" />}
         navItems={navItems}
-        userInfo={{ name: "Jane Doe", email: "jane@donorx.org" }}
+        userInfo={{ name: "Logistics User", email: user?.email ||"" }}
       />
       <main
         className={clsx(
@@ -127,91 +127,88 @@ export const Deliveries: React.FC = () => {
           </select>
         </div>
 
-        <div className="overflow-x-auto bg-white rounded-lg shadow">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                {["Time", "Pickup", "Dropoff", "Status", "Actions"].map(
-                  (col) => (
-                    <th
-                      key={col}
-                      className="px-6 py-3 text-left text-sm font-medium text-gray-500"
-                    >
-                      {col}
-                    </th>
-                  )
+<div className="overflow-x-auto bg-white rounded-2xl shadow-md">
+  <table className="min-w-full divide-y divide-gray-200">
+    <thead className="bg-purple-600 sticky top-0">
+      <tr>
+        {["Time", "Pickup", "Dropoff", "Status", "Actions"].map((col) => (
+          <th
+            key={col}
+            className="px-6 py-3 text-left text-sm font-semibold text-white uppercase"
+          >
+            {col}
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-gray-100">
+      {loading ? (
+        <tr>
+          <td
+            colSpan={5}
+            className="px-6 py-8 text-center text-sm text-gray-500"
+          >
+            Loading deliveries…
+          </td>
+        </tr>
+      ) : paginated.length === 0 ? (
+        <tr>
+          <td
+            colSpan={5}
+            className="px-6 py-8 text-center text-sm text-gray-500"
+          >
+            No deliveries found
+          </td>
+        </tr>
+      ) : (
+        paginated.map((row, idx) => (
+          <tr
+            key={row.id}
+            className={idx % 2 === 0 ? "bg-gray-50 hover:bg-gray-100" : "bg-white hover:bg-gray-100"}
+          >
+            <td className="px-6 py-4 text-sm text-gray-800">
+              {new Date(row.createdAt).toLocaleString()}
+            </td>
+            <td className="px-6 py-4 text-sm text-gray-800 truncate">
+              {row.pickupLocation.label}
+            </td>
+            <td className="px-6 py-4 text-sm text-gray-800 truncate">
+              {row.dropoffLocation.label}
+            </td>
+            <td className="px-6 py-4">
+              <span
+                className={clsx(
+                  "px-2 py-1 text-xs font-medium rounded-full",
+                  statusColors[row.deliveryStatus]
                 )}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {loading ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="px-6 py-4 text-center text-sm text-gray-500"
-                  >
-                    Loading deliveries...
-                  </td>
-                </tr>
-              ) : paginated.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="px-6 py-4 text-center text-sm text-gray-500"
-                  >
-                    No deliveries found
-                  </td>
-                </tr>
-              ) : (
-                paginated.map((row) => (
-                  <tr key={row.id}>
-                    <td className="px-6 py-4 text-sm text-gray-800">
-                      {new Date(row.createdAt).toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-800">
-                      <div className="text-sm text-gray-500">
-                        {row.pickupLocation.label}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-800">
-                      <div className="text-sm text-gray-500">
-                        {row.dropoffLocation.label}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={clsx(
-                          "px-2 py-1 text-xs font-medium rounded-full",
-                          statusColors[row.deliveryStatus]
-                        )}
-                      >
-                        {row.deliveryStatus}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 space-x-2">
-                      <button
-                        className="text-purple-600 hover:underline text-sm"
-                        onClick={() => navigate(`delivery-details/${row.id}`)}
-                      >
-                        View
-                      </button>
-                      {row.deliveryStatus === "PENDING" && (
-                        <button className="text-green-600 hover:underline text-sm">
-                          Start
-                        </button>
-                      )}
-                      {row.deliveryStatus === "IN_PROGRESS" && (
-                        <button className="text-blue-600 hover:underline text-sm">
-                          Complete
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))
+              >
+                {row.deliveryStatus.replace("_", " ").toLowerCase()}
+              </span>
+            </td>
+            <td className="px-6 py-4 space-x-4">
+              <button
+                onClick={() => navigate(`delivery-details/${row.id}`)}
+                className="text-purple-600 hover:underline text-sm"
+              >
+                View
+              </button>
+              {row.deliveryStatus === "PENDING" && (
+                <button className="text-green-600 hover:underline text-sm">
+                  Start
+                </button>
               )}
-            </tbody>
-          </table>
-        </div>
+              {row.deliveryStatus === "IN_PROGRESS" && (
+                <button className="text-blue-600 hover:underline text-sm">
+                  Complete
+                </button>
+              )}
+            </td>
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
 
         <PaginationControls
           page={page}

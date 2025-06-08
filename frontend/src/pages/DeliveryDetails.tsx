@@ -116,7 +116,7 @@ export const DeliveryDetails: React.FC = () => {
               onClick={() => navigate(`/tracking/${delivery.id}`)}
               type="button"
               aria-label="View Route"
-              className="flex items-center gap-2 justify-center px-5 py-2.5 text-sm font-medium bg-indigo-600 text-white rounded-xl shadow hover:bg-indigo-700 transition"
+              className="flex items-center gap-2 justify-center px-5 py-2.5 text-sm font-medium bg-purple-600 text-white rounded-xl shadow hover:bg-purple-700 transition"
             >
               <MapPin className="w-4 h-4" /> View Route
             </button>

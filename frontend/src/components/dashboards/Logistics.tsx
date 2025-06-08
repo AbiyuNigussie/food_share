@@ -12,6 +12,7 @@ import {
 import { SideBar, NavItem } from "../SideBar";
 import { StatCard } from "../StatCard";
 import { Header } from "../Header";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface Delivery {
   status: "Pending" | "In Progress" | "Completed";
@@ -96,6 +97,7 @@ export const Logistics: React.FC = () => {
         : "border border-gray-300 text-gray-700 hover:bg-gray-50";
     return <button className={`${base} ${styles}`}>{children}</button>;
   };
+  const { user } = useAuth();
 
   return (
     <>
@@ -105,7 +107,7 @@ export const Logistics: React.FC = () => {
         title="LogistiX"
         logoIcon={<TruckIcon className="w-6 h-6 text-purple-600" />}
         navItems={navItems}
-        userInfo={{ name: "Logistix User", email: "logistix@foodshare.org" }}
+        userInfo={{ name: "Logistix User", email: user?.email || "" }}
       />
       <main
         className={clsx(

@@ -288,7 +288,7 @@ const NewDonationFormModal: React.FC<NewDonationModalProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 rounded-lg bg-indigo-600 py-3 text-white font-semibold hover:bg-indigo-700 transition disabled:opacity-50"
+              className="flex-1 rounded-lg bg-purple-600 py-3 text-white font-semibold hover:bg-purple-700 transition disabled:opacity-50"
             >
               {loading ? "Submitting..." : "Create Donation"}
             </button>

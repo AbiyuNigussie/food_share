@@ -14,7 +14,7 @@ import {
   ClipboardListIcon,
 } from "lucide-react";
 import PaginationControls from "../components/PaginationControl";
-import { SideBar } from "../components/sideBar";
+import { SideBar } from "../components/SideBar";
 
 const recipientNavItems = [
   { label: "Dashboard", icon: <HomeIcon />, href: "/dashboard" },
@@ -72,30 +72,29 @@ export const RecipientDonationsPage: React.FC = () => {
     items: T[],
     content: (item: T) => React.ReactNode
   ) => (
-    <div className="max-w-6xl mx-auto bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+    <div className="max-w-7xl mx-auto bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
       {/* top accent bar */}
       <div className="h-1 bg-purple-500" />
-      <div className="p-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="p-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {items.map((it) => (
             <div
               key={it.id}
-              className="relative flex flex-col bg-gradient-to-br from-white/80 via-white/60 to-white/80 border-l-4 border-purple-500 rounded-lg shadow-lg hover:shadow-2xl transition p-6"
+              className="relative flex flex-col bg-white border-l-4 border-purple-500 rounded-lg shadow hover:shadow-lg transition p-8"
             >
               {/* Ribbon badge */}
               <div className="absolute top-4 right-4">
-                <span className="px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-700 rounded-full">
+                <span className="px-3 py-1 text-xs font-semibold bg-purple-100 text-purple-700 rounded-full">
                   {activeTab === "matched" ? "Matched" : "Claimed"}
                 </span>
               </div>
-
               {/* Main content */}
-              <div className="space-y-2 mb-4">{content(it)}</div>
-
+              <div className="space-y-1 mb-2">{content(it)}</div>
               {/* Footer timestamp */}
               <div className="mt-auto text-xs text-gray-400 text-right">
                 {activeTab === "matched" ? (
-                  <>Matched on{" "}
+                  <>
+                    Matched on{" "}
                     {new Date((it as unknown as MatchedDonation).createdAt).toLocaleDateString(undefined, {
                       month: "short",
                       day: "2-digit",
@@ -103,7 +102,8 @@ export const RecipientDonationsPage: React.FC = () => {
                     })}
                   </>
                 ) : (
-                  <>Claimed on{" "}
+                  <>
+                    Claimed on{" "}
                     {new Date((it as unknown as ClaimedDonation).createdAt).toLocaleDateString(undefined, {
                       month: "short",
                       day: "2-digit",
@@ -129,15 +129,15 @@ export const RecipientDonationsPage: React.FC = () => {
         userInfo={{ name: "Recipient User", email: user?.email || "" }}
       />
 
-      <div className="min-h-screen bg-gray-50 py-16 px-4">
-        <div className="max-w-6xl mx-auto">
+      <div className="min-h-screen bg-gray-50 py-16 px-6">
+        <div className="max-w-7xl mx-auto">
           {/* Title */}
           <h1 className="text-2xl font-semibold text-left text-gray-900 mb-8">
             My Donations
           </h1>
 
           {/* Tabs */}
-          <div className="flex justify-left space-x-12 mb-12">
+          <div className="flex justify-start space-x-12 mb-12">
             {(["matched", "claimed"] as const).map((tab) => (
               <button
                 key={tab}
@@ -155,7 +155,7 @@ export const RecipientDonationsPage: React.FC = () => {
           </div>
 
           {/* Showing count */}
-          <div className="flex justify-end mb-4 max-w-6xl mx-auto">
+          <div className="flex justify-end mb-4">
             <span className="text-sm text-gray-900">
               {activeTab === "matched"
                 ? `Showing ${matchedFrom}–${matchedTo} of ${matchedTotal}`
@@ -165,26 +165,44 @@ export const RecipientDonationsPage: React.FC = () => {
 
           {/* Content */}
           {activeTab === "matched" ? (
-            matched.length
-              ? renderCardsContainer(matched, (d) => (
-                  <>
-                    <h3 className="text-2xl font-bold text-gray-800">
-                      {(d as MatchedDonation).foodType}
-                    </h3>
+            matched.length ? (
+              renderCardsContainer(matched, (d) => (
+                <>
+                  <h3 className="text-2xl font-bold text-gray-800">
+                    {(d as MatchedDonation).foodType}
+                  </h3>
+                  <p className="text-gray-700">
+                    <strong>Qty:</strong> {(d as MatchedDonation).quantity}
+                  </p>
+                  <p className="text-gray-700">
+                    <strong>Donor:</strong> {(d as MatchedDonation).donor.user.firstName}{" "}
+                    {(d as MatchedDonation).donor.user.lastName}
+                  </p>
+                  {(d as ClaimedDonation).delivery && (
+                  <div className="mt-3 space-y-2">
                     <p className="text-gray-700">
-                      <strong>Qty:</strong> {(d as MatchedDonation).quantity}
+                      <strong>Status:</strong>{" "}
+                      <span
+                        className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${
+                          (d as ClaimedDonation).delivery!.deliveryStatus === "DELIVERED"
+                            ? "bg-green-200 text-green-800"
+                            : (d as ClaimedDonation).delivery!.deliveryStatus === "IN_TRANSIT"
+                            ? "bg-blue-200 text-blue-800"
+                            : "bg-yellow-200 text-yellow-800"
+                        }`}
+                      >
+                        {(d as ClaimedDonation).delivery!.deliveryStatus.replace(/_/g, " ")}
+                      </span>
                     </p>
-                    <p className="text-gray-700">
-                      <strong>Donor:</strong> {(d as MatchedDonation).donor.user.firstName}{" "}
-                      {(d as MatchedDonation).donor.user.lastName}
-                    </p>
-                  </>
-                ))
-              : (
-                <div className="text-center text-purple-500 py-12">
-                  No matched donations yet.
-                </div>
-              )
+                  </div>
+                )}
+                </>
+              ))
+            ) : (
+              <div className="text-center text-purple-500 py-12">
+                No matched donations yet.
+              </div>
+            )
           ) : claimed.length ? (
             renderCardsContainer(claimed, (d) => (
               <>
@@ -214,9 +232,6 @@ export const RecipientDonationsPage: React.FC = () => {
                         {(d as ClaimedDonation).delivery!.deliveryStatus.replace(/_/g, " ")}
                       </span>
                     </p>
-                    <p className="text-gray-700">
-                      <strong>Pickup:</strong> {(d as ClaimedDonation).delivery!.pickupLocation}
-                    </p>
                   </div>
                 )}
               </>
@@ -228,7 +243,7 @@ export const RecipientDonationsPage: React.FC = () => {
           )}
 
           {/* Pagination */}
-          <div className="mt-8 max-w-6xl mx-auto">
+          <div className="mt-8">
             <PaginationControls
               page={activeTab === "matched" ? matchedPage : claimedPage}
               rowsPerPage={activeTab === "matched" ? matchedRows : claimedRows}

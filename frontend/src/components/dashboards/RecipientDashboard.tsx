@@ -5,7 +5,7 @@ import { SearchBar } from "../SearchBar";
 import { FilterSelect } from "../FilterSelect";
 import { DonationSection } from "../DonationSection";
 import { DonationStatus } from "../../types";
-import { SideBar } from "../sideBar";
+import { SideBar } from "../SideBar";
 import clsx from "clsx";
 import {
   HomeIcon,
