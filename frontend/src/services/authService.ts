@@ -11,7 +11,8 @@ export const authService = {
     phoneNumber: string,
     password: string,
     role: string,
-    organization?: string
+    organization?: string,
+    amount?: number
   ) => {
     return axios.post(`${BASE_URL}/user/auth/register`, {
       firstName,
@@ -21,6 +22,7 @@ export const authService = {
       password,
       role,
       organization,
+      amount,
     });
   },
 

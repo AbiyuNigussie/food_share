@@ -8,6 +8,7 @@ import recipientNeedRoute from "./routes/recipientNeedRoute";
 import deliveryRoute from "./routes/deliveryRoute";
 import notificationRoute from "./routes/notificationRoute";
 import recipientDonationRoutes from "./routes/recipientDonationRoute";
+import paymentRoute from "./routes/paymentRoute";
 import { GeoMapRoutes } from "./routes/geomapRoute";
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use("/api", deliveryRoute);
 app.use("/api", notificationRoute);
 app.use("/api", recipientDonationRoutes);
 app.use("/api/geocode", GeoMapRoutes);
+app.use("/api/payment", paymentRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello, welcome to the ekekiyans gang with typeScript and Express!");
