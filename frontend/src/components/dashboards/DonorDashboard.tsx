@@ -24,7 +24,7 @@ export const DonorDashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [donations, setDonations] = useState<Donation[]>([]);
   const [page, setPage] = useState(1);
-  const [rowsPerPage] = useState(5);
+  const [rowsPerPage] = useState(8);
   const [total, setTotal] = useState(0);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(

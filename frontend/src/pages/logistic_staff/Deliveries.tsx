@@ -39,7 +39,7 @@ export const Deliveries: React.FC = () => {
   const [filter, setFilter] = useState<DeliveryStatus | "All">("PENDING");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const rowsPerPage = 5;
+  const rowsPerPage = 10;
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
