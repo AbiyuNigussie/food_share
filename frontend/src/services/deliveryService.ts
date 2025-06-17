@@ -35,16 +35,58 @@ export const deliveryService = {
     });
   },
 
-  // Example placeholder for updating delivery status
-  updateDeliveryStatus: async (token: string, id: string, status: string) => {
-    return axios.patch(
-      `${BASE_URL}/deliveries/${id}/status`,
+  // Assign a logistics staff to a delivery
+  assignDelivery: async (token: string, deliveryId: string) =>
+    axios.post(
+      `${BASE_URL}/deliveries/assign`,
+      { deliveryId },
+      { headers: { Authorization: `Bearer ${token}` } }
+    ),
+
+  // Schedule pickup for a delivery
+  schedulePickup: (token: string, deliveryId: string, datetime: string) =>
+    axios.post(
+      `${BASE_URL}/deliveries/${deliveryId}/schedule-pickup`,
+      { datetime },
+      { headers: { Authorization: `Bearer ${token}` } }
+    ),
+
+  // Mark pickup as completed
+  completePickup: (token: string, deliveryId: string) =>
+    axios.post(
+      `${BASE_URL}/deliveries/${deliveryId}/complete-pickup`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    ),
+
+  // Schedule dropoff for a delivery
+  scheduleDropoff: (token: string, deliveryId: string, datetime: string) =>
+    axios.post(
+      `${BASE_URL}/deliveries/${deliveryId}/schedule-dropoff`,
+      { datetime },
+      { headers: { Authorization: `Bearer ${token}` } }
+    ),
+
+  // Mark dropoff as completed
+  completeDropoff: (token: string, deliveryId: string) =>
+    axios.post(
+      `${BASE_URL}/deliveries/${deliveryId}/complete-dropoff`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    ),
+
+  // Mark delivery as fully completed
+  completeDelivery: (token: string, deliveryId: string) =>
+    axios.post(
+      `${BASE_URL}/deliveries/${deliveryId}/complete-delivery`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    ),
+
+  updateStatus: (token: string, deliveryId: string, status: string) =>
+    axios.patch(
+      `${BASE_URL}/deliveries/${deliveryId}/status`,
       { status },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-  },
+      { headers: { Authorization: `Bearer ${token}` } }
+    ),
 };

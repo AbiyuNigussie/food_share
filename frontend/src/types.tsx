@@ -95,8 +95,8 @@ export interface MatchedDonation {
 }
 
 // -------------
-/** 
- * A donation that the recipient “claimed” explicitly (via the “Claim Donation” flow). 
+/**
+ * A donation that the recipient “claimed” explicitly (via the “Claim Donation” flow).
  * Comes from `getClaimedDonationsForRecipient`.
  */
 export interface ClaimedDonation {
@@ -117,4 +117,23 @@ export interface ClaimedDonation {
     recipientPhone: string;
     // (add any other fields you like from your Prisma Delivery model)
   };
+}
+
+export interface DeliveryTimelineEvent {
+  id: string;
+  status: string;
+  note?: string;
+  timestamp: string;
+}
+
+export interface Delivery {
+  id: string;
+  deliveryStatus: string;
+  createdAt: string;
+  pickupLocation: Location;
+  dropoffLocation: Location;
+  updatedAt: string;
+  scheduledPickup?: string;
+  scheduledDropoff?: string;
+  timeline?: DeliveryTimelineEvent[];
 }

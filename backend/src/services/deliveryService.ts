@@ -3,12 +3,11 @@ import { DeliveryFilters } from "../types";
 const prisma = new PrismaClient();
 
 export const assignDeliveryStaff = async (
-  donationId: string,
-  logisticsStaffId: string,
-  scheduledDate: string
+  deliveryId: string,
+  logisticsStaffId: string
 ) => {
   return prisma.delivery.update({
-    where: { donationId },
+    where: { id: deliveryId },
     data: {
       logisticsStaffId,
       deliveryStatus: "ASSIGNED",
@@ -18,7 +17,7 @@ export const assignDeliveryStaff = async (
 
 export const updateDeliveryStatus = async (
   deliveryId: string,
-  status: "IN_PROGRESS" | "DELIVERED" | "FAILED" | "CANCELLED"
+  status: string
 ) => {
   return prisma.delivery.update({
     where: { id: deliveryId },
@@ -42,7 +41,10 @@ export const getAllDeliveries = async (
 
   if (filter.status === "PENDING") {
     whereClause.deliveryStatus = "PENDING";
-  } else if (filter.status === "INP_POGRESS" || filter.status === "DELIVERED") {
+  } else if (
+    filter.status === "ASSIGNED" ||
+    filter.status === "PICKUP_SCHEDULED"
+  ) {
     whereClause = {
       deliveryStatus: filter.status,
       logisticsStaffId,
@@ -52,7 +54,15 @@ export const getAllDeliveries = async (
       OR: [
         { deliveryStatus: "PENDING" },
         {
-          deliveryStatus: { in: ["IN_PROGRESS", "DELIVERED"] },
+          deliveryStatus: {
+            in: [
+              "ASSIGNED",
+              "PICKUP_SCHEDULED",
+              "PICKED_UP",
+              "DROPOFF_SCHEDULED",
+              "DROPPED_OFF",
+            ],
+          },
           logisticsStaffId,
         },
       ],
@@ -104,6 +114,41 @@ export const getDeliveryById = async (deliveryId: string) => {
       },
       pickupLocation: true,
       dropoffLocation: true,
+      timeline: true,
+    },
+  });
+};
+
+export const setDeliverySchedule = async (
+  deliveryId: string,
+  scheduledPickup: string | null,
+  scheduledDropoff: string | null
+) => {
+  return prisma.delivery.update({
+    where: { id: deliveryId },
+    data: {
+      ...(scheduledPickup && {
+        scheduledPickup: new Date(scheduledPickup),
+        deliveryStatus: "PICKUP_SCHEDULED",
+      }),
+      ...(scheduledDropoff && {
+        scheduledDropoff: new Date(scheduledDropoff),
+        deliveryStatus: "DROPOFF_SCHEDULED",
+      }),
+    },
+  });
+};
+
+export const addDeliveryTimelineEvent = async (
+  deliveryId: string,
+  status: string,
+  note?: string
+) => {
+  return prisma.deliveryTimeline.create({
+    data: {
+      deliveryId,
+      status,
+      note,
     },
   });
 };

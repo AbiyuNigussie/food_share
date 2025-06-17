@@ -15,18 +15,9 @@ import {
 import { useAuth } from "../../contexts/AuthContext";
 import { deliveryService } from "../../services/deliveryService";
 import { useNavigate } from "react-router";
-import { Location } from "../../types";
+import { Delivery } from "../../types";
 
 type DeliveryStatus = "PENDING" | "IN_PROGRESS" | "DELIVERED";
-
-interface Delivery {
-  id: string;
-  deliveryStatus: DeliveryStatus;
-  createdAt: string;
-  pickupLocation: Location;
-  dropoffLocation: Location;
-  updatedAt: string;
-}
 
 const statusColors: Record<DeliveryStatus, string> = {
   PENDING: "lowercase bg-gray-100 text-gray-600",
@@ -36,6 +27,12 @@ const statusColors: Record<DeliveryStatus, string> = {
 
 export const Deliveries: React.FC = () => {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(
+    null
+  );
+  const [pickupTime, setPickupTime] = useState("");
+  const [dropoffTime, setDropoffTime] = useState("");
   const [filter, setFilter] = useState<DeliveryStatus | "All">("PENDING");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -44,6 +41,7 @@ export const Deliveries: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+
   const navItems: NavItem[] = [
     {
       label: "Dashboard",
@@ -65,32 +63,64 @@ export const Deliveries: React.FC = () => {
     },
   ];
 
+  const handleScheduleSubmit = async () => {
+    if (!selectedDelivery) return;
+    try {
+      await deliveryService.setDeliverySchedule(
+        user?.token || "",
+        selectedDelivery.id,
+        pickupTime,
+        dropoffTime
+      );
+      // Optionally add a timeline event
+      await deliveryService.addTimelineEvent(
+        user?.token || "",
+        selectedDelivery.id,
+        "PICKUP_SCHEDULED",
+        "Pickup and dropoff scheduled"
+      );
+      setScheduleModalOpen(false);
+      // Refresh deliveries
+      fetchDeliveries();
+    } catch (err) {
+      alert("Failed to set schedule");
+    }
+  };
+  const fetchDeliveries = async () => {
+    setLoading(true);
+    try {
+      const token = user?.token || "";
+      const statusFilter =
+        filter === "All" ? undefined : filter.toLowerCase().replace(" ", "_");
+      const response = await deliveryService.getLogisticDeliveries(token, {
+        page,
+        rowsPerPage,
+        status: statusFilter,
+      });
+
+      setDeliveries(response.data?.data || []);
+      setTotal(response.data.total);
+    } catch (error) {
+      console.error("Failed to fetch deliveries", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchDeliveries = async () => {
-      setLoading(true);
-      try {
-        const token = user?.token || "";
-        const statusFilter =
-          filter === "All" ? undefined : filter.toLowerCase().replace(" ", "_");
-        const response = await deliveryService.getLogisticDeliveries(token, {
-          page,
-          rowsPerPage,
-          status: statusFilter,
-        });
-
-        setDeliveries(response.data?.data || []);
-        setTotal(response.data.total);
-      } catch (error) {
-        console.error("Failed to fetch deliveries", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchDeliveries();
   }, [page, rowsPerPage, filter]);
 
   const paginated = deliveries;
+
+  const handleAssign = async (deliveryId: string) => {
+    try {
+      await deliveryService.assignDelivery(user?.token || "", deliveryId);
+      fetchDeliveries();
+    } catch (err) {
+      alert("Failed to assign delivery");
+    }
+  };
 
   return (
     <>
@@ -100,7 +130,7 @@ export const Deliveries: React.FC = () => {
         title="LogistiX"
         logoIcon={<GiftIcon className="w-6 h-6 text-purple-600" />}
         navItems={navItems}
-        userInfo={{ name: "Logistics User", email: user?.email ||"" }}
+        userInfo={{ name: "Logistics User", email: user?.email || "" }}
       />
       <main
         className={clsx(
@@ -127,88 +157,92 @@ export const Deliveries: React.FC = () => {
           </select>
         </div>
 
-<div className="overflow-x-auto bg-white rounded-2xl shadow-md">
-  <table className="min-w-full divide-y divide-gray-200">
-    <thead className="bg-purple-600 sticky top-0">
-      <tr>
-        {["Time", "Pickup", "Dropoff", "Status", "Actions"].map((col) => (
-          <th
-            key={col}
-            className="px-6 py-3 text-left text-sm font-semibold text-white uppercase"
-          >
-            {col}
-          </th>
-        ))}
-      </tr>
-    </thead>
-    <tbody className="divide-y divide-gray-100">
-      {loading ? (
-        <tr>
-          <td
-            colSpan={5}
-            className="px-6 py-8 text-center text-sm text-gray-500"
-          >
-            Loading deliveries…
-          </td>
-        </tr>
-      ) : paginated.length === 0 ? (
-        <tr>
-          <td
-            colSpan={5}
-            className="px-6 py-8 text-center text-sm text-gray-500"
-          >
-            No deliveries found
-          </td>
-        </tr>
-      ) : (
-        paginated.map((row, idx) => (
-          <tr
-            key={row.id}
-            className={idx % 2 === 0 ? "bg-gray-50 hover:bg-gray-100" : "bg-white hover:bg-gray-100"}
-          >
-            <td className="px-6 py-4 text-sm text-gray-800">
-              {new Date(row.createdAt).toLocaleString()}
-            </td>
-            <td className="px-6 py-4 text-sm text-gray-800 truncate">
-              {row.pickupLocation.label}
-            </td>
-            <td className="px-6 py-4 text-sm text-gray-800 truncate">
-              {row.dropoffLocation.label}
-            </td>
-            <td className="px-6 py-4">
-              <span
-                className={clsx(
-                  "px-2 py-1 text-xs font-medium rounded-full",
-                  statusColors[row.deliveryStatus]
+        <div className="overflow-x-auto bg-white rounded-2xl shadow-md">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-purple-600 sticky top-0">
+              <tr>
+                {["Time", "Pickup", "Dropoff", "Status", "Actions"].map(
+                  (col) => (
+                    <th
+                      key={col}
+                      className="px-6 py-3 text-left text-sm font-semibold text-white uppercase"
+                    >
+                      {col}
+                    </th>
+                  )
                 )}
-              >
-                {row.deliveryStatus.replace("_", " ").toLowerCase()}
-              </span>
-            </td>
-            <td className="px-6 py-4 space-x-4">
-              <button
-                onClick={() => navigate(`delivery-details/${row.id}`)}
-                className="text-purple-600 hover:underline text-sm"
-              >
-                View
-              </button>
-              {row.deliveryStatus === "PENDING" && (
-                <button className="text-green-600 hover:underline text-sm">
-                  Start
-                </button>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {loading ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-6 py-8 text-center text-sm text-gray-500"
+                  >
+                    Loading deliveries…
+                  </td>
+                </tr>
+              ) : paginated.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-6 py-8 text-center text-sm text-gray-500"
+                  >
+                    No deliveries found
+                  </td>
+                </tr>
+              ) : (
+                paginated.map((row, idx) => (
+                  <tr
+                    key={row.id}
+                    className={
+                      idx % 2 === 0
+                        ? "bg-gray-50 hover:bg-gray-100"
+                        : "bg-white hover:bg-gray-100"
+                    }
+                  >
+                    <td className="px-6 py-4 text-sm text-gray-800">
+                      {new Date(row.createdAt).toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-800 truncate">
+                      {row.pickupLocation.label}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-800 truncate">
+                      {row.dropoffLocation.label}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={clsx(
+                          "px-2 py-1 text-xs font-medium rounded-full",
+                          statusColors[row.deliveryStatus as DeliveryStatus]
+                        )}
+                      >
+                        {row.deliveryStatus.replace("_", " ").toLowerCase()}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 space-x-4">
+                      <button
+                        onClick={() => navigate(`delivery-details/${row.id}`)}
+                        className="text-purple-600 hover:underline text-sm"
+                      >
+                        View
+                      </button>
+                      {row.deliveryStatus === "PENDING" && (
+                        <button
+                          className="text-indigo-600 hover:underline text-sm"
+                          onClick={() => handleAssign(row.id)}
+                        >
+                          Assign
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
               )}
-              {row.deliveryStatus === "IN_PROGRESS" && (
-                <button className="text-blue-600 hover:underline text-sm">
-                  Complete
-                </button>
-              )}
-            </td>
-          </tr>
-        ))
-      )}
-    </tbody>
-  </table>
-</div>
+            </tbody>
+          </table>
+        </div>
 
         <PaginationControls
           page={page}
@@ -217,6 +251,41 @@ export const Deliveries: React.FC = () => {
           onPageChange={(newPage) => setPage(newPage)}
         />
       </main>
+      {scheduleModalOpen && (
+        <div className="fixed inset-0 bg-black/40 bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-4">Set Pickup & Dropoff</h2>
+            <label className="block mb-2">Pickup Time</label>
+            <input
+              type="datetime-local"
+              value={pickupTime}
+              onChange={(e) => setPickupTime(e.target.value)}
+              className="w-full border rounded px-3 py-2 mb-4"
+            />
+            <label className="block mb-2">Dropoff Time</label>
+            <input
+              type="datetime-local"
+              value={dropoffTime}
+              onChange={(e) => setDropoffTime(e.target.value)}
+              className="w-full border rounded px-3 py-2 mb-4"
+            />
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setScheduleModalOpen(false)}
+                className="px-4 py-2 rounded bg-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleScheduleSubmit}
+                className="px-4 py-2 rounded bg-purple-600 text-white"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

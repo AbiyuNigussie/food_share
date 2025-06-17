@@ -7,6 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { toast } from "react-toastify";
 import { Phone, MapPin, Truck, User, Clock, ArrowLeftIcon } from "lucide-react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import { DeliveryTimelineEvent } from "../types";
 
 const formatDateTime = (iso: string | null) => {
   if (!iso) return "TBD";
@@ -32,6 +33,7 @@ export const DeliveryDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchDelivery = async () => {
       if (!id) return;
@@ -67,7 +69,6 @@ export const DeliveryDetails: React.FC = () => {
     );
   }
 
-  // Compute coordinates for the map. If no lat/lng, use fallback.
   const pickupCoords = {
     lat: delivery.pickupLocation?.latitude ?? fallbackCenter.lat,
     lng: delivery.pickupLocation?.longitude ?? fallbackCenter.lng,
@@ -80,7 +81,7 @@ export const DeliveryDetails: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-16 text-gray-800">
-      <div className="max-w-[90rem] mx-auto space-y-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[90rem] mx-auto space-y-16 px-4 sm:px-6 lg:px-8 h-full">
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>
             <div>
@@ -123,151 +124,188 @@ export const DeliveryDetails: React.FC = () => {
           </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:auto-rows-fr items-stretch">
-          {/* Status Card */}
-          <div className="min-h-[260px] flex flex-col justify-between bg-white rounded-2xl shadow-lg p-6">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 uppercase">
-              <Clock className="w-4 h-4" /> Status
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10 items-start h-full">
+          {/* Left Column */}
+          <div className="flex flex-col gap-6 md:gap-8 lg:gap-10 h-full">
+            {/* Status Card */}
+            <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 mb-2">
+              <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-gray-500 uppercase">
+                <Clock className="w-4 h-4" /> Status
+              </div>
+              <span className="self-start bg-yellow-100 text-yellow-800 text-xs md:text-sm font-medium px-3 py-1 rounded-full mt-2 mb-2">
+                {delivery.deliveryStatus}
+              </span>
+              <div className="space-y-1">
+                <p className="text-xs md:text-sm text-gray-500">
+                  Scheduled For
+                </p>
+                <p className="text-base md:text-lg font-semibold">
+                  {formatDateTime(delivery.scheduledDate)}
+                </p>
+              </div>
             </div>
-            <span className="self-start bg-yellow-100 text-yellow-800 text-sm font-medium px-4 py-1 rounded-full">
-              {delivery.deliveryStatus}
-            </span>
-            <div className="space-y-1">
-              <p className="text-sm text-gray-500">Scheduled For</p>
-              <p className="text-lg font-semibold">
-                {formatDateTime(delivery.scheduledDate)}
-              </p>
-            </div>
-          </div>
 
-          {/* Driver Info Card */}
-          <div className="min-h-[260px] flex flex-col justify-between bg-white rounded-2xl shadow-lg p-6">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 uppercase">
-              <Truck className="w-4 h-4" /> Driver Info
-            </div>
-            {delivery.logisticsStaff?.user ? (
-              <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center h-12 w-12 rounded-full bg-gray-100">
-                  <Truck className="w-5 h-5 text-gray-500" />
-                </div>
-                <div className="space-y-0.5">
-                  <p className="text-lg font-semibold">
-                    {delivery.logisticsStaff.user.firstName}{" "}
-                    {delivery.logisticsStaff.user.lastName}
+            {/* Donation Details */}
+            <div className="flex flex-col bg-white rounded-2xl shadow-lg p-4 md:p-6 gap-6 md:gap-8">
+              <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-gray-500 uppercase">
+                <User className="w-4 h-4" /> Donation Details
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                <p>
+                  <span className="font-medium text-gray-700">Type:</span>{" "}
+                  {delivery.donation.foodType}
+                </p>
+                <p>
+                  <span className="font-medium text-gray-700">Quantity:</span>{" "}
+                  {delivery.donation.quantity}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-sm">
+                <div className="flex flex-col gap-1">
+                  <p className="text-gray-500 font-medium flex items-center gap-2">
+                    <User className="w-4 h-4" /> Donor
                   </p>
-                  <p className="text-sm text-indigo-600 flex items-center gap-1">
+                  <p className="text-gray-900 text-base font-medium">
+                    {delivery.donation.donor?.user?.firstName ?? "N/A"}{" "}
+                    {delivery.donation.donor?.user?.lastName ?? ""}
+                  </p>
+                  <p className="text-gray-600 flex items-center gap-1">
                     <Phone className="w-3 h-3" />{" "}
-                    {delivery.logisticsStaff.user.phoneNumber}
+                    {delivery.donation.donor?.user?.phoneNumber ?? "N/A"}
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <p className="text-gray-500 font-medium flex items-center gap-2">
+                    <User className="w-4 h-4" /> Recipient
+                  </p>
+                  <p className="text-gray-900 text-base font-medium">
+                    {delivery.donation.recipient?.user?.firstName ?? "N/A"}{" "}
+                    {delivery.donation.recipient?.user?.lastName ?? ""}
+                  </p>
+                  <p className="text-gray-600 flex items-center gap-1">
+                    <Phone className="w-3 h-3" />{" "}
+                    {delivery.donation.recipient?.user?.phoneNumber ?? "N/A"}
                   </p>
                 </div>
               </div>
-            ) : (
-              <p className="text-sm text-gray-500">No driver assigned</p>
-            )}
+
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700">
+                <p className="font-medium text-gray-600 mb-1">
+                  Additional Notes
+                </p>
+                <p className="text-gray-800">
+                  {delivery.donation.notes?.trim() ||
+                    "No additional notes provided."}
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Route Information Card */}
-          <div className="lg:row-span-2 flex flex-col bg-white rounded-2xl shadow-lg p-6">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
+          {/* Middle Column */}
+          <div className="flex flex-col gap-6 md:gap-8 lg:gap-10 h-full">
+            {/* Driver Info */}
+            <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 mb-2">
+              <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-gray-500 uppercase">
+                <Truck className="w-4 h-4" /> Driver Info
+              </div>
+              {delivery.logisticsStaff?.user ? (
+                <div className="flex items-center gap-4 mt-2">
+                  <div className="flex items-center justify-center h-10 w-10 md:h-12 md:w-12 rounded-full bg-gray-100">
+                    <Truck className="w-5 h-5 text-gray-500" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <p className="text-base md:text-lg font-semibold">
+                      {delivery.logisticsStaff.user.firstName}{" "}
+                      {delivery.logisticsStaff.user.lastName}
+                    </p>
+                    <p className="text-xs md:text-sm text-indigo-600 flex items-center gap-1">
+                      <Phone className="w-3 h-3" />{" "}
+                      {delivery.logisticsStaff.user.phoneNumber}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-xs md:text-sm text-gray-500 mt-2">
+                  No driver assigned
+                </p>
+              )}
+            </div>
+
+            {/* Delivery Timeline */}
+            <div className="flex-1 bg-white rounded-2xl shadow-lg p-4 md:p-6 overflow-y-auto min-h-[180px]">
+              <h3 className="text-base md:text-lg font-semibold mb-2 md:mb-3">
+                Delivery Timeline
+              </h3>
+              <ul className="space-y-2">
+                {delivery.timeline && delivery.timeline.length > 0 ? (
+                  delivery.timeline.map((event: DeliveryTimelineEvent) => (
+                    <li key={event.id} className="flex items-center gap-3">
+                      <span className="text-xs text-gray-500">
+                        {new Date(event.timestamp).toLocaleString()}
+                      </span>
+                      <span className="font-medium">
+                        {event.status.replace(/_/g, " ")}
+                      </span>
+                      {event.note && (
+                        <span className="text-gray-400 text-xs">
+                          ({event.note})
+                        </span>
+                      )}
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-gray-400 text-sm">
+                    No timeline events yet.
+                  </li>
+                )}
+              </ul>
+            </div>
+          </div>
+
+          {/* Right Column - Route Info */}
+          <div className="h-full bg-white rounded-2xl shadow-lg p-4 md:p-6 flex flex-col">
+            <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 md:mb-4">
               <MapPin className="w-4 h-4" /> Route Information
             </div>
 
-            <div className="flex-grow rounded-lg overflow-hidden">
+            <div className="flex-grow rounded-lg min-h-[180px] overflow-hidden">
               {delivery?.pickupLocation && delivery?.dropoffLocation && (
                 <LoadScript
                   googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
                 >
-                  <GoogleMap
-                    mapContainerStyle={mapContainerStyle}
-                    center={pickupCoords}
-                    zoom={10}
-                    options={{
-                      fullscreenControl: false,
-                      streetViewControl: false,
-                    }}
-                  >
-                    <Marker position={pickupCoords} label="P" title="Pickup" />
-                    <Marker
-                      position={dropoffCoords}
-                      label="D"
-                      title="Dropoff"
-                    />
-                  </GoogleMap>
+                  <div className="w-full h-48 md:h-64 rounded-lg overflow-hidden">
+                    <GoogleMap
+                      mapContainerStyle={{ width: "100%", height: "100%" }}
+                      center={pickupCoords}
+                      zoom={10}
+                    >
+                      <Marker position={pickupCoords} label="P" />
+                      <Marker position={dropoffCoords} label="D" />
+                    </GoogleMap>
+                  </div>
                 </LoadScript>
               )}
-            </div>
-
-            <div className="flex flex-col gap-4 text-sm text-gray-700 mt-6">
-              <div className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
-                <div>
-                  <p className="font-medium text-gray-600">Pickup Location</p>
-                  <p>{delivery.pickupLocation?.label ?? "Unknown"}</p>
+              <div className="flex flex-col gap-4 text-sm text-gray-700 mt-6">
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-gray-600">Pickup Location</p>
+                    <p>{delivery.pickupLocation?.label ?? "Unknown"}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-gray-600">
+                      Dropoff Location
+                    </p>
+                    <p>{delivery.dropoffLocation?.label ?? "Unknown"}</p>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
-                <div>
-                  <p className="font-medium text-gray-600">Dropoff Location</p>
-                  <p>{delivery.dropoffLocation?.label ?? "Unknown"}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Donation Details */}
-          <div className="lg:col-span-2 flex flex-col bg-white rounded-2xl shadow-lg p-6 gap-8">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 uppercase">
-              <User className="w-4 h-4" /> Donation Details
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-              <p>
-                <span className="font-medium text-gray-700">Type:</span>{" "}
-                {delivery.donation.foodType}
-              </p>
-              <p>
-                <span className="font-medium text-gray-700">Quantity:</span>{" "}
-                {delivery.donation.quantity}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-sm">
-              <div className="flex flex-col gap-1">
-                <p className="text-gray-500 font-medium flex items-center gap-2">
-                  <User className="w-4 h-4" /> Donor
-                </p>
-                <p className="text-gray-900 text-base font-medium">
-                  {delivery.donation.donor?.user?.firstName ?? "N/A"}{" "}
-                  {delivery.donation.donor?.user?.lastName ?? ""}
-                </p>
-                <p className="text-gray-600 flex items-center gap-1">
-                  <Phone className="w-3 h-3" />{" "}
-                  {delivery.donation.donor?.user?.phoneNumber ?? "N/A"}
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <p className="text-gray-500 font-medium flex items-center gap-2">
-                  <User className="w-4 h-4" /> Recipient
-                </p>
-                <p className="text-gray-900 text-base font-medium">
-                  {delivery.donation.recipient?.user?.firstName ?? "N/A"}{" "}
-                  {delivery.donation.recipient?.user?.lastName ?? ""}
-                </p>
-                <p className="text-gray-600 flex items-center gap-1">
-                  <Phone className="w-3 h-3" />{" "}
-                  {delivery.donation.recipient?.user?.phoneNumber ?? "N/A"}
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700">
-              <p className="font-medium text-gray-600 mb-1">Additional Notes</p>
-              <p className="text-gray-800">
-                {delivery.donation.notes?.trim() ||
-                  "No additional notes provided."}
-              </p>
             </div>
           </div>
         </div>
