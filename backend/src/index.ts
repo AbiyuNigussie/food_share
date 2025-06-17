@@ -10,6 +10,7 @@ import notificationRoute from "./routes/notificationRoute";
 import recipientDonationRoutes from "./routes/recipientDonationRoute";
 import paymentRoute from "./routes/paymentRoute";
 import { GeoMapRoutes } from "./routes/geomapRoute";
+import Irouter from "./routes/insightRoute";
 dotenv.config();
 
 const app = express();
@@ -22,6 +23,7 @@ app.use("/api/user/auth", UserAuthRoutes);
 app.use("/api/admin/auth", adminAuthRoute);
 app.use("/api", donationRoutes);
 app.use("/api", recipientNeedRoute);
+app.use("/api", Irouter);
 app.use("/api", deliveryRoute);
 app.use("/api", notificationRoute);
 app.use("/api", recipientDonationRoutes);

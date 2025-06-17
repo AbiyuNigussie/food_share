@@ -41,6 +41,7 @@ export const authenticateUser = (
       req.logisticsStaffId = payload.id;
       break;
     default:
+      console.log(payload)
       res.status(403).json({ message: "Access denied" });
       return;
   }

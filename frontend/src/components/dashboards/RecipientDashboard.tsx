@@ -14,6 +14,7 @@ import {
   UserIcon,
   SettingsIcon,
   ClipboardListIcon,
+  BarChart2Icon,
 } from "lucide-react";
 import { donationService } from "../../services/donationService";
 import { useAuth } from "../../contexts/AuthContext";
@@ -25,11 +26,7 @@ import { toast } from "react-toastify";
 const recipientNavItems = [
   { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "#" },
   { label: "Donations", icon: <PackageIcon className="w-5 h-5" />, href: "/dashboard/my-donations" },
-  {
-    label: "Nearby Locations",
-    icon: <MapPinIcon className="w-5 h-5" />,
-    href: "#",
-  },
+  { label: "Insights", icon: <BarChart2Icon />, href: "/dashboard/recipient-insights" },
   {
     label: "My Needs",
     icon: <ClipboardListIcon className="w-5 h-5" />,

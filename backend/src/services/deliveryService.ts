@@ -11,8 +11,7 @@ export const assignDeliveryStaff = async (
     where: { donationId },
     data: {
       logisticsStaffId,
-      scheduledDate: new Date(scheduledDate),
-      deliveryStatus: "SCHEDULED",
+      deliveryStatus: "ASSIGNED",
     },
   });
 };

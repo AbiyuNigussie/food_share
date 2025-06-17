@@ -20,6 +20,8 @@ import { RecipientDonationsPage } from "./pages/RecipientDonation";
 import SubscriptionPage from "./pages/SubscripitionPage";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import FeedbackPage from "./pages/Feedback/Feedbackpage";
+import { DonorInsightsPage } from "./pages/DonorInsightsPage";
+import { RecipientInsightsPage } from "./pages/RecipientInsightsPage";
 
 function App() {
   return (
@@ -132,6 +134,22 @@ function App() {
               }
             />
             <Route path="/feedback" element={<FeedbackPage />} />
+            <Route
+              path="/dashboard/donor-insights"
+              element={
+                <PrivateRoute>
+                  <DonorInsightsPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/dashboard/recipient-insights"
+              element={
+                <PrivateRoute>
+                  <RecipientInsightsPage />
+                </PrivateRoute>
+              }
+            />
 
             {/* Other pages with Main Layout
           {/* <Route path="/" element={<Home />} /> */}

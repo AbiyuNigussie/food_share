@@ -207,4 +207,13 @@ export const authService = {
       { headers: { Authorization: `Bearer ${token}` } }
     );
   },
+    getDonorInsights: (token: string) =>
+    axios.get(`${BASE_URL}/donor/insights`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+
+  getRecipientInsights: (token: string) =>
+    axios.get(`${BASE_URL}/recipient/insights`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
 };

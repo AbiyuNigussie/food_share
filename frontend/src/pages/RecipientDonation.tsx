@@ -127,9 +127,15 @@ export const RecipientDonationsPage: React.FC = () => {
         navItems={recipientNavItems}
         userInfo={{ name: "Recipient User", email: user?.email || "" }}
       />
+      
 
-      <div className="min-h-screen bg-gray-50 py-16 px-6">
-        <div className="max-w-7xl mx-auto">
+      <div
+        className={
+          "min-h-screen bg-gray-50 py-16 px-6 transition-all duration-200 " +
+          (sidebarOpen ? "ml-64" : "ml-16")
+        }
+      >
+        <div className="max-w-7xl mx-auto space-y-8 mt-6 w-full">
           {/* Title */}
           <h1 className="text-2xl font-semibold text-left text-gray-900 mb-8">
             My Donations
@@ -180,7 +186,7 @@ export const RecipientDonationsPage: React.FC = () => {
                   {(d as ClaimedDonation).delivery && (
                   <div className="mt-3 space-y-2">
                     <p className="text-gray-700">
-                      <strong>Status:</strong>{" "}
+                      <strong>Delivery Status:</strong>{" "}
                       <span
                         className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${
                           (d as ClaimedDonation).delivery!.deliveryStatus === "DELIVERED"
@@ -218,7 +224,7 @@ export const RecipientDonationsPage: React.FC = () => {
                 {(d as ClaimedDonation).delivery && (
                   <div className="mt-3 space-y-2">
                     <p className="text-gray-700">
-                      <strong>Status:</strong>{" "}
+                      <strong>Delivery Status:</strong>{" "}
                       <span
                         className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${
                           (d as ClaimedDonation).delivery!.deliveryStatus === "DELIVERED"
