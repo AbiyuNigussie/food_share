@@ -11,6 +11,9 @@ import recipientDonationRoutes from "./routes/recipientDonationRoute";
 import paymentRoute from "./routes/paymentRoute";
 import { GeoMapRoutes } from "./routes/geomapRoute";
 import Irouter from "./routes/insightRoute";
+import adminRoute from './routes/admin/adminRoute';
+import userRoute from './routes/admin/userRoute';
+
 dotenv.config();
 
 const app = express();
@@ -37,3 +40,7 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+app.use("/api/admin", adminRoute);
+app.use('/api/admin', userRoute);
+
