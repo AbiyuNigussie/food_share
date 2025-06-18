@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   HomeIcon,
   UsersIcon,
@@ -10,8 +10,23 @@ import { SideBar } from "../SideBar";
 import { StatCard } from "../StatCard";
 import { Header } from "../Header";
 
+interface User {
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+}
+
 export const AdminDashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    fetch("/api/admin/users")
+      .then((res) => res.json())
+      .then((data) => setUsers(data))
+      .catch((err) => console.error("Failed to fetch users:", err));
+  }, []);
 
   const navItems = [
     { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "/admin/dashboard" },
@@ -28,17 +43,12 @@ export const AdminDashboard: React.FC = () => {
     { label: "Success Rate",    value: "92%" },
   ];
 
-  const users = [
-    { name: "John Doe",     email: "john@example.com",    role: "Donor",     status: "active"  },
-    { name: "Jane Smith",   email: "jane@example.com",    role: "Recipient", status: "suspended" },
-    { name: "Mike Johnson", email: "mike@example.com",    role: "Donor",     status: "pending" },
-  ];
-
   const getStatusBadge = (status: string) => {
     const base = "px-3 py-1 rounded-full text-xs font-semibold";
-    if (status === "active")
+    const normalized = status.toLowerCase();
+    if (normalized === "active")
       return <span className={`${base} bg-purple-100 text-purple-700`}>Active</span>;
-    if (status === "suspended")
+    if (normalized === "suspended")
       return <span className={`${base} bg-red-100 text-red-700`}>Suspended</span>;
     return <span className={`${base} bg-gray-200 text-gray-600`}>Pending</span>;
   };
@@ -86,7 +96,7 @@ export const AdminDashboard: React.FC = () => {
                 <tbody>
                   {users.map((u, idx) => (
                     <tr
-                      key={idx}
+                      key={u.email}
                       className={`${
                         idx % 2 === 0 ? "bg-white" : "bg-gray-50"
                       } hover:bg-purple-50 transition-colors`}
@@ -106,6 +116,7 @@ export const AdminDashboard: React.FC = () => {
               </table>
             </div>
           </section>
+
           <section className="space-y-4">
             <h2 className="text-xl font-semibold text-gray-800">Recent Feedback</h2>
             {[
@@ -122,6 +133,7 @@ export const AdminDashboard: React.FC = () => {
               </div>
             ))}
           </section>
+
           <section className="bg-white rounded-lg shadow-lg p-6 text-center">
             <h2 className="text-lg font-semibold text-gray-800 mb-2">
               Detailed Reports

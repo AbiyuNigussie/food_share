@@ -8,6 +8,9 @@ import recipientNeedRoute from "./routes/recipientNeedRoute";
 import deliveryRoute from "./routes/deliveryRoute";
 import notificationRoute from "./routes/notificationRoute";
 import { GeoMapRoutes } from "./routes/geomapRoute";
+import adminRoute from './routes/admin/adminRoute';
+import userRoute from './routes/admin/userRoute';
+
 dotenv.config();
 
 const app = express();
@@ -31,3 +34,7 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+app.use("/api/admin", adminRoute);
+app.use('/api/admin', userRoute);
+

@@ -18,6 +18,8 @@ import { RecipientNeeds } from "./pages/RecipientNeeds";
 import FeedbackPage from "./pages/Feedback/Feedbackpage";
 import LandingPage from "./pages/landing/LandingPage";
 import FAQPage from "./pages/FAQPage";
+import AboutPage from "./pages/AboutPage";
+
 
 import { Deliveries } from "./pages/logistic_staff/Deliveries";
 function App() {
@@ -145,9 +147,10 @@ function App() {
              element={<FAQPage />
              } 
              />
-
-
-
+             <Route
+             path="/about"
+             element={<AboutPage />} 
+             />
             {/* Other pages with Main Layout
           {/* <Route path="/" element={<Home />} /> */}
           </Routes>
