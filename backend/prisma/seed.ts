@@ -152,7 +152,7 @@ async function main() {
       data: {
         donationId: donation.id,
         recipientPhone: need.contactPhone,
-        deliveryStatus: "pending",
+        deliveryStatus: faker.helpers.arrayElement(['PENDING','DELIVERED','ASSIGNED','PICKUP_SCHEDULED','DROPOFF_SCHEDULED']),
         dropoffLocationId: need.dropoffLocationId,
         pickupLocationId: faker.helpers.arrayElement(locationIds).id,
         createdAt: donation.createdAt,

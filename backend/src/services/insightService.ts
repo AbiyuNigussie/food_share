@@ -60,7 +60,8 @@ export async function getRecipientInsights(recipientId: string, year: number) {
   const recent = await prisma.delivery.findMany({
     where: {
       donation: { recipientId },
-      createdAt: { gte: start, lt: end }
+      createdAt: { gte: start, lt: end },
+      deliveryStatus: "DELIVERED",
     },
     select: { createdAt: true }
   });
