@@ -1,4 +1,5 @@
 import { Request } from "express";
+import { User } from '@prisma/client';
 
 export interface AuthenticatedRequest extends Request {
   userId?: string; 
@@ -22,3 +23,13 @@ interface Address {
   lat: number;
   lon: number;
 }
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User;
+    }
+  }
+}
+
+

@@ -23,6 +23,11 @@ import FeedbackPage from "./pages/Feedback/Feedbackpage";
 import { DonorInsightsPage } from "./pages/DonorInsightsPage";
 import { RecipientInsightsPage } from "./pages/RecipientInsightsPage";
 
+import LandingPage from "./pages/landing/LandingPage";
+import FAQPage from "./pages/FAQPage";
+import AboutPage from "./pages/AboutPage";
+
+
 function App() {
   return (
     <AuthProvider>
@@ -150,7 +155,28 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route
+              path="/feedback"
+              element={
+                <FeedbackPage />
+              }
+            />
 
+             <Route 
+             path="/"
+             element={
+             <LandingPage />
+             } 
+             />
+             <Route 
+             path="/faq/:role" 
+             element={<FAQPage />
+             } 
+             />
+             <Route
+             path="/about"
+             element={<AboutPage />} 
+             />
             {/* Other pages with Main Layout
           {/* <Route path="/" element={<Home />} /> */}
           </Routes>

@@ -14,7 +14,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await authService.login(email, password, role); // Axios response
+      const res = await authService.login(email, password, role); 
       const data = res.data;
 
       login({
@@ -62,7 +62,7 @@ const Login: React.FC = () => {
             required
           />
 
-          {/* Forgot password link */}
+
           <div className="text-right text-sm">
             <span
               onClick={() => navigate("/forgot-password")}
