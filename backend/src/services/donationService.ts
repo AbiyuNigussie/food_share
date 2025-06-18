@@ -92,12 +92,17 @@ export const createDonation = async (
   return donation;
 };
 
-export const getAllDonations = async (page: number, rowsPerPage: number) => {
+export const getAllDonations = async (
+  page: number,
+  rowsPerPage: number,
+  donorId?: string
+) => {
   return await prisma.donation.findMany({
+    where: donorId ? { donorId } : {},
     skip: (page - 1) * rowsPerPage,
     take: rowsPerPage,
     include: {
-      location: true, // include location details
+      location: true,
       donor: {
         include: {
           user: {
@@ -159,9 +164,10 @@ export const deleteDonationById = async (donationId: string) => {
   });
 };
 
-export const getDonationsCount = async () => {
-  const result = await prisma.donation.count();
-  return result;
+export const getDonationsCount = async (donorId?: string) => {
+  return await prisma.donation.count({
+    where: donorId ? { donorId } : {},
+  });
 };
 
 export const getFilteredDonationsCount = async (filters: DonationFilters) => {
@@ -274,7 +280,9 @@ export const claimDonationById = async (
     });
 
     // ⬅️ NEW: Notify all logistics‐staff users about the new delivery
-    const allStaff = await tx.logisticsStaff.findMany({ select: { userId: true } });
+    const allStaff = await tx.logisticsStaff.findMany({
+      select: { userId: true },
+    });
     await Promise.all(
       allStaff.map((s) =>
         tx.notification.create({

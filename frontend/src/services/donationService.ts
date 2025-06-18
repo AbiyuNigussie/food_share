@@ -48,4 +48,9 @@ export const donationService = {
       },
     });
   },
+  getMyDonations: (token: string, page: number, rowsPerPage: number) =>
+    axios.get("/api/donations/my", {
+      params: { page, rowsPerPage },
+      headers: { Authorization: `Bearer ${token}` },
+    }),
 };

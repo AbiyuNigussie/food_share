@@ -112,6 +112,34 @@ export const handleGetFilteredDonations = async (
   }
 };
 
+export const handleGetMyDonations = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const donorId = req.donorId;
+    if (!donorId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+    const page = Number(req.query.page) || 1;
+    const rowsPerPage = Number(req.query.rowsPerPage) || 10;
+
+    const donations = await getAllDonations(page, rowsPerPage, donorId);
+    const total = await getDonationsCount(donorId);
+
+    res.status(200).json({
+      data: donations,
+      total,
+      page,
+      rowsPerPage,
+    });
+  } catch (error) {
+    console.error("Error fetching my donations:", error);
+    res.status(500).json({ error: "Failed to fetch my donations" });
+  }
+};
+
 export const handleDeleteDonation = async (
   req: Request,
   res: Response
