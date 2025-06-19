@@ -118,16 +118,16 @@ const LandingPage = () => {
       <div className="font-sans text-gray-800 bg-gradient-to-br from-purple-50 via-white to-indigo-50 min-h-screen">
         {/* Hero Section */}
         <section
-          className="relative flex flex-col items-center justify-center min-h-[80vh] px-6 overflow-hidden"
+          className="relative flex flex-col items-center justify-center min-h-[94vh] px-6 overflow-hidden"
           style={{
             backgroundImage:
-              "linear-gradient(120deg,rgba(99,102,100,0.03),rgba(168,139,250,0.03)), url('/assets/images/hero.png')",
+              "linear-gradient(120deg,rgba(168,139,250,0.01),transparent), url('/assets/images/hero.png')",
             backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
+            backgroundPosition: "center", 
             backgroundSize: "cover",
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/60 to-indigo-900/40 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 to-indigo-900/40 pointer-events-none" />
           <div className="relative z-10 flex flex-col items-center animate-fade-in-up">
             <h1 className="text-4xl md:text-6xl font-extrabold text-white drop-shadow-lg mb-6 tracking-tight animate-slide-down">
               <span className="bg-gradient-to-r from-purple-300 via-indigo-200 to-purple-100 bg-clip-text text-transparent">
@@ -295,13 +295,17 @@ const LandingPage = () => {
               <li><a href="/register" className="hover:underline">Donors</a></li>
               <li><a href="/register" className="hover:underline">Recipients</a></li>
               <li><a href="/register" className="hover:underline">Logistics</a></li>
+              <li><a href="/about" className="hover:underline">About</a></li>
+              <li><a href="/faq/:role" className="hover:underline">FAQ</a></li>
+              <li><a href="/login" className="hover:underline">Login</a></li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold mb-2">Connect</h4>
             <ul className="space-y-1">
-              <li><a href="#" className="hover:underline">GitHub</a></li>
-              <li><a href="#" className="hover:underline">Contact</a></li>
+              <li><a href="https://github.com/AbiyuNigussie/food_share" className="hover:underline">GitHub</a></li>
+              <li><a href="/contact" className="hover:underline">Contact</a></li>
+
             </ul>
           </div>
         </div>

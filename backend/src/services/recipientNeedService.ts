@@ -1,5 +1,6 @@
 import { PrismaClient, RecipientNeed, Donation, Location } from "@prisma/client";
 import { scoreAndSort } from "../utils/match";
+import { createNotificationAndEmail } from "../services/notificationService";
 
 const prisma = new PrismaClient();
 
@@ -20,7 +21,6 @@ export async function createNeed(
     notes?: string;
   }
 ) {
-
   const dropLoc = await prisma.location.create({
     data: {
       label: data.dropoffLocation.label,
@@ -67,30 +67,21 @@ export async function createNeed(
     donationWithLabels
   ) as DonationWithLabel[];
 
+  // Send notifications to recipient and donors (both in-app and email)
   for (const matchedDonation of topMatches) {
-    await prisma.notification.create({
-      data: {
-        userId: newNeed.recipientId,
-        message: `We found a matching donation (${matchedDonation.quantity} ${matchedDonation.foodType}) for your need.`,
-        meta: {
-          needId: newNeed.id,
-          donationId: matchedDonation.id,
-        },
-      },
-    });
+    await createNotificationAndEmail(
+      newNeed.recipientId,
+      `We found a matching donation (${matchedDonation.quantity} ${matchedDonation.foodType}) for your need.`,
+      { needId: newNeed.id, donationId: matchedDonation.id }
+    );
   }
 
   for (const matchedDonation of topMatches) {
-    await prisma.notification.create({
-      data: {
-        userId: matchedDonation.donorId!,
-        message: `Your donation (${matchedDonation.quantity} ${matchedDonation.foodType}) was matched to a recipient need.`,
-        meta: {
-          needId: newNeed.id,
-          donationId: matchedDonation.id,
-        },
-      },
-    });
+    await createNotificationAndEmail(
+      matchedDonation.donorId!,
+      `Your donation (${matchedDonation.quantity} ${matchedDonation.foodType}) was matched to a recipient need.`,
+      { needId: newNeed.id, donationId: matchedDonation.id }
+    );
   }
 
   return newNeed;
@@ -190,7 +181,10 @@ export async function claimMatch(
   needId: string,
   donationId: string
 ) {
-  return prisma.$transaction(async (tx) => {
+  // Collect notifications to send after transaction
+  const notificationsToSend: Array<{userId: string, message: string, meta?: any}> = [];
+
+  const result = await prisma.$transaction(async (tx) => {
     // 1) Load the need
     const need = await tx.recipientNeed.findUnique({
       where: { id: needId },
@@ -241,41 +235,43 @@ export async function claimMatch(
       },
     });
 
-    await tx.notification.create({
-      data: {
-        userId:  updatedNeed.recipientId!,
-        message: `A donation of ${updatedDonation.quantity} ${updatedDonation.foodType} has been reserved for your need.`,
-        meta: {
-          needId,
-          donationId: updatedDonation.id,
-        },
+    // Collect notifications instead of sending them here
+    notificationsToSend.push({
+      userId:  updatedNeed.recipientId!,
+      message: `A donation of ${updatedDonation.quantity} ${updatedDonation.foodType} has been reserved for your need.`,
+      meta: {
+        needId,
+        donationId: updatedDonation.id,
       },
     });
 
-    await tx.notification.create({
-      data: {
-        userId:  updatedDonation.donorId!,
-        message: `Your donation of ${updatedDonation.quantity} ${updatedDonation.foodType} has been reserved by a recipient.`,
-        meta: {
-          needId,
-          donationId: updatedDonation.id,
-        },
+    notificationsToSend.push({
+      userId:  updatedDonation.donorId!,
+      message: `Your donation of ${updatedDonation.quantity} ${updatedDonation.foodType} has been reserved by a recipient.`,
+      meta: {
+        needId,
+        donationId: updatedDonation.id,
       },
     });
 
     const allStaff = await tx.logisticsStaff.findMany({ select: { userId: true } });
-    await Promise.all(
-      allStaff.map(s =>
-        tx.notification.create({
-          data: {
-            userId: s.userId,
-            message: `New delivery scheduled for ${updatedDonation.foodType} (${updatedDonation.quantity}).`,
-            meta: { donationId: updatedDonation.id, deliveryId: delivery.id },
-          },
-        })
-      )
-    );
+    allStaff.forEach(s => {
+      notificationsToSend.push({
+        userId: s.userId,
+        message: `New delivery scheduled for ${updatedDonation.foodType} (${updatedDonation.quantity}).`,
+        meta: { donationId: updatedDonation.id, deliveryId: delivery.id },
+      });
+    });
 
     return { updatedNeed, updatedDonation };
   });
+
+  // After transaction, send notifications and emails
+  await Promise.all(
+    notificationsToSend.map(n =>
+      createNotificationAndEmail(n.userId, n.message, n.meta)
+    )
+  );
+
+  return result;
 }

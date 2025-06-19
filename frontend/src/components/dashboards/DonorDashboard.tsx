@@ -39,9 +39,9 @@ export const DonorDashboard: React.FC = () => {
   const navItems: NavItem[] = [
     { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "#" },
     {
-      label: "Donations",
+      label: "My Donations",
       icon: <GiftIcon className="w-5 h-5" />,
-      href: "/dashboard/my-donations",
+      href: "/dashboard/Donor-Donations",
     },
     {
       label: "Insights",
