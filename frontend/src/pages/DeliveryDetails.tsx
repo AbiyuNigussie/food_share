@@ -80,7 +80,7 @@ export const DeliveryDetails: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-16 text-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-purple-200 via-white to-indigo-100 rounded-3xl shadow-xl border border-purple-200 py-16 text-gray-800">
       <div className="max-w-[90rem] mx-auto space-y-16 px-4 sm:px-6 lg:px-8 h-full">
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>
@@ -128,20 +128,50 @@ export const DeliveryDetails: React.FC = () => {
           {/* Left Column */}
           <div className="flex flex-col gap-6 md:gap-8 lg:gap-10 h-full">
             {/* Status Card */}
-            <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 mb-2">
-              <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-gray-500 uppercase">
-                <Clock className="w-4 h-4" /> Status
+            <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 mb-2 flex items-center gap-4">
+              <div
+                className={`
+    flex items-center justify-center h-12 w-12 rounded-full
+    ${
+      delivery.deliveryStatus === "DELIVERED"
+        ? "bg-green-100"
+        : delivery.deliveryStatus === "CANCELLED"
+        ? "bg-red-100"
+        : "bg-yellow-100"
+    }
+  `}
+              >
+                <Clock
+                  className={`
+      w-6 h-6
+      ${
+        delivery.deliveryStatus === "DELIVERED"
+          ? "text-green-600"
+          : delivery.deliveryStatus === "CANCELLED"
+          ? "text-red-600"
+          : "text-yellow-600"
+      }
+    `}
+                />
               </div>
-              <span className="self-start bg-yellow-100 text-yellow-800 text-xs md:text-sm font-medium px-3 py-1 rounded-full mt-2 mb-2">
-                {delivery.deliveryStatus}
-              </span>
-              <div className="space-y-1">
-                <p className="text-xs md:text-sm text-gray-500">
-                  Scheduled For
-                </p>
-                <p className="text-base md:text-lg font-semibold">
-                  {formatDateTime(delivery.scheduledDate)}
-                </p>
+              <div className="flex flex-col flex-1">
+                <div className="text-xs md:text-sm font-semibold text-gray-500 uppercase mb-1">
+                  Status
+                </div>
+                <span
+                  className={`
+      px-4 py-1 rounded-full text-xs md:text-sm font-bold w-fit
+      ${
+        delivery.deliveryStatus === "DELIVERED"
+          ? "bg-green-100 text-green-800"
+          : delivery.deliveryStatus === "CANCELLED"
+          ? "bg-red-100 text-red-800"
+          : "bg-yellow-100 text-yellow-800"
+      }
+    `}
+                >
+                  {delivery.deliveryStatus.replace(/_/g, " ")}
+                </span>
               </div>
             </div>
 
@@ -160,6 +190,24 @@ export const DeliveryDetails: React.FC = () => {
                   <span className="font-medium text-gray-700">Quantity:</span>{" "}
                   {delivery.donation.quantity}
                 </p>
+                <p>
+                  <span className="font-medium text-gray-700">
+                    Available From:
+                  </span>{" "}
+                  {formatDateTime(delivery.donation.availableFrom)}
+                </p>
+                <p>
+                  <span className="font-medium text-gray-700">
+                    Available To:
+                  </span>{" "}
+                  {formatDateTime(delivery.donation.availableTo)}
+                </p>
+                <p>
+                  <span className="font-medium text-gray-700">
+                    Expiry Date:
+                  </span>{" "}
+                  {formatDateTime(delivery.donation.expiryDate)}
+                </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-sm">
@@ -175,6 +223,9 @@ export const DeliveryDetails: React.FC = () => {
                     <Phone className="w-3 h-3" />{" "}
                     {delivery.donation.donor?.user?.phoneNumber ?? "N/A"}
                   </p>
+                  <p className="text-gray-500">
+                    {delivery.donation.donor?.address ?? "No address"}
+                  </p>
                 </div>
 
                 <div className="flex flex-col gap-1">
@@ -188,6 +239,9 @@ export const DeliveryDetails: React.FC = () => {
                   <p className="text-gray-600 flex items-center gap-1">
                     <Phone className="w-3 h-3" />{" "}
                     {delivery.donation.recipient?.user?.phoneNumber ?? "N/A"}
+                  </p>
+                  <p className="text-gray-500">
+                    {delivery.donation.recipient?.address ?? "No address"}
                   </p>
                 </div>
               </div>
@@ -235,7 +289,7 @@ export const DeliveryDetails: React.FC = () => {
             </div>
 
             {/* Delivery Timeline */}
-            <div className="flex-1 bg-white rounded-2xl shadow-lg p-4 md:p-6 overflow-y-auto min-h-[180px]">
+            <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 overflow-y-auto h-95">
               <h3 className="text-base md:text-lg font-semibold mb-2 md:mb-3">
                 Delivery Timeline
               </h3>
@@ -266,7 +320,7 @@ export const DeliveryDetails: React.FC = () => {
           </div>
 
           {/* Right Column - Route Info */}
-          <div className="h-full bg-white rounded-2xl shadow-lg p-4 md:p-6 flex flex-col">
+          <div className="h-130 bg-white rounded-2xl shadow-lg p-4 md:p-6 flex flex-col">
             <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 md:mb-4">
               <MapPin className="w-4 h-4" /> Route Information
             </div>

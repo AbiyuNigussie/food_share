@@ -111,6 +111,17 @@ const NewDonationFormModal: React.FC<NewDonationModalProps> = ({
       toast.success("Donation created successfully!");
       onSuccess();
       onClose();
+      setForm({
+        title: "",
+        foodType: "",
+        quantity: "",
+        expiryDate: "",
+        availableFrom: "",
+        availableTo: "",
+        notes: "",
+      });
+      setSelectedPlace(null);
+      setLocationInput("");
     } catch (error: any) {
       toast.error(
         error?.response?.data?.error || "Failed to create donation. Try again."

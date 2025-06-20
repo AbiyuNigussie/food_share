@@ -63,29 +63,6 @@ export const Deliveries: React.FC = () => {
     },
   ];
 
-  const handleScheduleSubmit = async () => {
-    if (!selectedDelivery) return;
-    try {
-      await deliveryService.setDeliverySchedule(
-        user?.token || "",
-        selectedDelivery.id,
-        pickupTime,
-        dropoffTime
-      );
-      // Optionally add a timeline event
-      await deliveryService.addTimelineEvent(
-        user?.token || "",
-        selectedDelivery.id,
-        "PICKUP_SCHEDULED",
-        "Pickup and dropoff scheduled"
-      );
-      setScheduleModalOpen(false);
-      // Refresh deliveries
-      fetchDeliveries();
-    } catch (err) {
-      alert("Failed to set schedule");
-    }
-  };
   const fetchDeliveries = async () => {
     setLoading(true);
     try {
@@ -134,7 +111,7 @@ export const Deliveries: React.FC = () => {
       />
       <main
         className={clsx(
-          "p-8 bg-gray-50 min-h-screen transition-all duration-200",
+          "p-8 bg-gradient-to-br from-purple-200 via-white to-indigo-100  border border-purple-200 min-h-screen transition-all duration-200",
           sidebarOpen ? "ml-64" : "ml-16"
         )}
       >
@@ -251,41 +228,6 @@ export const Deliveries: React.FC = () => {
           onPageChange={(newPage) => setPage(newPage)}
         />
       </main>
-      {scheduleModalOpen && (
-        <div className="fixed inset-0 bg-black/40 bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-lg font-semibold mb-4">Set Pickup & Dropoff</h2>
-            <label className="block mb-2">Pickup Time</label>
-            <input
-              type="datetime-local"
-              value={pickupTime}
-              onChange={(e) => setPickupTime(e.target.value)}
-              className="w-full border rounded px-3 py-2 mb-4"
-            />
-            <label className="block mb-2">Dropoff Time</label>
-            <input
-              type="datetime-local"
-              value={dropoffTime}
-              onChange={(e) => setDropoffTime(e.target.value)}
-              className="w-full border rounded px-3 py-2 mb-4"
-            />
-            <div className="flex gap-2 justify-end">
-              <button
-                onClick={() => setScheduleModalOpen(false)}
-                className="px-4 py-2 rounded bg-gray-200"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleScheduleSubmit}
-                className="px-4 py-2 rounded bg-purple-600 text-white"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };

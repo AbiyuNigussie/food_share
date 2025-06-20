@@ -57,12 +57,24 @@ export async function getRecipientInsights(recipientId: string, year: number) {
   const start = new Date(year, 0, 1);
   const end = new Date(year + 1, 0, 1);
 
+  // Fetch delivered deliveries with quantity
   const recent = await prisma.delivery.findMany({
     where: {
       donation: { recipientId },
-      createdAt: { gte: start, lt: end }
+      createdAt: { gte: start, lt: end },
+      deliveryStatus: "DELIVERED",
     },
-    select: { createdAt: true }
+    select: { createdAt: true, donation: { select: { quantity: true } } }
+  });
+
+  // Sum up the total lbs (assuming quantity is like "12 lbs" or "12 kg")
+  let totalLbs = 0;
+  recent.forEach(({ donation }) => {
+    if (donation?.quantity) {
+      // Extract the number part (e.g., "12 kg" => 12)
+      const match = donation.quantity.match(/(\d+(\.\d+)?)/);
+      if (match) totalLbs += parseFloat(match[1]);
+    }
   });
 
   // Bucket by month for the selected year
@@ -78,5 +90,5 @@ export async function getRecipientInsights(recipientId: string, year: number) {
     monthly.push({ month: key, volume: buckets[key] || 0 });
   }
 
-  return { monthly };
+  return { monthly, totalLbs };
 }

@@ -152,7 +152,7 @@ async function main() {
       data: {
         donationId: donation.id,
         recipientPhone: need.contactPhone,
-        deliveryStatus: "pending",
+        deliveryStatus: faker.helpers.arrayElement(['DELIVERED']),
         dropoffLocationId: need.dropoffLocationId,
         pickupLocationId: faker.helpers.arrayElement(locationIds).id,
         createdAt: donation.createdAt,
@@ -190,6 +190,70 @@ async function main() {
   - ${createdDonations.length} recipient needs
   - ${createdDonations.length} deliveries
   `);
+
+  // Create a logistics staff user
+  await prisma.user.create({
+    data: {
+      email: "abiyunigussie7@gmail.com",
+      password: await bcrypt.hash(PASSWORD_SEED, 10),
+      firstName: "Abiyu",
+      lastName: "Nigussie",
+      phoneNumber: faker.phone.number(),
+      role: Role.LOGISTIC_PROVIDER,
+      isVerified: true,
+      verificationToken: null,
+      createdAt: new Date(2025, 0, 1),
+      logisticsStaff: {
+        create: {
+          role: "Driver",
+          vehicleInfo: faker.vehicle.vehicle(),
+          assignedZone: faker.location.city(),
+        }
+      }
+    }
+  });
+
+  // Create an additional donor user (with no donations)
+  await prisma.user.create({
+    data: {
+      email: "abiyprogramer221@gmail.com",
+      password: await bcrypt.hash(PASSWORD_SEED, 10),
+      firstName: "Lealem",
+      lastName: "Mekuria",
+      phoneNumber: faker.phone.number(),
+      role: Role.DONOR,
+      isVerified: true,
+      verificationToken: null,
+      createdAt: new Date(2025, 0, 1),
+      donor: {
+        create: {
+          address: faker.location.streetAddress()
+        }
+      }
+    }
+  });
+
+    await prisma.user.create({
+    data: {
+      email: "testrecipient@gmail.com",
+      password: await bcrypt.hash(PASSWORD_SEED, 10),
+      firstName: "test",
+      lastName: "recipient",
+      phoneNumber: faker.phone.number(),
+      role: Role.RECIPIENT,
+      isVerified: true,
+      verificationToken: null,
+      createdAt: new Date(2025, 0, 1),
+      recipient: {
+        create: {
+          address: faker.location.streetAddress(),
+          subscriptionStatus: "active", // or whatever default you want
+          subscriptionDate: new Date(), // or a specific date
+        }
+      }
+    }
+  });
+
 }
 
 main()

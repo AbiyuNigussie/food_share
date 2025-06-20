@@ -177,7 +177,7 @@ const RecipientDashboard: React.FC = () => {
 
       <div
         className={clsx(
-          "p-8 bg-gray-50 min-h-screen transition-all duration-200",
+          "p-8  min-h-screen transition-all duration-200",
           sidebarOpen ? "ml-64" : "ml-16"
         )}
       >
