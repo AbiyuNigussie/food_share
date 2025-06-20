@@ -80,7 +80,7 @@ export const DeliveryDetails: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-16 text-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-purple-200 via-white to-indigo-100 rounded-3xl shadow-xl border border-purple-200 py-16 text-gray-800">
       <div className="max-w-[90rem] mx-auto space-y-16 px-4 sm:px-6 lg:px-8 h-full">
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>

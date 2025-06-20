@@ -131,7 +131,7 @@ export const RecipientDonationsPage: React.FC = () => {
 
       <div
         className={
-          "min-h-screen bg-gray-50 py-16 px-6 transition-all duration-200 " +
+          "min-h-screen bg-gradient-to-br from-purple-200 via-white to-indigo-100  border-purple-200 py-16 px-6 transition-all duration-200 " +
           (sidebarOpen ? "ml-64" : "ml-16")
         }
       >

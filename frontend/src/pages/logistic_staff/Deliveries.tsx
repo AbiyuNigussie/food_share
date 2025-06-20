@@ -111,7 +111,7 @@ export const Deliveries: React.FC = () => {
       />
       <main
         className={clsx(
-          "p-8 bg-gray-50 min-h-screen transition-all duration-200",
+          "p-8 bg-gradient-to-br from-purple-200 via-white to-indigo-100  border border-purple-200 min-h-screen transition-all duration-200",
           sidebarOpen ? "ml-64" : "ml-16"
         )}
       >

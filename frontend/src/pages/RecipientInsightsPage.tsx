@@ -43,6 +43,7 @@ export const RecipientInsightsPage: React.FC = () => {
     { date: string; volume: number; foodType: string }[]
   >([]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [totalLbs, setTotalLbs] = useState(0);
 
   const navItems: NavItem[] = [
     { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "/dashboard" },
@@ -68,6 +69,15 @@ export const RecipientInsightsPage: React.FC = () => {
     }
     fetchInsights();
   }, [token]);
+
+  useEffect(() => {
+    async function fetchInsights() {
+      const res = await authService.getRecipientInsights(token);
+      setStats(res.data.data.monthly || []);
+      setTotalLbs(res.data.data.totalLbs || 0);
+    }
+    fetchInsights();
+  }, [token, selectedYear]);
 
   if (loading) return <div className="p-6 text-center">Loading insights…</div>;
 
@@ -214,27 +224,13 @@ export const RecipientInsightsPage: React.FC = () => {
               <span className="text-gray-500">Months Tracked</span>
             </div>
             <div className="bg-white rounded-2xl shadow p-6 flex flex-col items-center">
-              <span className="text-2xl font-bold">{totalReceived}</span>
+              <span className="text-2xl font-bold">{totalLbs}</span>
               <span className="text-gray-500">Total Received (lbs)</span>
             </div>
             {/* Add more stat cards as needed */}
           </div>
 
-          {/* Recent Receipts List */}
-          <section className="bg-white rounded-2xl shadow p-6">
-            <h3 className="font-semibold text-gray-700 mb-4">Recent Receipts</h3>
-            <ul className="divide-y divide-gray-100">
-              {recentReceipts.map((rec, idx) => (
-                <li key={idx} className="py-3 flex items-center justify-between">
-                  <span className="font-medium text-gray-900">{rec.foodType}</span>
-                  <span className="text-gray-500">{rec.date}</span>
-                  <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold">
-                    {rec.volume} lbs
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
+
         </div>
       </main>
     </>

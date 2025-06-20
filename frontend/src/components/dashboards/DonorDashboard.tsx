@@ -121,7 +121,7 @@ export const DonorDashboard: React.FC = () => {
       />
       <main
         className={clsx(
-          "min-h-screen bg-gray-50 p-6",
+          "min-h-screen  p-6",
           sidebarOpen ? "ml-64" : "ml-16"
         )}
       >
@@ -172,7 +172,7 @@ export const DonorDashboard: React.FC = () => {
               <option value="all">All Statuses</option>
               <option value="matched">Matched</option>
               <option value="pending">Pending</option>
-              <option value="in-process">In-Process</option>
+              <option value="claimed">Claimed</option>
             </select>
 
             {/* Add Donation */}
