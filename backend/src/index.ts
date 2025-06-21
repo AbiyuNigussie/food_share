@@ -13,6 +13,7 @@ import { GeoMapRoutes } from "./routes/geomapRoute";
 import Irouter from "./routes/insightRoute";
 import adminRoute from './routes/admin/adminRoute';
 import userRoute from './routes/admin/userRoute';
+import donorDonationRoutes from "./routes/donorDonationRoute";
 
 dotenv.config();
 
@@ -32,6 +33,8 @@ app.use("/api", notificationRoute);
 app.use("/api", recipientDonationRoutes);
 app.use("/api/geocode", GeoMapRoutes);
 app.use("/api/payment", paymentRoute);
+app.use("/api/donor", donorDonationRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("Hello, welcome to the ekekiyans gang with typeScript and Express!");

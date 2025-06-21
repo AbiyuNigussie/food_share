@@ -22,7 +22,8 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import FeedbackPage from "./pages/Feedback/Feedbackpage";
 import { DonorInsightsPage } from "./pages/DonorInsightsPage";
 import { RecipientInsightsPage } from "./pages/RecipientInsightsPage";
-
+import { DonorDonationsPage } from "./pages/DonorDonationPage";
+import ContactPage from "./pages/ContactPage";
 import LandingPage from "./pages/landing/LandingPage";
 import FAQPage from "./pages/FAQPage";
 import AboutPage from "./pages/AboutPage";
@@ -156,13 +157,26 @@ function App() {
               }
             />
             <Route
+              path="/dashboard/Donor-Donations"
+              element={
+                <PrivateRoute>
+                  <DonorDonationsPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
               path="/feedback"
               element={
                 <FeedbackPage />
               }
             />
-
-             <Route 
+            <Route
+              path="/contact"
+              element={
+                <ContactPage />
+              }
+            />
+            <Route 
              path="/"
              element={
              <LandingPage />

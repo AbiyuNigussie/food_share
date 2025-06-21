@@ -11,8 +11,9 @@ const MainNavLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           </h1>
           <div className="hidden md:flex gap-8 items-center">
             <a href="/about" className="text-gray-700 hover:text-purple-700 font-medium transition">About</a>
-            <a href="#why" className="text-gray-700 hover:text-purple-700 font-medium transition">Why It Matters</a>
+            
             <a href="/faq/:rol" className="text-gray-700 hover:text-purple-700 font-medium transition">FAQ</a>
+            <a href="/contact" className="text-gray-700 hover:text-purple-700 font-medium transition">Contact</a>
             <a href="/register" className="bg-purple-600 text-white px-4 py-2 rounded-full font-semibold shadow hover:bg-purple-700 transition">Register</a>
             <a href="/login" className="text-purple-700 font-semibold hover:underline transition">Login</a>
           </div>

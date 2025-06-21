@@ -57,7 +57,7 @@ export const DonorInsightsPage: React.FC = () => {
 
   const navItems: NavItem[] = [
     { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "/dashboard" },
-    { label: "Donations", icon: <GiftIcon className="w-5 h-5" />, href: "/dashboard/my-donations" },
+    { label: "Donations", icon: <GiftIcon className="w-5 h-5" />, href: "/dashboard/Donor-Donations" },
     { label: "Insights", icon: <BarChart2Icon />, href: "/dashboard/donor-insights" },
     { label: "Profile", icon: <UserIcon className="w-5 h-5" />, href: "#" },
     { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "#" },

@@ -207,6 +207,20 @@ export const authService = {
       { headers: { Authorization: `Bearer ${token}` } }
     );
   },
+
+  // …inside authService object:
+  getDonorMatchedDonations: (token: string, page = 1, rowsPerPage = 5) =>
+    axios.get(
+      `${BASE_URL}/donor/donations/matched?page=${page}&rowsPerPage=${rowsPerPage}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    ),
+
+  getDonorClaimedDonations: (token: string, page = 1, rowsPerPage = 5) =>
+    axios.get(
+      `${BASE_URL}/donor/donations/claimed?page=${page}&rowsPerPage=${rowsPerPage}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    ),
+
     getDonorInsights: (token: string) =>
     axios.get(`${BASE_URL}/donor/insights`, {
       headers: { Authorization: `Bearer ${token}` },

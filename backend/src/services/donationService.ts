@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { DonationFilters } from "../types";
 import { scoreAndSortNeeds } from "../utils/match";
+import { createNotificationAndEmail } from "../services/notificationService";
 
 const prisma = new PrismaClient();
 
@@ -76,17 +77,13 @@ export const createDonation = async (
 
   const topNeeds = scoreAndSortNeeds(donationForMatching, needsWithLocation);
 
+  // Send notifications (in-app + email)
   for (const need of topNeeds) {
-    await prisma.notification.create({
-      data: {
-        userId: need.recipientId,
-        message: `A new donation (${donation.quantity} ${donation.foodType}) matches your need.`,
-        meta: {
-          needId: need.id,
-          donationId: donation.id,
-        },
-      },
-    });
+    await createNotificationAndEmail(
+      need.recipientId,
+      `A new donation (${donation.quantity} ${donation.foodType}) matches your need.`,
+      { needId: need.id, donationId: donation.id }
+    );
   }
 
   return donation;
@@ -214,7 +211,10 @@ export const claimDonationById = async (
     deliveryNotes?: string;
   }
 ) => {
-  return await prisma.$transaction(async (tx) => {
+  // Collect notifications to send after transaction
+  const notificationsToSend: Array<{userId: string, message: string, meta?: any}> = [];
+
+  const updatedDonation = await prisma.$transaction(async (tx) => {
     // 1️⃣ Verify donation exists & is claimable (include location info)
     const donation = await tx.donation.findUnique({
       where: { id: donationId },
@@ -270,33 +270,36 @@ export const claimDonationById = async (
       },
     });
 
-    // 6️⃣ Notify the donor
-    await tx.notification.create({
-      data: {
-        userId: donation.donorId, // the original donor’s userId
-        message: `Your donation (${donation.foodType}, ${donation.quantity}) has been claimed by a recipient.`,
-        meta: { donationId, recipientId: recipient.userId },
-      },
+    // 6️⃣ Notify the donor (collect for after transaction)
+    notificationsToSend.push({
+      userId: donation.donorId,
+      message: `Your donation (${donation.foodType}, ${donation.quantity}) has been claimed by a recipient.`,
+      meta: { donationId, recipientId: recipient.userId },
     });
 
-    // ⬅️ NEW: Notify all logistics‐staff users about the new delivery
+    // ⬅️ NEW: Notify all logistics‐staff users about the new delivery (collect for after transaction)
     const allStaff = await tx.logisticsStaff.findMany({
       select: { userId: true },
     });
-    await Promise.all(
-      allStaff.map((s) =>
-        tx.notification.create({
-          data: {
-            userId: s.userId,
-            message: `New delivery created for ${donation.foodType} (${donation.quantity}).`,
-            meta: { donationId, deliveryId: delivery.id },
-          },
-        })
-      )
-    );
+    allStaff.forEach((s) => {
+      notificationsToSend.push({
+        userId: s.userId,
+        message: `New delivery created for ${donation.foodType} (${donation.quantity}).`,
+        meta: { donationId, deliveryId: delivery.id },
+      });
+    });
 
     return updatedDonation;
   });
+
+  // After transaction, send notifications and emails
+  await Promise.all(
+    notificationsToSend.map(n =>
+      createNotificationAndEmail(n.userId, n.message, n.meta)
+    )
+  );
+
+  return updatedDonation;
 };
 
 export const updateDonationStatus = async (
