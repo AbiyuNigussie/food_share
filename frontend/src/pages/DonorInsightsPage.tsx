@@ -59,8 +59,7 @@ export const DonorInsightsPage: React.FC = () => {
     { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "/dashboard" },
     { label: "Donations", icon: <GiftIcon className="w-5 h-5" />, href: "/dashboard/Donor-Donations" },
     { label: "Insights", icon: <BarChart2Icon />, href: "/dashboard/donor-insights" },
-    { label: "Profile", icon: <UserIcon className="w-5 h-5" />, href: "#" },
-    { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "#" },
+    { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "/dashboard/settings" },
   ];
 
   useEffect(() => {
@@ -102,7 +101,7 @@ export const DonorInsightsPage: React.FC = () => {
     // Fetch recent donations with foodType
     async function fetchRecentDonations() {
       try {
-        const res = await authService.getDonations(token, 1, 5);
+        const res = await authService.getDonorDonations(token, 1, 5);
         setRecentDonations(
           res.data.data.map((don: any) => ({
             date: don.createdAt,           // or format as needed
@@ -186,10 +185,10 @@ export const DonorInsightsPage: React.FC = () => {
       <SideBar
         open={sidebarOpen}
         toggle={() => setSidebarOpen((prev) => !prev)}
-        title="DonorX"
+        title="Donor Portal"
         logoIcon={<GiftIcon className="w-6 h-6 text-purple-600" />}
         navItems={navItems}
-        userInfo={{ name: "Donor User", email: user?.email || "" }}
+        userInfo={{ name: `${user?.firstName} ${user?.lastName}`, email: user?.email || "" }}
       />
 
       <main

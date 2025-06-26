@@ -6,9 +6,7 @@ import {
   GiftIcon,
   TruckIcon,
   HomeIcon,
-  PackageIcon,
   BarChart2Icon,
-  ListIcon,
   UserIcon,
   SettingsIcon,
 } from "lucide-react";
@@ -19,7 +17,6 @@ const donorNavItems = [
   { label: "Dashboard", icon: <HomeIcon />, href: "/dashboard" },
   { label: "My Donations", icon: <GiftIcon />, href: "/dashboard/Donor-Donations" },
   { label: "Insights", icon: <BarChart2Icon />, href: "/dashboard/donor-insights" },
-  { label: "Profile", icon: <UserIcon />, href: "#" },
   { label: "Settings", icon: <SettingsIcon />, href: "#" },
 ];
 
@@ -119,7 +116,7 @@ export const DonorDonationsPage: React.FC = () => {
         title="Donor Portal"
         navItems={donorNavItems}
         userInfo={{
-          name: "Donor User",
+          name: `${user?.firstName} ${user?.lastName}`,
           email: user?.email || "",
         }}
       />
@@ -172,8 +169,11 @@ export const DonorDonationsPage: React.FC = () => {
                   </p>
                   <p className="text-gray-700">
                     <strong>Recipient:</strong>{" "}
-                    {(d as any).recipient.user.firstName}{" "}
-                    {(d as any).recipient.user.lastName}
+                    {(d as any).recipient?.user
+                      ? `${(d as any).recipient.user.firstName} ${
+                          (d as any).recipient.user.lastName
+                        }`
+                      : "TBD"}
                   </p>
                 </>
               ))
@@ -184,42 +184,45 @@ export const DonorDonationsPage: React.FC = () => {
             )
           ) : claimed.length ? (
             renderCardsContainer(claimed, d => (
-              <>
-                <h3 className="text-2xl font-bold text-gray-800">
-                  {(d as any).foodType}
-                </h3>
-                <p className="text-gray-700">
-                  <strong>Qty:</strong> {(d as any).quantity}
-                </p>
-                <p className="text-gray-700">
-                  <strong>Recipient:</strong>{" "}
-                  {(d as any).recipient.user.firstName}{" "}
-                  {(d as any).recipient.user.lastName}
-                </p>
-                {(d as any).delivery && (
-                  <div className="mt-3 space-y-2">
-                    <p className="text-gray-700">
-                      <strong>Delivery Status:</strong>{" "}
-                      <span
-                        className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${
-                          (d as any).delivery.deliveryStatus === "DELIVERED"
-                            ? "bg-green-200 text-green-800"
-                            : (d as any).delivery.deliveryStatus === "IN_TRANSIT"
-                            ? "bg-blue-200 text-blue-800"
-                            : "bg-yellow-200 text-yellow-800"
-                        }`}
-                      >
-                        {(d as any).delivery.deliveryStatus.replace(/_/g, " ")}
-                      </span>
-                    </p>
-                    <p className="text-gray-700">
-                      <strong>Pickup:</strong>{" "}
-                      {(d as any).delivery.pickupLocation.label ||
-                       (d as any).delivery.pickupLocation}
-                    </p>
-                  </div>
-                )}
-              </>
+                <>
+                  <h3 className="text-2xl font-bold text-gray-800">
+                    {(d as any).foodType}
+                  </h3>
+                  <p className="text-gray-700">
+                    <strong>Qty:</strong> {(d as any).quantity}
+                  </p>
+                  <p className="text-gray-700">
+                    <strong>Recipient:</strong>{" "}
+                    {(d as any).recipient?.user
+                      ? `${(d as any).recipient.user.firstName} ${
+                          (d as any).recipient.user.lastName
+                        }`
+                      : "TBD"}
+                  </p>
+                  {(d as any).delivery && (
+                    <div className="mt-3 space-y-2">
+                      <p className="text-gray-700">
+                        <strong>Delivery Status:</strong>{" "}
+                        <span
+                          className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${
+                            (d as any).delivery.deliveryStatus === "DELIVERED"
+                              ? "bg-green-200 text-green-800"
+                              : (d as any).delivery.deliveryStatus === "IN_TRANSIT"
+                              ? "bg-blue-200 text-blue-800"
+                              : "bg-yellow-200 text-yellow-800"
+                          }`}
+                        >
+                          {(d as any).delivery.deliveryStatus.replace(/_/g, " ")}
+                        </span>
+                      </p>
+                      <p className="text-gray-700">
+                        <strong>Pickup:</strong>{" "}
+                        {(d as any).delivery.pickupLocation?.label ||
+                          "Unknown"}
+                      </p>
+                    </div>
+                  )}
+                </>
             ))
           ) : (
             <div className="text-center text-purple-500 py-12">

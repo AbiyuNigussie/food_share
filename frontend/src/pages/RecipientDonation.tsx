@@ -11,6 +11,7 @@ import {
   UserIcon,
   SettingsIcon,
   ClipboardListIcon,
+  BarChart2Icon,
 } from "lucide-react";
 import PaginationControls from "../components/PaginationControl";
 import { SideBar } from "../components/SideBar";
@@ -18,10 +19,9 @@ import { SideBar } from "../components/SideBar";
 const recipientNavItems = [
   { label: "Dashboard", icon: <HomeIcon />, href: "/dashboard" },
   { label: "Donations", icon: <PackageIcon />, href: "/dashboard/my-donations" },
-  { label: "Nearby Locations", icon: <MapPinIcon />, href: "#" },
+  { label: "Insights", icon: <BarChart2Icon />, href: "/dashboard/recipient-insights" },
   { label: "My Needs", icon: <ClipboardListIcon />, href: "/dashboard/Recipient-Needs" },
-  { label: "Profile", icon: <UserIcon />, href: "#" },
-  { label: "Settings", icon: <SettingsIcon />, href: "#" },
+  { label: "Settings", icon: <SettingsIcon />, href: "/dashboard/settings" },
 ];
 
 export const RecipientDonationsPage: React.FC = () => {

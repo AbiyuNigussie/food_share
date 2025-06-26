@@ -104,7 +104,7 @@ export const DeliveryDetails: React.FC = () => {
     statusIcons.default;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-200 via-white to-indigo-100 rounded-3xl shadow-xl border border-purple-200 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4">
@@ -142,7 +142,7 @@ export const DeliveryDetails: React.FC = () => {
             </button>
             <button
               onClick={() => navigate(`/tracking/${delivery.id}`)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
             >
               <Navigation className="w-4 h-4" />
               View Route

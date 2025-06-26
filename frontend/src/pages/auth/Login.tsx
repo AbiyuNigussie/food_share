@@ -22,6 +22,9 @@ const Login: React.FC = () => {
       login({
         id: data.user.id,
         email: data.user.email,
+        firstName: data.user.firstName,
+        lastName: data.user.lastName,
+        phoneNumber: data.user.phoneNumber,
         token: data.token,
         role: data.user.role,
       });

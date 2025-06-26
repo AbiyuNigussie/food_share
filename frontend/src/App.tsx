@@ -27,6 +27,7 @@ import ContactPage from "./pages/ContactPage";
 import LandingPage from "./pages/landing/LandingPage";
 import FAQPage from "./pages/FAQPage";
 import AboutPage from "./pages/AboutPage";
+import { SettingsPage } from "./pages/SettingsPage";
 
 
 function App() {
@@ -161,6 +162,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <DonorDonationsPage />
+                </PrivateRoute>
+              }
+            />
+           <Route
+              path="/dashboard/settings"
+              element={
+                <PrivateRoute>
+                  <SettingsPage />
                 </PrivateRoute>
               }
             />

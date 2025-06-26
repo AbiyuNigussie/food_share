@@ -61,10 +61,7 @@ const navItems: NavItem[] = [
     icon: <TruckIcon className="w-5 h-5" />,
     href: "deliveries",
   },
-  { label: "Routes", icon: <MapPinIcon className="w-5 h-5" />, href: "#" },
-  { label: "Drivers", icon: <UserIcon className="w-5 h-5" />, href: "#" },
-  { label: "Reports", icon: <BarChart2Icon className="w-5 h-5" />, href: "#" },
-  { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "#" },
+  { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "/dashboard/settings" },
 ];
 
 export const Logistics: React.FC = () => {
@@ -270,10 +267,10 @@ export const Logistics: React.FC = () => {
       <SideBar
         open={sidebarOpen}
         toggle={() => setSidebarOpen((o) => !o)}
-        title="LogistiX"
+        title="Logistics Portal"
         logoIcon={<TruckIcon className="w-6 h-6 text-purple-600" />}
         navItems={navItems}
-        userInfo={{ name: "Logistix User", email: user?.email || "" }}
+        userInfo={{ name: `${user?.firstName} ${user?.lastName}`, email: user?.email || "" }}
       />
       <main
         className={clsx(

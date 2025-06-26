@@ -7,6 +7,7 @@ import { DonationSection } from "../DonationSection";
 import { DonationStatus } from "../../types";
 import { SideBar } from "../SideBar";
 import clsx from "clsx";
+import { authService } from "../../services/authService";
 import {
   HomeIcon,
   PackageIcon,
@@ -32,15 +33,9 @@ const recipientNavItems = [
     icon: <ClipboardListIcon className="w-5 h-5" />,
     href: "/dashboard/Recipient-Needs",
   },
-  { label: "Profile", icon: <UserIcon className="w-5 h-5" />, href: "#" },
-  { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "#" },
+  { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "/dashboard/settings" },
 ];
 
-const stats = [
-  { label: "Total Food Received (lbs)", value: 486 },
-  { label: "Meals Served", value: 1458 },
-  { label: "Community Members Helped", value: 324 },
-];
 
 const RecipientDashboard: React.FC = () => {
   const [search, setSearch] = useState("");
@@ -48,6 +43,7 @@ const RecipientDashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [availableDonations, setAvailableDonations] = useState([]);
   const [loading, setLoading] = useState(false);
+  
 
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -55,8 +51,12 @@ const RecipientDashboard: React.FC = () => {
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(
     null
   );
-
+type RReceiveStat = { month: string; volume: number };
   const { user } = useAuth();
+    const token = user?.token!;
+    const [stat, setStat] = useState<RReceiveStat[]>([]);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [totalLbs, setTotalLbs] = useState(0);
 
   const fetchAvailableDonations = async () => {
     setLoading(true);
@@ -121,6 +121,21 @@ const RecipientDashboard: React.FC = () => {
     fetchAvailableDonations();
   }, [search, typeFilter, currentPage]);
 
+    useEffect(() => {
+      async function fetchInsights() {
+        const res = await authService.getRecipientInsights(token);
+        setStat(res.data.data.monthly || []);
+        setTotalLbs(res.data.data.totalLbs || 0);
+      }
+      fetchInsights();
+    }, [token, selectedYear]);
+
+  const stats = [
+  { label: "Total Food Received (lbs)", value: { setTotalLbs } },
+  { label: "Meals Served", value: 1458 },
+  { label: "Community Members Helped", value: 324 },
+];
+
   const controls = (
     <>
       <SearchBar
@@ -170,7 +185,7 @@ const RecipientDashboard: React.FC = () => {
         title="Recipient Portal"
         navItems={recipientNavItems}
         userInfo={{
-          name: "Recipient User",
+          name: `${user?.firstName} ${user?.lastName}`,
           email: user?.email || "",
         }}
       />
@@ -183,11 +198,21 @@ const RecipientDashboard: React.FC = () => {
       >
         <Header title="Recipient Dashboard" />
         <div className="p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {stats.map((s, i) => (
-              <StatCard key={i} {...s} />
-            ))}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <div className="relative bg-white rounded-2xl shadow-md hover:shadow-xl transition p-6 overflow-hidden">
+            {/* Decorative purple circle */}
+            <div className="absolute top-0 right-0 w-16 h-16 bg-purple-100 rounded-full transform translate-x-1/3 -translate-y-1/3" />
+
+            <div className="relative flex flex-col">
+              <span className="text-sm font-medium text-purple-600 uppercase tracking-wide">
+                Total Food Received (lbs)
+              </span>
+              <span className="mt-3 text-4xl font-extrabold text-purple-800">
+                {totalLbs}
+              </span>
+            </div>
           </div>
+        </div>
 
           <DonationSection
             title="Available Donations"

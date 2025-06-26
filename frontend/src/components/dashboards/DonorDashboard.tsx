@@ -48,11 +48,10 @@ export const DonorDashboard: React.FC = () => {
       icon: <BarChart2Icon />,
       href: "/dashboard/donor-insights",
     },
-    { label: "Profile", icon: <UserIcon className="w-5 h-5" />, href: "#" },
     {
       label: "Settings",
       icon: <SettingsIcon className="w-5 h-5" />,
-      href: "#",
+      href: "/dashboard/settings",
     },
   ];
 
@@ -114,10 +113,10 @@ export const DonorDashboard: React.FC = () => {
       <SideBar
         open={sidebarOpen}
         toggle={() => setSidebarOpen((prev) => !prev)}
-        title="DonorX"
+        title="Donor Portal"
         logoIcon={<GiftIcon className="w-6 h-6 text-purple-600" />}
         navItems={navItems}
-        userInfo={{ name: "Donor User", email: user?.email || "" }}
+        userInfo={{ name: `${user?.firstName} ${user?.lastName}`, email: user?.email || "" }}
       />
       <main
         className={clsx(
