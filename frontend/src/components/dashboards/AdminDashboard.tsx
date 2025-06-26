@@ -8,6 +8,7 @@ import {
   XIcon,
   EditIcon,
   SaveIcon,
+  Trash2Icon,
 } from "lucide-react";
 import { SideBar } from "../SideBar";
 import { StatCard } from "../StatCard";
@@ -49,11 +50,6 @@ export const AdminDashboard: React.FC = () => {
       label: "Users",
       icon: <UsersIcon className="w-5 h-5" />,
       href: "/admin/users",
-    },
-    {
-      label: "Feedback",
-      icon: <BellIcon className="w-5 h-5" />,
-      href: "/admin/feedback",
     },
     {
       label: "Reports",
@@ -149,6 +145,34 @@ export const AdminDashboard: React.FC = () => {
         {
           autoClose: 5000,
         }
+      );
+    }
+  };
+
+  const deleteUser = async (userId: string) => {
+    try {
+      const toastId = toast.loading("Deleting user...");
+
+      await axios.delete(`/api/admin/users/${userId}`);
+
+      setUsers(users.filter((user) => user.id !== userId));
+
+      toast.update(toastId, {
+        render: "User deleted successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+        closeButton: true,
+      });
+
+      if (selectedUser?.id === userId) {
+        closeModal();
+      }
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to delete user. Please try again.",
+        { autoClose: 5000 }
       );
     }
   };
