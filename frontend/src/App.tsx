@@ -29,6 +29,8 @@ import FAQPage from "./pages/FAQPage";
 import AboutPage from "./pages/AboutPage";
 import { SettingsPage } from "./pages/SettingsPage";
 
+import AdminReports from "./pages/admin/AdminReports";
+import AdminContactPage from "./pages/admin/Contact";
 
 function App() {
   return (
@@ -87,6 +89,14 @@ function App() {
                 <AuthLayout>
                   <AdminRegister />
                 </AuthLayout>
+              }
+            />
+            <Route
+              path="/admin/reports"
+              element={
+                <PrivateRoute>
+                  <AdminReports />
+                </PrivateRoute>
               }
             />
             <Route
@@ -181,33 +191,19 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route path="/feedback" element={<FeedbackPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/faq/:role" element={<FAQPage />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route
-              path="/feedback"
+              path="/admin/contacts"
               element={
-                <FeedbackPage />
+                <PrivateRoute>
+                  <AdminContactPage />
+                </PrivateRoute>
               }
             />
-            <Route
-              path="/contact"
-              element={
-                <ContactPage />
-              }
-            />
-            <Route 
-             path="/"
-             element={
-             <LandingPage />
-             } 
-             />
-             <Route 
-             path="/faq/:role" 
-             element={<FAQPage />
-             } 
-             />
-             <Route
-             path="/about"
-             element={<AboutPage />} 
-             />
             {/* Other pages with Main Layout
           {/* <Route path="/" element={<Home />} /> */}
           </Routes>

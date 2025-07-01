@@ -1,12 +1,13 @@
 import { Request } from "express";
-import { User } from '@prisma/client';
+import { User } from "@prisma/client";
 
 export interface AuthenticatedRequest extends Request {
-  userId?: string; 
+  userId?: string;
   role?: string;
   donorId?: string;
   recipientId?: string;
   logisticsStaffId?: string;
+  adminId?: string;
 }
 
 interface DonationFilters {
@@ -31,5 +32,3 @@ declare global {
     }
   }
 }
-
-
