@@ -28,6 +28,7 @@ import LandingPage from "./pages/landing/LandingPage";
 import FAQPage from "./pages/FAQPage";
 import AboutPage from "./pages/AboutPage";
 import AdminReports from "./pages/admin/AdminReports";
+import AdminContactPage from "./pages/admin/Contact";
 
 function App() {
   return (
@@ -177,6 +178,14 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/faq/:role" element={<FAQPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route
+              path="/admin/contacts"
+              element={
+                <PrivateRoute>
+                  <AdminContactPage />
+                </PrivateRoute>
+              }
+            />
             {/* Other pages with Main Layout
           {/* <Route path="/" element={<Home />} /> */}
           </Routes>
