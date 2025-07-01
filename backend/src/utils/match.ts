@@ -42,7 +42,7 @@ export function scoreAndSort(
 
   return scored
     .sort((a, b) => b.score - a.score)
-    .slice(0, 5)
+    .slice(0, 2)
     .map((s) => s.donation);
 }
 
@@ -80,6 +80,6 @@ export function scoreAndSortNeeds(
 
   return scored
     .sort((a, b) => b.score - a.score)
-    .slice(0, 5)
+    .slice(0, 2)
     .map((s) => s.need);
 }

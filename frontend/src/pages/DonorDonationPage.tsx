@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { authService } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 import {
   GiftIcon,
   TruckIcon,
@@ -17,13 +18,14 @@ const donorNavItems = [
   { label: "Dashboard", icon: <HomeIcon />, href: "/dashboard" },
   { label: "My Donations", icon: <GiftIcon />, href: "/dashboard/Donor-Donations" },
   { label: "Insights", icon: <BarChart2Icon />, href: "/dashboard/donor-insights" },
-  { label: "Settings", icon: <SettingsIcon />, href: "#" },
+  { label: "Settings", icon: <SettingsIcon />, href: "/dashboard/settings" },
 ];
 
 export const DonorDonationsPage: React.FC = () => {
   const { user } = useAuth();
   const token = user?.token || "";
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const navigate = useNavigate();
 
   // === Matched ===
   const [matched, setMatched] = useState<any[]>([]);
@@ -82,6 +84,21 @@ export const DonorDonationsPage: React.FC = () => {
                 </span>
               </div>
               <div className="space-y-1 mb-4">{content(it)}</div>
+                            {/* View Details button */}
+              {"delivery" in it && (it as any).delivery?.id && (
+                <button
+                  onClick={() =>
+                    navigate(
+                      `/dashboard/deliveries/delivery-details/${
+                        (it as any).delivery.id
+                      }`
+                    )
+                  }
+                  className="mt-auto w-full py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
+                >
+                  View Details
+                </button>
+              )}
               <div className="mt-auto text-xs text-gray-400 text-right">
                 {activeTab === "matched" ? (
                   <>Matched on{" "}
@@ -175,6 +192,31 @@ export const DonorDonationsPage: React.FC = () => {
                         }`
                       : "TBD"}
                   </p>
+                {(d as any).delivery && (
+                    <div className="mt-3 space-y-2">
+                      <p className="text-gray-700">
+                        <strong>Delivery Status:</strong>{" "}
+                        <span
+                          className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${
+                            (d as any).delivery.deliveryStatus === "DELIVERED"
+                              ? "bg-green-200 text-green-800"
+                              : (d as any).delivery.deliveryStatus === "IN_TRANSIT"
+                              ? "bg-blue-200 text-blue-800"
+                              : "bg-yellow-200 text-yellow-800"
+                          }`}
+                        >
+                          {(d as any).delivery.deliveryStatus.replace(/_/g, " ")}
+                        </span>
+                      </p>
+                      <p className="text-gray-700">
+                        {d.recipient?.organization && (
+                          <span className="ml-2 text-sm text-gray-500">
+                            ({d.recipient.organization})
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  )}
                 </>
               ))
             ) : (
@@ -216,9 +258,11 @@ export const DonorDonationsPage: React.FC = () => {
                         </span>
                       </p>
                       <p className="text-gray-700">
-                        <strong>Pickup:</strong>{" "}
-                        {(d as any).delivery.pickupLocation?.label ||
-                          "Unknown"}
+                        {d.recipient?.organization && (
+                          <span className="ml-2 text-sm text-gray-500">
+                            ({d.recipient.organization})
+                          </span>
+                        )}
                       </p>
                     </div>
                   )}

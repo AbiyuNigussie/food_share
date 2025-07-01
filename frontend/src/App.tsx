@@ -113,6 +113,14 @@ function App() {
                 </PrivateRoute>
               }
             />
+              <Route
+    path="/dashboard/my-donations/:id"
+    element={
+      <PrivateRoute>
+        <DeliveryDetails />
+      </PrivateRoute>
+    }
+  />
 
             <Route
               path="/dashboard/deliveries"

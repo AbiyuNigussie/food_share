@@ -60,7 +60,6 @@ export const SettingsPage: React.FC = () => {
           { label: "Dashboard",    icon: <HomeIcon className="w-5 h-5" />,           href: "/dashboard" },
           { label: "My Donations", icon: <GiftIcon className="w-5 h-5" />,          href: "/dashboard/Donor-Donations" },
           { label: "Insights",     icon: <BarChart2Icon className="w-5 h-5" />,     href: "/dashboard/donor-insights" },
-          { label: "Profile",      icon: <UserIcon className="w-5 h-5" />,           href: "/dashboard/profile" },
           { label: "Settings",     icon: <SettingsIcon className="w-5 h-5" />,       href: "/dashboard/settings" },
         ];
         break;
@@ -71,7 +70,6 @@ export const SettingsPage: React.FC = () => {
           { label: "Donations", icon: <PackageIcon className="w-5 h-5" />,           href: "/dashboard/my-donations" },
           { label: "Insights",  icon: <BarChart2Icon className="w-5 h-5" />,         href: "/dashboard/recipient-insights" },
           { label: "My Needs",  icon: <ClipboardListIcon className="w-5 h-5" />,     href: "/dashboard/Recipient-Needs" },
-          { label: "Profile",   icon: <UserIcon className="w-5 h-5" />,               href: "/dashboard/profile" },
           { label: "Settings",  icon: <SettingsIcon className="w-5 h-5" />,           href: "/dashboard/settings" },
         ];
         break;
