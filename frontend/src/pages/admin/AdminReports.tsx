@@ -7,6 +7,9 @@ import {
   ClipboardListIcon,
   HomeIcon,
   DownloadIcon,
+  UsersIcon,
+  MailIcon,
+  SettingsIcon,
 } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -401,12 +404,26 @@ export default function AdminReports() {
         open={sidebarOpen}
         toggle={() => setSidebarOpen(!sidebarOpen)}
         navItems={[
-          { label: "Dashboard", icon: <HomeIcon />, href: "/dashboard" },
-          {
-            label: "Reports",
-            icon: <ClipboardListIcon />,
-            href: "/admin/reports",
-          },
+{
+      label: "Dashboard",
+      icon: <HomeIcon className="w-5 h-5" />,
+      href: "/dashboard",
+    },
+    {
+      label: "Reports",
+      icon: <ClipboardListIcon className="w-5 h-5" />,
+      href: "/admin/reports",
+    },
+    {
+      label: "Contacts",
+      icon: <MailIcon className="w-5 h-5" />,
+      href: "/admin/contacts",
+    },
+    {
+      label: "Settings",
+      icon: <SettingsIcon className="w-5 h-5" />,
+      href: "/admin/settings",
+    },
         ]}
         userInfo={{
           name: "Admin",

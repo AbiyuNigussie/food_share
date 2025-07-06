@@ -49,6 +49,7 @@ export const Deliveries: React.FC = () => {
       href: "/dashboard",
     },
     { label: "Deliveries", icon: <TruckIcon className="w-5 h-5" />, href: "#" },
+    { label: "My Deliveries", icon: <BarChart2Icon />, href: "/dashboard/my-deliveries" },
     {
       label: "Settings",
       icon: <SettingsIcon className="w-5 h-5" />,

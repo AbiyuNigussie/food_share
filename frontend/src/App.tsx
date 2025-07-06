@@ -28,7 +28,7 @@ import LandingPage from "./pages/landing/LandingPage";
 import FAQPage from "./pages/FAQPage";
 import AboutPage from "./pages/AboutPage";
 import { SettingsPage } from "./pages/SettingsPage";
-
+import {LogisticsHistoryPage} from "./pages/LogisticsHistoryPage";
 import AdminReports from "./pages/admin/AdminReports";
 import AdminContactPage from "./pages/admin/Contact";
 
@@ -204,6 +204,23 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route
+              path="/admin/settings"
+              element={
+                <PrivateRoute>
+                  <SettingsPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/dashboard/my-deliveries"
+              element={
+                <PrivateRoute>
+                  <LogisticsHistoryPage />
+                </PrivateRoute>
+              }
+            />
+
             {/* Other pages with Main Layout
           {/* <Route path="/" element={<Home />} /> */}
           </Routes>

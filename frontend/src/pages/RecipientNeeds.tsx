@@ -275,7 +275,7 @@ export const RecipientNeeds: React.FC = () => {
                     className="inline-flex items-center bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition"
                   >
                     <TruckIcon className="w-5 h-5 mr-2" />
-                    Add Need
+                    {loading ? "Adding..." :"Add Need"}
                   </button>
                 </div>
               </form>

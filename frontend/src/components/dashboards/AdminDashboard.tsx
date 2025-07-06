@@ -43,12 +43,7 @@ export const AdminDashboard: React.FC = () => {
     {
       label: "Dashboard",
       icon: <HomeIcon className="w-5 h-5" />,
-      href: "/admin/dashboard",
-    },
-    {
-      label: "Users",
-      icon: <UsersIcon className="w-5 h-5" />,
-      href: "/admin/users",
+      href: "/dashboard",
     },
     {
       label: "Reports",
@@ -63,7 +58,7 @@ export const AdminDashboard: React.FC = () => {
     {
       label: "Settings",
       icon: <SettingsIcon className="w-5 h-5" />,
-      href: "/admin/config",
+      href: "/admin/settings",
     },
   ];
 

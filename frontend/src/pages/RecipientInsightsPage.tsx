@@ -15,7 +15,7 @@ import {
   Filler, // <-- ADD THIS
 } from "chart.js";
 import { Bar, Line, Doughnut } from "react-chartjs-2";
-import { MapPinIcon, HomeIcon, BarChart2Icon, GiftIcon, ListIcon, UserIcon, SettingsIcon, PackageIcon } from 'lucide-react';
+import { MapPinIcon, HomeIcon, BarChart2Icon, GiftIcon, ListIcon, UserIcon, SettingsIcon, PackageIcon, ClipboardListIcon } from 'lucide-react';
 import { SideBar, NavItem } from "../components/SideBar";
 import { Header } from "../components/Header";
 
@@ -49,7 +49,7 @@ export const RecipientInsightsPage: React.FC = () => {
     { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "/dashboard" },
     { label: "Donations", icon: <PackageIcon className="w-5 h-5" />, href: "/dashboard/my-donations" },   
     { label: "Insights", icon: <BarChart2Icon />, href: "/dashboard/recipient-insights" },
-    { label: "My Needs", icon: <ListIcon className="w-5 h-5" />, href: "/dashboard/recipient-needs" },
+    { label: "My Needs", icon: <ClipboardListIcon className="w-5 h-5" />, href: "/dashboard/recipient-needs" },
     { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "/dashboard/settings" },
   ];
 

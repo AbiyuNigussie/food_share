@@ -15,10 +15,10 @@ import PaginationControls from "../components/PaginationControl";
 import { SideBar } from "../components/SideBar";
 
 const donorNavItems = [
-  { label: "Dashboard", icon: <HomeIcon />, href: "/dashboard" },
-  { label: "My Donations", icon: <GiftIcon />, href: "/dashboard/Donor-Donations" },
-  { label: "Insights", icon: <BarChart2Icon />, href: "/dashboard/donor-insights" },
-  { label: "Settings", icon: <SettingsIcon />, href: "/dashboard/settings" },
+  { label: "Dashboard",    icon: <HomeIcon className="w-5 h-5" />,           href: "/dashboard" },
+  { label: "My Donations", icon: <GiftIcon className="w-5 h-5" />,          href: "/dashboard/Donor-Donations" },
+  { label: "Insights",     icon: <BarChart2Icon className="w-5 h-5" />,     href: "/dashboard/donor-insights" },
+  { label: "Settings",     icon: <SettingsIcon className="w-5 h-5" />,       href: "/dashboard/settings" },
 ];
 
 export const DonorDonationsPage: React.FC = () => {

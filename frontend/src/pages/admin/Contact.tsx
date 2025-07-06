@@ -39,11 +39,6 @@ const navItems = [
     href: "/dashboard",
   },
   {
-    label: "Users",
-    icon: <UsersIcon className="w-5 h-5" />,
-    href: "/admin/users",
-  },
-  {
     label: "Reports",
     icon: <ClipboardListIcon className="w-5 h-5" />,
     href: "/admin/reports",
@@ -56,7 +51,7 @@ const navItems = [
   {
     label: "Settings",
     icon: <SettingsIcon className="w-5 h-5" />,
-    href: "/admin/config",
+    href: "/admin/settings",
   },
 ];
 

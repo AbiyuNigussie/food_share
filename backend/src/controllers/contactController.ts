@@ -11,7 +11,6 @@ import { AuthenticatedRequest } from "../types";
 const submitContactMessage = async (req: Request, res: Response) => {
   try {
     const { name, email, phoneNumber, subject, message } = req.body;
-    console.log(req.body);
     const newMessage = await submitMessage(
       name,
       email,
@@ -28,7 +27,6 @@ const submitContactMessage = async (req: Request, res: Response) => {
 const respondToMessage = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { contactMessageId, response } = req.body;
-    console.log("from controler", contactMessageId);
     const adminId = req.user?.id;
     if (!adminId) {
       res.status(400).json({ error: "Admin ID is required." });

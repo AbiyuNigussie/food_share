@@ -255,4 +255,11 @@ updateProfile: (
     axios.get(`${BASE_URL}/recipient/insights`, {
       headers: { Authorization: `Bearer ${token}` },
     }),
+
+    getMyDeliveries: (token: string, page = 1, rowsPerPage = 8) =>
+     axios.get(`${BASE_URL}/my/deliveries`, {
+    params: { page, rowsPerPage },
+    headers: { Authorization: `Bearer ${token}` },
+  }),
+
 };

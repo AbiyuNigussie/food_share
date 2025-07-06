@@ -18,6 +18,7 @@ import {
   PackageIcon,
   TruckIcon,
   LockIcon,
+  MailIcon,
 } from "lucide-react";
 
 // Tabs definition
@@ -78,15 +79,33 @@ export const SettingsPage: React.FC = () => {
         navItems = [
           { label: "Dashboard",  icon: <HomeIcon className="w-5 h-5" />,             href: "/dashboard" },
           { label: "Deliveries", icon: <TruckIcon className="w-5 h-5" />,            href: "/dashboard/deliveries" },
+          { label: "My Deliveries", icon: <BarChart2Icon />,                         href: "/dashboard/my-deliveries" },
           { label: "Settings",   icon: <SettingsIcon className="w-5 h-5" />,         href: "/dashboard/settings" },
         ];
         break;
       case "ADMIN":
         title = "Admin Portal";
         navItems = [
-          { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />,              href: "/dashboard" },
-          { label: "Users",     icon: <UserIcon className="w-5 h-5" />,              href: "/dashboard/users" },
-          { label: "Settings",  icon: <SettingsIcon className="w-5 h-5" />,          href: "/dashboard/settings" },
+          {
+            label: "Dashboard",
+            icon: <HomeIcon className="w-5 h-5" />,
+            href: "/dashboard",
+          },
+          {
+            label: "Reports",
+            icon: <ClipboardListIcon className="w-5 h-5" />,
+            href: "/admin/reports",
+          },
+          {
+            label: "Contacts",
+            icon: <MailIcon className="w-5 h-5" />,
+            href: "/admin/contacts",
+          },
+          {
+            label: "Settings",
+            icon: <SettingsIcon className="w-5 h-5" />,
+            href: "/admin/settings",
+          },
         ];
         break;
       default:
