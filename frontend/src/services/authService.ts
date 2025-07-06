@@ -60,12 +60,10 @@ export const authService = {
     });
   },
 
-  getDonations: (token: string, page = 1, rowsPerPage = 5) => {
-    return axios.get(
-      `${BASE_URL}/donations?page=${page}&rowsPerPage=${rowsPerPage}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-  },
+getDonorDonations: (token: string, page: number, rowsPerPage: number) =>
+  axios.get(`${BASE_URL}/donations/my?page=${page}&rowsPerPage=${rowsPerPage}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  }),
 
   updateDonationStatus: async (
     donationId: string,
@@ -220,6 +218,33 @@ export const authService = {
       `${BASE_URL}/donor/donations/claimed?page=${page}&rowsPerPage=${rowsPerPage}`,
       { headers: { Authorization: `Bearer ${token}` } }
     ),
+    
+updateProfile: (
+    token: string,
+    payload: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phoneNumber: string;
+    }
+  ) => {
+    return axios.put(
+      `${BASE_URL}/user/profile`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  },
+  changePassword: (token: string, currentPassword: string, newPassword: string) =>
+    axios.post(
+      `${BASE_URL}/user/change-password`,
+      { currentPassword, newPassword },
+      { headers: { Authorization: `Bearer ${token}` } }
+    ),
+    
 
     getDonorInsights: (token: string) =>
     axios.get(`${BASE_URL}/donor/insights`, {
@@ -230,4 +255,11 @@ export const authService = {
     axios.get(`${BASE_URL}/recipient/insights`, {
       headers: { Authorization: `Bearer ${token}` },
     }),
+
+    getMyDeliveries: (token: string, page = 1, rowsPerPage = 8) =>
+     axios.get(`${BASE_URL}/my/deliveries`, {
+    params: { page, rowsPerPage },
+    headers: { Authorization: `Bearer ${token}` },
+  }),
+
 };

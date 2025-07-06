@@ -11,10 +11,13 @@ import recipientDonationRoutes from "./routes/recipientDonationRoute";
 import paymentRoute from "./routes/paymentRoute";
 import { GeoMapRoutes } from "./routes/geomapRoute";
 import Irouter from "./routes/insightRoute";
-import adminRoute from './routes/admin/adminRoute';
-import userRoute from './routes/admin/userRoute';
+import adminRoute from "./routes/admin/adminRoute";
+import userRoute from "./routes/admin/userRoute";
 import donorDonationRoutes from "./routes/donorDonationRoute";
+import SRoute from "./routes/settingRoute";
+import MDrouter from "./routes/myDeliveriesRoute";
 
+import contactRoutes from "./routes/contactRoute";
 dotenv.config();
 
 const app = express();
@@ -34,6 +37,10 @@ app.use("/api", recipientDonationRoutes);
 app.use("/api/geocode", GeoMapRoutes);
 app.use("/api/payment", paymentRoute);
 app.use("/api/donor", donorDonationRoutes);
+app.use("/api", SRoute);
+app.use("/api/admin", adminRoute);
+app.use("/api/my", MDrouter);
+app.use("/api/contact", contactRoutes);
 
 
 app.get("/", (req, res) => {
@@ -45,5 +52,4 @@ app.listen(PORT, () => {
 });
 
 app.use("/api/admin", adminRoute);
-app.use('/api/admin', userRoute);
-
+app.use("/api/admin", userRoute);

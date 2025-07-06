@@ -104,7 +104,7 @@ export const DeliveryDetails: React.FC = () => {
     statusIcons.default;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-200 via-white to-indigo-100 rounded-3xl shadow-xl border border-purple-200 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4">
@@ -128,21 +128,8 @@ export const DeliveryDetails: React.FC = () => {
 
           <div className="flex flex-wrap gap-3">
             <button
-              disabled={!delivery.logisticsStaff?.user?.phoneNumber}
-              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                delivery.logisticsStaff?.user?.phoneNumber
-                  ? "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
-                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
-              }`}
-            >
-              <Phone className="w-4 h-4" />
-              {delivery.logisticsStaff?.user?.phoneNumber
-                ? "Contact Driver"
-                : "No Driver"}
-            </button>
-            <button
               onClick={() => navigate(`/tracking/${delivery.id}`)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
             >
               <Navigation className="w-4 h-4" />
               View Route
@@ -385,7 +372,7 @@ export const DeliveryDetails: React.FC = () => {
                       <GoogleMap
                         mapContainerStyle={{ width: "100%", height: "100%" }}
                         center={pickupCoords}
-                        zoom={12}
+                        zoom={10}
                       >
                         <Marker position={pickupCoords} label="P" />
                         <Marker position={dropoffCoords} label="D" />

@@ -27,7 +27,10 @@ import ContactPage from "./pages/ContactPage";
 import LandingPage from "./pages/landing/LandingPage";
 import FAQPage from "./pages/FAQPage";
 import AboutPage from "./pages/AboutPage";
-
+import { SettingsPage } from "./pages/SettingsPage";
+import {LogisticsHistoryPage} from "./pages/LogisticsHistoryPage";
+import AdminReports from "./pages/admin/AdminReports";
+import AdminContactPage from "./pages/admin/Contact";
 
 function App() {
   return (
@@ -89,6 +92,14 @@ function App() {
               }
             />
             <Route
+              path="/admin/reports"
+              element={
+                <PrivateRoute>
+                  <AdminReports />
+                </PrivateRoute>
+              }
+            />
+            <Route
               path="/reset-password/:token"
               element={
                 <AuthLayout>
@@ -112,6 +123,14 @@ function App() {
                 </PrivateRoute>
               }
             />
+              <Route
+    path="/dashboard/my-donations/:id"
+    element={
+      <PrivateRoute>
+        <DeliveryDetails />
+      </PrivateRoute>
+    }
+  />
 
             <Route
               path="/dashboard/deliveries"
@@ -164,33 +183,44 @@ function App() {
                 </PrivateRoute>
               }
             />
-            <Route
-              path="/feedback"
+           <Route
+              path="/dashboard/settings"
               element={
-                <FeedbackPage />
+                <PrivateRoute>
+                  <SettingsPage />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/feedback" element={<FeedbackPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/faq/:role" element={<FAQPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route
+              path="/admin/contacts"
+              element={
+                <PrivateRoute>
+                  <AdminContactPage />
+                </PrivateRoute>
               }
             />
             <Route
-              path="/contact"
+              path="/admin/settings"
               element={
-                <ContactPage />
+                <PrivateRoute>
+                  <SettingsPage />
+                </PrivateRoute>
               }
             />
-            <Route 
-             path="/"
-             element={
-             <LandingPage />
-             } 
-             />
-             <Route 
-             path="/faq/:role" 
-             element={<FAQPage />
-             } 
-             />
-             <Route
-             path="/about"
-             element={<AboutPage />} 
-             />
+            <Route
+              path="/dashboard/my-deliveries"
+              element={
+                <PrivateRoute>
+                  <LogisticsHistoryPage />
+                </PrivateRoute>
+              }
+            />
+
             {/* Other pages with Main Layout
           {/* <Route path="/" element={<Home />} /> */}
           </Routes>

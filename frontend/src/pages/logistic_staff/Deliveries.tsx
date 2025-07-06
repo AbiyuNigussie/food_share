@@ -49,17 +49,11 @@ export const Deliveries: React.FC = () => {
       href: "/dashboard",
     },
     { label: "Deliveries", icon: <TruckIcon className="w-5 h-5" />, href: "#" },
-    { label: "Routes", icon: <MapPinIcon className="w-5 h-5" />, href: "#" },
-    { label: "Drivers", icon: <UserIcon className="w-5 h-5" />, href: "#" },
-    {
-      label: "Reports",
-      icon: <BarChart2Icon className="w-5 h-5" />,
-      href: "#",
-    },
+    { label: "My Deliveries", icon: <BarChart2Icon />, href: "/dashboard/my-deliveries" },
     {
       label: "Settings",
       icon: <SettingsIcon className="w-5 h-5" />,
-      href: "#",
+      href: "/dashboard/settings",
     },
   ];
 
@@ -104,10 +98,10 @@ export const Deliveries: React.FC = () => {
       <SideBar
         open={sidebarOpen}
         toggle={() => setSidebarOpen((prev) => !prev)}
-        title="LogistiX"
+        title="Logistics Portal"
         logoIcon={<GiftIcon className="w-6 h-6 text-purple-600" />}
         navItems={navItems}
-        userInfo={{ name: "Logistics User", email: user?.email || "" }}
+        userInfo={{ name: `${user?.firstName} ${user?.lastName}`, email: user?.email || "" }}
       />
       <main
         className={clsx(
