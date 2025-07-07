@@ -19,21 +19,25 @@ export const authenticateAdmin = async (
 
   const token = authHeader.split(" ")[1];
 
-  try {
-    const decoded: any = jwt.verify(token, JWT_SECRET);
+  jwt.verify(token, JWT_SECRET, async (err: any, decoded: any) => {
+    if (err) {
+      res.status(401).json({ message: "Invalid or expired token" });
+      return;
+    }
+    // Support both { id } and { userId } in token payload
+    const userId = decoded.userId || decoded.id;
+    if (!userId) {
+      res.status(401).json({ message: "Invalid token payload" });
+      return;
+    }
     const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
+      where: { id: userId },
     });
-
     if (!user || user.role !== "ADMIN") {
       res.status(403).json({ message: "Forbidden: Admins only" });
       return;
     }
-
     req.user = user;
     next();
-  } catch (err) {
-    console.log("Authentication error:", err);
-    res.status(401).json({ message: "Invalid or expired token" });
-  }
+  });
 };

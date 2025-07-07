@@ -3,6 +3,20 @@ const authService = require("../../services/user/authService");
 import { CustomError } from "../../utils/CustomError";
 import { isValidEmail } from "../../utils/validate";
 import { Role } from "@prisma/client";
+
+// Extend Express Request interface to include 'files' (fix: use 'export' for module augmentation)
+export {};
+declare global {
+  namespace Express {
+    interface Request {
+      files?:
+        | { [fieldname: string]: Express.Multer.File[] }
+        | Express.Multer.File[]
+        | undefined;
+    }
+  }
+}
+
 const register = async (req: Request, res: Response) => {
   try {
     const {
@@ -12,8 +26,49 @@ const register = async (req: Request, res: Response) => {
       phoneNumber,
       password,
       role,
-      organization, // from frontend
+      organization,
+      legalName,
+      registrationNumber,
+      country,
+      website,
+      contactPersonTitle,
+      organizationType,
     } = req.body;
+
+    // File uploads (if any) - now handled by Cloudinary, not Multer
+    const files = req.files as Record<string, any> | undefined;
+    let businessRegistrationDocUrl = null;
+    let taxIdDocUrl = null;
+    let proofOfAddressDocUrl = null;
+
+    // Cloudinary upload logic (buffer)
+    const {
+      uploadToCloudinaryBuffer,
+    } = require("../../utils/uploadToCloudinary");
+    if (files?.businessRegistrationDoc?.[0]?.buffer) {
+      const uploadRes = await uploadToCloudinaryBuffer(
+        files.businessRegistrationDoc[0].buffer,
+        "foodshare/recipients",
+        files.businessRegistrationDoc[0].originalname
+      );
+      businessRegistrationDocUrl = uploadRes.url;
+    }
+    if (files?.taxIdDoc?.[0]?.buffer) {
+      const uploadRes = await uploadToCloudinaryBuffer(
+        files.taxIdDoc[0].buffer,
+        "foodshare/recipients",
+        files.taxIdDoc[0].originalname
+      );
+      taxIdDocUrl = uploadRes.url;
+    }
+    if (files?.proofOfAddressDoc?.[0]?.buffer) {
+      const uploadRes = await uploadToCloudinaryBuffer(
+        files.proofOfAddressDoc[0].buffer,
+        "foodshare/recipients",
+        files.proofOfAddressDoc[0].originalname
+      );
+      proofOfAddressDocUrl = uploadRes.url;
+    }
 
     // Validate required fields
     if (
@@ -48,7 +103,7 @@ const register = async (req: Request, res: Response) => {
       throw new CustomError("The email is not valid", 400);
     }
 
-    // Call authService and include organization
+    // Call authService and include all org fields and docs (Cloudinary URLs)
     const result = await authService.register(
       firstName,
       lastName,
@@ -56,7 +111,16 @@ const register = async (req: Request, res: Response) => {
       phoneNumber,
       password,
       role,
-      organization // optional for others, required for recipients
+      organization,
+      legalName,
+      registrationNumber,
+      country,
+      website,
+      contactPersonTitle,
+      organizationType,
+      businessRegistrationDocUrl,
+      taxIdDocUrl,
+      proofOfAddressDocUrl
     );
 
     res.status(201).json({

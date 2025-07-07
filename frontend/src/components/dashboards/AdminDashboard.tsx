@@ -8,6 +8,7 @@ import {
   EditIcon,
   SaveIcon,
   MailIcon,
+  BellIcon,
 } from "lucide-react";
 import { SideBar } from "../SideBar";
 import { StatCard } from "../StatCard";
@@ -43,7 +44,22 @@ export const AdminDashboard: React.FC = () => {
     {
       label: "Dashboard",
       icon: <HomeIcon className="w-5 h-5" />,
-      href: "/dashboard",
+      href: "/admin/dashboard",
+    },
+    {
+      label: "Users",
+      icon: <UsersIcon className="w-5 h-5" />,
+      href: "/admin/users",
+    },
+    {
+      label: "Recipient Approvals",
+      icon: <ClipboardListIcon className="w-5 h-5" />,
+      href: "/admin/recipients/approvals",
+    },
+    {
+      label: "Feedback",
+      icon: <BellIcon className="w-5 h-5" />,
+      href: "/admin/feedback",
     },
     {
       label: "Reports",

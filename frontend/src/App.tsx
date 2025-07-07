@@ -27,8 +27,9 @@ import ContactPage from "./pages/ContactPage";
 import LandingPage from "./pages/landing/LandingPage";
 import FAQPage from "./pages/FAQPage";
 import AboutPage from "./pages/AboutPage";
+import RecipientApprovals from "./pages/admin/RecipientApprovals";
 import { SettingsPage } from "./pages/SettingsPage";
-import {LogisticsHistoryPage} from "./pages/LogisticsHistoryPage";
+import { LogisticsHistoryPage } from "./pages/LogisticsHistoryPage";
 import AdminReports from "./pages/admin/AdminReports";
 import AdminContactPage from "./pages/admin/Contact";
 
@@ -123,14 +124,14 @@ function App() {
                 </PrivateRoute>
               }
             />
-              <Route
-    path="/dashboard/my-donations/:id"
-    element={
-      <PrivateRoute>
-        <DeliveryDetails />
-      </PrivateRoute>
-    }
-  />
+            <Route
+              path="/dashboard/my-donations/:id"
+              element={
+                <PrivateRoute>
+                  <DeliveryDetails />
+                </PrivateRoute>
+              }
+            />
 
             <Route
               path="/dashboard/deliveries"
@@ -183,7 +184,20 @@ function App() {
                 </PrivateRoute>
               }
             />
-           <Route
+            <Route path="/feedback" element={<FeedbackPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/faq/:role" element={<FAQPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route
+              path="/admin/recipients/approvals"
+              element={
+                <PrivateRoute>
+                  <RecipientApprovals />
+                </PrivateRoute>
+              }
+            />
+            <Route
               path="/dashboard/settings"
               element={
                 <PrivateRoute>

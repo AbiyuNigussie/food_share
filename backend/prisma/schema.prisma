@@ -34,14 +34,24 @@ model Donor {
 }
 
 model Recipient {
-  userId             String             @id
-  address            String
-  subscriptionStatus SubscriptionStatus
-  subscriptionDate   DateTime
-  organization       String?
-  donations          Donation[]         @relation("RecipientDonations")
-  user               User               @relation(fields: [userId], references: [id])
-  needs              RecipientNeed[]    @relation("RecipientNeeds")
+  userId                  String             @id
+  address                 String
+  subscriptionStatus      SubscriptionStatus
+  subscriptionDate        DateTime
+  organization            String?
+  legalName               String?
+  registrationNumber      String?
+  country                 String?
+  website                 String?
+  contactPersonTitle      String?
+  organizationType        String?
+  businessRegistrationDoc String?
+  taxIdDoc                String?
+  proofOfAddressDoc       String?
+  isApproved              Boolean            @default(false)
+  donations               Donation[]         @relation("RecipientDonations")
+  user                    User               @relation(fields: [userId], references: [id])
+  needs                   RecipientNeed[]    @relation("RecipientNeeds")
 }
 
 model Donation {

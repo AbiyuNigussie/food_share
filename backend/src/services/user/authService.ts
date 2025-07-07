@@ -15,7 +15,16 @@ const register = async (
   phoneNumber: string,
   password: string,
   role: Role,
-  organization?: string // optional, only required for RECIPIENT
+  organization?: string,
+  legalName?: string,
+  registrationNumber?: string,
+  country?: string,
+  website?: string,
+  contactPersonTitle?: string,
+  organizationType?: string,
+  businessRegistrationDoc?: string,
+  taxIdDoc?: string,
+  proofOfAddressDoc?: string
 ) => {
   try {
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -55,7 +64,17 @@ const register = async (
           data: {
             userId: user.id,
             address: "",
-            organization: organization || "", // Ensure it's set
+            organization: organization || "",
+            legalName: legalName || "",
+            registrationNumber: registrationNumber || "",
+            country: country || "",
+            website: website || "",
+            contactPersonTitle: contactPersonTitle || "",
+            organizationType: organizationType || "",
+            businessRegistrationDoc: businessRegistrationDoc || "",
+            taxIdDoc: taxIdDoc || "",
+            proofOfAddressDoc: proofOfAddressDoc || "",
+            // These are now Cloudinary URLs
             subscriptionStatus: "pending",
             subscriptionDate: new Date(),
           },
@@ -142,6 +161,16 @@ const login = async (email: string, password: string, role: string) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       throw new CustomError("Incorrect email or password!", 400);
+    }
+
+    // Block recipient login if not approved
+    if (user.role === "RECIPIENT") {
+      if (!user.recipient || user.recipient.isApproved !== true) {
+        throw new CustomError(
+          "Your registration is pending admin approval.",
+          403
+        );
+      }
     }
 
     const jwt_token = jwt.sign(
