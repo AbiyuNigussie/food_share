@@ -5,11 +5,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "your_fallback_secret";
 
-<<<<<<< HEAD
-export const authenticateAdmin = (
-=======
 export const authenticateAdmin = async (
->>>>>>> 0ac8c76fecf75f52e95ed134e2f18cbb9c46bff2
   req: Request,
   res: Response,
   next: NextFunction
@@ -43,12 +39,5 @@ export const authenticateAdmin = async (
     }
     req.user = user;
     next();
-<<<<<<< HEAD
   });
-=======
-  } catch (err) {
-    console.log("Authentication error:", err);
-    res.status(401).json({ message: "Invalid or expired token" });
-  }
->>>>>>> 0ac8c76fecf75f52e95ed134e2f18cbb9c46bff2
 };
