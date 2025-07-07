@@ -29,27 +29,56 @@ export const AdminDashboard: React.FC = () => {
   }, []);
 
   const navItems = [
-    { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "/admin/dashboard" },
-    { label: "Users",     icon: <UsersIcon className="w-5 h-5" />, href: "/admin/users" },
-    { label: "Feedback",  icon: <BellIcon className="w-5 h-5" />, href: "/admin/feedback" },
-    { label: "Reports",   icon: <ClipboardListIcon className="w-5 h-5" />, href: "/admin/reports" },
-    { label: "Settings",  icon: <SettingsIcon className="w-5 h-5" />, href: "/admin/config" },
+    {
+      label: "Dashboard",
+      icon: <HomeIcon className="w-5 h-5" />,
+      href: "/admin/dashboard",
+    },
+    {
+      label: "Users",
+      icon: <UsersIcon className="w-5 h-5" />,
+      href: "/admin/users",
+    },
+    {
+      label: "Recipient Approvals",
+      icon: <ClipboardListIcon className="w-5 h-5" />,
+      href: "/admin/recipients/approvals",
+    },
+    {
+      label: "Feedback",
+      icon: <BellIcon className="w-5 h-5" />,
+      href: "/admin/feedback",
+    },
+    {
+      label: "Reports",
+      icon: <ClipboardListIcon className="w-5 h-5" />,
+      href: "/admin/reports",
+    },
+    {
+      label: "Settings",
+      icon: <SettingsIcon className="w-5 h-5" />,
+      href: "/admin/config",
+    },
   ];
 
   const stats = [
-    { label: "Total Users",     value: 324 },
-    { label: "Active Users",    value: 256 },
+    { label: "Total Users", value: 324 },
+    { label: "Active Users", value: 256 },
     { label: "Total Donations", value: 1458 },
-    { label: "Success Rate",    value: "92%" },
+    { label: "Success Rate", value: "92%" },
   ];
 
   const getStatusBadge = (status: string) => {
     const base = "px-3 py-1 rounded-full text-xs font-semibold";
     const normalized = status.toLowerCase();
     if (normalized === "active")
-      return <span className={`${base} bg-purple-100 text-purple-700`}>Active</span>;
+      return (
+        <span className={`${base} bg-purple-100 text-purple-700`}>Active</span>
+      );
     if (normalized === "suspended")
-      return <span className={`${base} bg-red-100 text-red-700`}>Suspended</span>;
+      return (
+        <span className={`${base} bg-red-100 text-red-700`}>Suspended</span>
+      );
     return <span className={`${base} bg-gray-200 text-gray-600`}>Pending</span>;
   };
 
@@ -57,13 +86,17 @@ export const AdminDashboard: React.FC = () => {
     <div className="min-h-screen">
       <SideBar
         open={sidebarOpen}
-        toggle={() => setSidebarOpen(o => !o)}
+        toggle={() => setSidebarOpen((o) => !o)}
         title="Admin Panel"
         navItems={navItems}
         userInfo={{ name: "Admin User", email: "admin@logistix.com" }}
       />
 
-      <div className={`flex-1 transition-all duration-200 ${sidebarOpen ? "ml-64" : "ml-16"}`}>
+      <div
+        className={`flex-1 transition-all duration-200 ${
+          sidebarOpen ? "ml-64" : "ml-16"
+        }`}
+      >
         <Header title="Admin Dashboard" />
 
         <main className="p-8 space-y-8">
@@ -83,14 +116,16 @@ export const AdminDashboard: React.FC = () => {
               <table className="min-w-full bg-white rounded-lg shadow-lg">
                 <thead className="bg-white sticky top-0">
                   <tr className="border-b border-gray-200">
-                    {["Name", "Email", "Role", "Status", "Actions"].map((hdr) => (
-                      <th
-                        key={hdr}
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
-                        {hdr}
-                      </th>
-                    ))}
+                    {["Name", "Email", "Role", "Status", "Actions"].map(
+                      (hdr) => (
+                        <th
+                          key={hdr}
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          {hdr}
+                        </th>
+                      )
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -118,11 +153,19 @@ export const AdminDashboard: React.FC = () => {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-gray-800">Recent Feedback</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Recent Feedback
+            </h2>
             {[
-              { from: "jane@foo.com",    message: "Pickup was delayed by 2 hours." },
-              { from: "shelter@bar.org", message: "Donation quality was excellent!" },
-              { from: "bob@foo.com",     message: "App crashed on feedback form." },
+              {
+                from: "jane@foo.com",
+                message: "Pickup was delayed by 2 hours.",
+              },
+              {
+                from: "shelter@bar.org",
+                message: "Donation quality was excellent!",
+              },
+              { from: "bob@foo.com", message: "App crashed on feedback form." },
             ].map((f, i) => (
               <div
                 key={i}

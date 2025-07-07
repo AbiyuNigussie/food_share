@@ -27,7 +27,7 @@ import ContactPage from "./pages/ContactPage";
 import LandingPage from "./pages/landing/LandingPage";
 import FAQPage from "./pages/FAQPage";
 import AboutPage from "./pages/AboutPage";
-
+import RecipientApprovals from "./pages/admin/RecipientApprovals";
 
 function App() {
   return (
@@ -164,33 +164,19 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route path="/feedback" element={<FeedbackPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/faq/:role" element={<FAQPage />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route
-              path="/feedback"
+              path="/admin/recipients/approvals"
               element={
-                <FeedbackPage />
+                <PrivateRoute>
+                  <RecipientApprovals />
+                </PrivateRoute>
               }
             />
-            <Route
-              path="/contact"
-              element={
-                <ContactPage />
-              }
-            />
-            <Route 
-             path="/"
-             element={
-             <LandingPage />
-             } 
-             />
-             <Route 
-             path="/faq/:role" 
-             element={<FAQPage />
-             } 
-             />
-             <Route
-             path="/about"
-             element={<AboutPage />} 
-             />
             {/* Other pages with Main Layout
           {/* <Route path="/" element={<Home />} /> */}
           </Routes>

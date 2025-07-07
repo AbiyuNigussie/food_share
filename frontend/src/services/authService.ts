@@ -4,26 +4,34 @@ const BASE_URL = "http://localhost:5000/api";
 
 export const authService = {
   // === User Authentication ===
-  register: async (
-    firstName: string,
-    lastName: string,
-    email: string,
-    phoneNumber: string,
-    password: string,
-    role: string,
-    organization?: string,
-    amount?: number
-  ) => {
-    return axios.post(`${BASE_URL}/user/auth/register`, {
-      firstName,
-      lastName,
-      email,
-      phoneNumber,
-      password,
-      role,
-      organization,
-      amount,
-    });
+  register: async (data: any, isFormData: boolean = false) => {
+    if (isFormData) {
+      return axios.post(`${BASE_URL}/user/auth/register`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    } else {
+      // old style for non-recipient
+      const {
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        password,
+        role,
+        organization,
+        amount,
+      } = data;
+      return axios.post(`${BASE_URL}/user/auth/register`, {
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        password,
+        role,
+        organization,
+        amount,
+      });
+    }
   },
 
   login: async (email: string, password: string, role: string) => {
@@ -221,7 +229,7 @@ export const authService = {
       { headers: { Authorization: `Bearer ${token}` } }
     ),
 
-    getDonorInsights: (token: string) =>
+  getDonorInsights: (token: string) =>
     axios.get(`${BASE_URL}/donor/insights`, {
       headers: { Authorization: `Bearer ${token}` },
     }),
