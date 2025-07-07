@@ -1,3 +1,4 @@
+// src/pages/DonorDashboard.tsx
 import React, { useState, useMemo, useEffect } from "react";
 import clsx from "clsx";
 import {
@@ -7,7 +8,6 @@ import {
   SettingsIcon,
   HomeIcon,
   BarChart2Icon,
-  PackageIcon,
 } from "lucide-react";
 import { SideBar, NavItem } from "../SideBar";
 import { Header } from "../Header";
@@ -35,6 +35,11 @@ export const DonorDashboard: React.FC = () => {
   );
 
   const { user } = useAuth();
+  const token = user?.token || "";
+
+  // ** New state for the two new cards **
+  const [matchedCount, setMatchedCount] = useState(0);
+  const [claimedCount, setClaimedCount] = useState(0);
 
   const navItems: NavItem[] = [
     { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "#" },
@@ -45,22 +50,20 @@ export const DonorDashboard: React.FC = () => {
     },
     {
       label: "Insights",
-      icon: <BarChart2Icon />,
+      icon: <BarChart2Icon className="w-5 h-5" />,
       href: "/dashboard/donor-insights",
     },
-    { label: "Profile", icon: <UserIcon className="w-5 h-5" />, href: "#" },
     {
       label: "Settings",
       icon: <SettingsIcon className="w-5 h-5" />,
-      href: "#",
+      href: "/dashboard/settings",
     },
   ];
 
+  // fetch main list
   const fetchDonations = async () => {
     setLoading(true);
     try {
-      const token = user?.token || "";
-      // Use the new endpoint
       const response = await donationService.getMyDonations(
         token,
         page,
@@ -76,8 +79,22 @@ export const DonorDashboard: React.FC = () => {
     }
   };
 
+  // ** fetch totals for matched & claimed **
+  const fetchMatchedAndClaimed = async () => {
+    try {
+      // just grab total counts via page=1,size=1
+      const m = await authService.getDonorMatchedDonations(token, 1, 1);
+      setMatchedCount(m.data.total);
+      const c = await authService.getDonorClaimedDonations(token, 1, 1);
+      setClaimedCount(c.data.total);
+    } catch (err) {
+      console.error("Error fetching matched/claimed counts", err);
+    }
+  };
+
   useEffect(() => {
     fetchDonations();
+    fetchMatchedAndClaimed();
   }, [page, rowsPerPage]);
 
   const filtered = useMemo(() => {
@@ -85,7 +102,8 @@ export const DonorDashboard: React.FC = () => {
       const matchesSearch =
         d.foodType?.toLowerCase().includes(search.toLowerCase()) ||
         d.location.label?.toLowerCase().includes(search.toLowerCase());
-      const matchesStatus = filterStatus === "all" || d.status === filterStatus;
+      const matchesStatus =
+        filterStatus === "all" || d.status === filterStatus;
       return matchesSearch && matchesStatus;
     });
   }, [search, filterStatus, donations]);
@@ -97,10 +115,10 @@ export const DonorDashboard: React.FC = () => {
 
   const handleDeleteDonation = async (donationId: string) => {
     try {
-      const token = user?.token || "";
       await authService.deleteDonation(donationId, token);
       toast.success("Donation deleted successfully!");
-      fetchDonations(); // refresh after deletion
+      fetchDonations();
+      fetchMatchedAndClaimed();
     } catch (error) {
       console.error("Delete error:", error);
       toast.error("Failed to delete donation.");
@@ -114,38 +132,56 @@ export const DonorDashboard: React.FC = () => {
       <SideBar
         open={sidebarOpen}
         toggle={() => setSidebarOpen((prev) => !prev)}
-        title="DonorX"
+        title="Donor Portal"
         logoIcon={<GiftIcon className="w-6 h-6 text-purple-600" />}
         navItems={navItems}
-        userInfo={{ name: "Donor User", email: user?.email || "" }}
+        userInfo={{
+          name: `${user?.firstName} ${user?.lastName}`,
+          email: user?.email || "",
+        }}
       />
       <main
         className={clsx(
-          "min-h-screen  p-6",
+          "min-h-screen p-6 transition-all",
           sidebarOpen ? "ml-64" : "ml-16"
         )}
       >
         <Header title="Donor Dashboard" />
 
+        {/* --- New stat cards row --- */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div className="relative bg-white rounded-2xl shadow-md hover:shadow-xl transition p-6 overflow-hidden">
-            {/* Decorative purple circle */}
+           <div className="relative bg-white rounded-2xl shadow-md hover:shadow-xl transition p-6 overflow-hidden">
             <div className="absolute top-0 right-0 w-16 h-16 bg-purple-100 rounded-full transform translate-x-1/3 -translate-y-1/3" />
-
-            <div className="relative flex flex-col">
-              <span className="text-sm font-medium text-purple-600 uppercase tracking-wide">
-                Total Donations
-              </span>
-              <span className="mt-3 text-4xl font-extrabold text-purple-800">
-                {total}
-              </span>
+            <span className="text-sm font-medium text-purple-600 uppercase tracking-wide">
+              Total Donations
+            </span>
+            <div className="mt-3 text-4xl font-extrabold text-purple-800">
+              {total}
+            </div>
+          </div>
+          <div className="relative bg-white rounded-2xl shadow-md hover:shadow-xl transition p-6 overflow-hidden">
+            <div className="absolute top-0 right-0 w-16 h-16 bg-purple-100 rounded-full transform translate-x-1/3 -translate-y-1/3" />
+            <span className="text-sm font-medium text-purple-600 uppercase tracking-wide">
+              Matched Donations
+            </span>
+            <div className="mt-3 text-4xl font-extrabold text-purple-800">
+              {matchedCount}
+            </div>
+          </div>
+          <div className="relative bg-white rounded-2xl shadow-md hover:shadow-xl transition p-6 overflow-hidden">
+            <div className="absolute top-0 right-0 w-16 h-16 bg-purple-100 rounded-full transform translate-x-1/3 -translate-y-1/3" />
+            <span className="text-sm font-medium text-purple-600 uppercase tracking-wide">
+              Claimed Donations
+            </span>
+            <div className="mt-3 text-4xl font-extrabold text-purple-800">
+              {claimedCount}
             </div>
           </div>
         </div>
 
+        {/* --- search / filter / add row --- */}
         <div className="max-w-10x1 mx-auto mb-6 px-1">
           <div className="bg-white rounded-xl shadow-inner px-6 py-4 flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-            {/* Search */}
             <div className="flex-1 relative">
               <input
                 type="text"
@@ -159,8 +195,6 @@ export const DonorDashboard: React.FC = () => {
               />
               <GiftIcon className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
             </div>
-
-            {/* Status Filter */}
             <select
               className="px-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-400"
               value={filterStatus}
@@ -174,8 +208,6 @@ export const DonorDashboard: React.FC = () => {
               <option value="pending">Pending</option>
               <option value="claimed">Claimed</option>
             </select>
-
-            {/* Add Donation */}
             <button
               onClick={() => setModalOpen(true)}
               className="bg-gradient-to-r from-purple-600 to-purple-500 text-white px-6 py-2 rounded-full font-semibold hover:from-purple-700 hover:to-purple-600 transition"
@@ -186,9 +218,12 @@ export const DonorDashboard: React.FC = () => {
         </div>
 
         <NewDonationFormModal
-          open={isModalOpen} // ❌ This should be `open`
+          open={isModalOpen}
           onClose={() => setModalOpen(false)}
-          onSuccess={fetchDonations}
+          onSuccess={() => {
+            fetchDonations();
+            fetchMatchedAndClaimed();
+          }}
         />
 
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Donations</h2>

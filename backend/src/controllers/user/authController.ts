@@ -157,16 +157,23 @@ const verifyEmail = async (req: Request, res: Response) => {
 
 const login = async (req: Request, res: Response) => {
   try {
-    const { email, password, role } = req.body;
+    const { email, password, role, firstName, lastName, phoneNumber } = req.body;
 
     if (!email || !password || !role) {
       throw new CustomError("You should fill all fields", 400);
     }
 
-    const success = await authService.login(email, password, role);
+    const success = await authService.login(email, password, role, firstName, lastName, phoneNumber);
 
     res.status(200).json({
-      user: success.user,
+      user: {
+        id: success.user.id,
+        email: success.user.email,
+        firstName: success.user.firstName,
+        lastName: success.user.lastName,
+        phoneNumber: success.user.phoneNumber,
+        role: success.user.role,
+      },
       token: success.token,
     });
   } catch (error: any) {

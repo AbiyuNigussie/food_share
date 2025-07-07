@@ -1,4 +1,6 @@
+// src/pages/RecipientDonationsPage.tsx
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { authService } from "../services/authService";
 import { MatchedDonation, ClaimedDonation } from "../types";
@@ -11,6 +13,7 @@ import {
   UserIcon,
   SettingsIcon,
   ClipboardListIcon,
+  BarChart2Icon,
 } from "lucide-react";
 import PaginationControls from "../components/PaginationControl";
 import { SideBar } from "../components/SideBar";
@@ -18,16 +21,16 @@ import { SideBar } from "../components/SideBar";
 const recipientNavItems = [
   { label: "Dashboard", icon: <HomeIcon />, href: "/dashboard" },
   { label: "Donations", icon: <PackageIcon />, href: "/dashboard/my-donations" },
-  { label: "Nearby Locations", icon: <MapPinIcon />, href: "#" },
-  { label: "My Needs", icon: <ClipboardListIcon />, href: "/dashboard/Recipient-Needs" },
-  { label: "Profile", icon: <UserIcon />, href: "#" },
-  { label: "Settings", icon: <SettingsIcon />, href: "#" },
+  { label: "Insights", icon: <BarChart2Icon />, href: "/dashboard/recipient-insights" },
+  { label: "My Needs", icon: <ClipboardListIcon />, href: "/dashboard/recipient-needs" },
+  { label: "Settings", icon: <SettingsIcon />, href: "/dashboard/settings" },
 ];
 
 export const RecipientDonationsPage: React.FC = () => {
   const { user } = useAuth();
   const token = user?.token || "";
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const navigate = useNavigate();
 
   // pagination & state
   const [matched, setMatched] = useState<MatchedDonation[]>([]);
@@ -87,8 +90,26 @@ export const RecipientDonationsPage: React.FC = () => {
                   {activeTab === "matched" ? "Matched" : "Claimed"}
                 </span>
               </div>
+
               {/* Main content */}
-              <div className="space-y-1 mb-2">{content(it)}</div>
+              <div className="space-y-1 mb-4">{content(it)}</div>
+
+              {/* View Details button */}
+              {"delivery" in it && (it as any).delivery?.id && (
+                <button
+                  onClick={() =>
+                    navigate(
+                      `/dashboard/deliveries/delivery-details/${
+                        (it as any).delivery.id
+                      }`
+                    )
+                  }
+                  className="mt-auto w-full py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
+                >
+                  View Details
+                </button>
+              )}
+
               {/* Footer timestamp */}
               <div className="mt-auto text-xs text-gray-400 text-right">
                 {activeTab === "matched" ? (
@@ -125,13 +146,11 @@ export const RecipientDonationsPage: React.FC = () => {
         toggle={() => setSidebarOpen((o) => !o)}
         title="Recipient Portal"
         navItems={recipientNavItems}
-        userInfo={{ name: "Recipient User", email: user?.email || "" }}
+        userInfo={{ name: `${user?.firstName} ${user?.lastName}`, email: user?.email || "" }}
       />
-      
-
       <div
         className={
-          "min-h-screen bg-gradient-to-br from-purple-200 via-white to-indigo-100  border-purple-200 py-16 px-6 transition-all duration-200 " +
+          "min-h-screen bg-gradient-to-br from-purple-200 via-white to-indigo-100 py-16 px-6 transition-all duration-200 " +
           (sidebarOpen ? "ml-64" : "ml-16")
         }
       >
@@ -174,33 +193,12 @@ export const RecipientDonationsPage: React.FC = () => {
               renderCardsContainer(matched, (d) => (
                 <>
                   <h3 className="text-2xl font-bold text-gray-800">
-                    {(d as MatchedDonation).foodType}
+                    {d.foodType}
                   </h3>
+                  <p className="text-gray-700"><strong>Qty:</strong> {d.quantity}</p>
                   <p className="text-gray-700">
-                    <strong>Qty:</strong> {(d as MatchedDonation).quantity}
+                    <strong>Donor:</strong> {d.donor.user.firstName} {d.donor.user.lastName}
                   </p>
-                  <p className="text-gray-700">
-                    <strong>Donor:</strong> {(d as MatchedDonation).donor.user.firstName}{" "}
-                    {(d as MatchedDonation).donor.user.lastName}
-                  </p>
-                  {(d as ClaimedDonation).delivery && (
-                  <div className="mt-3 space-y-2">
-                    <p className="text-gray-700">
-                      <strong>Delivery Status:</strong>{" "}
-                      <span
-                        className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${
-                          (d as ClaimedDonation).delivery!.deliveryStatus === "DELIVERED"
-                            ? "bg-green-200 text-green-800"
-                            : (d as ClaimedDonation).delivery!.deliveryStatus === "IN_TRANSIT"
-                            ? "bg-blue-200 text-blue-800"
-                            : "bg-yellow-200 text-yellow-800"
-                        }`}
-                      >
-                        {(d as ClaimedDonation).delivery!.deliveryStatus.replace(/_/g, " ")}
-                      </span>
-                    </p>
-                  </div>
-                )}
                 </>
               ))
             ) : (
@@ -212,29 +210,26 @@ export const RecipientDonationsPage: React.FC = () => {
             renderCardsContainer(claimed, (d) => (
               <>
                 <h3 className="text-2xl font-bold text-gray-800">
-                  {(d as ClaimedDonation).foodType}
+                  {d.foodType}
                 </h3>
+                <p className="text-gray-700"><strong>Qty:</strong> {d.quantity}</p>
                 <p className="text-gray-700">
-                  <strong>Qty:</strong> {(d as ClaimedDonation).quantity}
+                  <strong>Donor:</strong> {d.donor.user.firstName} {d.donor.user.lastName}
                 </p>
-                <p className="text-gray-700">
-                  <strong>Donor:</strong> {(d as ClaimedDonation).donor.user.firstName}{" "}
-                  {(d as ClaimedDonation).donor.user.lastName}
-                </p>
-                {(d as ClaimedDonation).delivery && (
-                  <div className="mt-3 space-y-2">
+                {d.delivery && (
+                  <div className="mt-3">
                     <p className="text-gray-700">
                       <strong>Delivery Status:</strong>{" "}
                       <span
                         className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${
-                          (d as ClaimedDonation).delivery!.deliveryStatus === "DELIVERED"
+                          d.delivery.deliveryStatus === "DELIVERED"
                             ? "bg-green-200 text-green-800"
-                            : (d as ClaimedDonation).delivery!.deliveryStatus === "IN_TRANSIT"
+                            : d.delivery.deliveryStatus === "IN_TRANSIT"
                             ? "bg-blue-200 text-blue-800"
                             : "bg-yellow-200 text-yellow-800"
                         }`}
                       >
-                        {(d as ClaimedDonation).delivery!.deliveryStatus.replace(/_/g, " ")}
+                        {d.delivery.deliveryStatus.replace(/_/g, " ")}
                       </span>
                     </p>
                   </div>

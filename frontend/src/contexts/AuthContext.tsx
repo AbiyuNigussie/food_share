@@ -3,13 +3,16 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 interface User {
   id: string;
   email: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
   token: string;
   role: "DONOR" | "RECIPIENT" | "LOGISTIC_PROVIDER" | "ADMIN";
 }
 
 interface AuthContextType {
   user: User | null;
+  setUser: (user: User | null) => void;
   login: (userData: User) => void;
   logout: () => void;
   loading: boolean;
@@ -42,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

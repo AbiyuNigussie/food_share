@@ -12,69 +12,69 @@ import {
   handleCompleteDropoff,
   handleCompleteDelivery,
 } from "../controllers/deliveryControlller";
-import { authenticateLogisticsStaff } from "../middlewares/authenticateLogisticsStaff";
+import { authenticateUser } from "../middlewares/authenticateAnyUser";
 
 const router = express.Router();
 
-router.get("/deliveries", authenticateLogisticsStaff, handleGetAllDeliveries);
+router.get("/deliveries", authenticateUser, handleGetAllDeliveries);
 
 router.get(
   "/deliveries/:deliveryId",
-  authenticateLogisticsStaff,
+  authenticateUser,
   handleGetDeliveryById
 );
 
 router.post(
   "/deliveries/assign",
-  authenticateLogisticsStaff,
+  authenticateUser,
   handleAssignDeliveryStaff
 );
 
 router.patch(
   "/deliveries/:deliveryId/status",
-  authenticateLogisticsStaff,
+  authenticateUser,
   handleUpdateDeliveryStatus
 );
 
 router.post(
   "/deliveries/schedule",
-  authenticateLogisticsStaff,
+  authenticateUser,
   handleSetDeliverySchedule
 );
 
 router.post(
   "/deliveries/timeline",
-  authenticateLogisticsStaff,
+  authenticateUser,
   handleAddTimelineEvent
 );
 
 router.post(
   "/deliveries/:deliveryId/schedule-pickup",
-  authenticateLogisticsStaff,
+  authenticateUser,
   handleSchedulePickup
 );
 
 router.post(
   "/deliveries/:deliveryId/complete-pickup",
-  authenticateLogisticsStaff,
+  authenticateUser,
   handleCompletePickup
 );
 
 router.post(
   "/deliveries/:deliveryId/schedule-dropoff",
-  authenticateLogisticsStaff,
+  authenticateUser,
   handleScheduleDropoff
 );
 
 router.post(
   "/deliveries/:deliveryId/complete-dropoff",
-  authenticateLogisticsStaff,
+  authenticateUser,
   handleCompleteDropoff
 );
 
 router.post(
   "/deliveries/:deliveryId/complete-delivery",
-  authenticateLogisticsStaff,
+  authenticateUser,
   handleCompleteDelivery
 );
 

@@ -202,21 +202,7 @@ const faqSections = [
 			{
 				question: "How do I reach technical support?",
 				answer: [
-					"Use the chat widget or email us at support@sustainablefood.org.",
-					"Live agents are available during weekdays from 9am–6pm.",
-				],
-			},
-			{
-				question: "Where can I learn how to use the platform?",
-				answer: [
-					"Our Help Center includes articles, how-to guides, and video tutorials.",
-					"There’s also an onboarding tour after signup.",
-				],
-			},
-			{
-				question: "Is community support available?",
-				answer: [
-					"Yes, users can ask questions in the community forum, get peer advice, and share best practices.",
+					"Use the contact page or email us at yonatangirmachew3@gmail.com.",
 				],
 			},
 			{
@@ -228,7 +214,7 @@ const faqSections = [
 			{
 				question: "What languages are supported?",
 				answer: [
-					"Currently available in English and Amharic. More languages coming soon based on user demand.",
+					"Currently available in English. More languages coming soon based on user demand.",
 				],
 			},
 		],
@@ -252,8 +238,8 @@ const FAQPage: React.FC = () => {
 
 	return (
 		<MainNavLayout>
-			<section className="max-w-4xl mx-auto px-4 py-12">
-				<h1 className="text-4xl font-bold text-purple-700 mb-8 text-center">
+			<section className="min-h-screen flex flex-col bg-gradient-to-br from-purple-200 via-white to-indigo-100 rounded-3xl shadow-xl border border-purple-200">
+				<h1 className="text-4xl font-bold text-purple-700 mb-8 p-8 text-center">
 					Frequently Asked Questions
 				</h1>
 				<div className="flex justify-center px-4 py-8">

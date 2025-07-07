@@ -180,7 +180,14 @@ const login = async (email: string, password: string, role: string) => {
     );
 
     return {
-      user: { id: user.id, email: user.email, role: user.role },
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phoneNumber: user.phoneNumber,
+        role: user.role,
+      },
       token: jwt_token,
     };
   } catch (error) {
