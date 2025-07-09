@@ -17,6 +17,7 @@ import {
   MoreVerticalIcon,
   CheckCircleIcon,
   XCircleIcon,
+  MailIcon,
 } from "lucide-react";
 import ReactDOM from "react-dom";
 
@@ -94,12 +95,7 @@ const RecipientApprovals: React.FC = () => {
     {
       label: "Dashboard",
       icon: <HomeIcon className="w-5 h-5" />,
-      href: "/admin/dashboard",
-    },
-    {
-      label: "Users",
-      icon: <UsersIcon className="w-5 h-5" />,
-      href: "/admin/users",
+      href: "/dashboard",
     },
     {
       label: "Recipient Approvals",
@@ -107,19 +103,19 @@ const RecipientApprovals: React.FC = () => {
       href: "/admin/recipients/approvals",
     },
     {
-      label: "Feedback",
-      icon: <BellIcon className="w-5 h-5" />,
-      href: "/admin/feedback",
-    },
-    {
       label: "Reports",
       icon: <ClipboardListIcon className="w-5 h-5" />,
       href: "/admin/reports",
     },
+        {
+      label: "Contacts",
+      icon: <MailIcon className="w-5 h-5" />,
+      href: "/admin/contacts",
+    },
     {
       label: "Settings",
       icon: <SettingsIcon className="w-5 h-5" />,
-      href: "/admin/config",
+      href: "/admin/settings",
     },
   ];
 
@@ -163,7 +159,10 @@ const RecipientApprovals: React.FC = () => {
         toggle={() => setSidebarOpen((o) => !o)}
         title="Admin Panel"
         navItems={navItems}
-        userInfo={{ name: user?.email || "Admin", email: user?.email || "" }}
+        userInfo={{
+          name: `${user?.firstName} ${user?.lastName}`,
+          email: user?.email || "",
+        }}
       />
       <div
         className={`flex-1 transition-all duration-200 ${

@@ -39,15 +39,15 @@ model Recipient {
   subscriptionStatus      SubscriptionStatus
   subscriptionDate        DateTime
   organization            String?
-  legalName               String?
-  registrationNumber      String?
-  country                 String?
-  website                 String?
-  contactPersonTitle      String?
-  organizationType        String?
   businessRegistrationDoc String?
-  taxIdDoc                String?
+  contactPersonTitle      String?
+  country                 String?
+  legalName               String?
+  organizationType        String?
   proofOfAddressDoc       String?
+  registrationNumber      String?
+  taxIdDoc                String?
+  website                 String?
   isApproved              Boolean            @default(false)
   donations               Donation[]         @relation("RecipientDonations")
   user                    User               @relation(fields: [userId], references: [id])
@@ -141,9 +141,9 @@ model LogisticsStaff {
 }
 
 model Admin {
-  userId         String          @id
-  user           User            @relation(fields: [userId], references: [id])
-  adminResponses AdminResponse[]
+  userId        String          @id
+  user          User            @relation(fields: [userId], references: [id])
+  AdminResponse AdminResponse[]
 }
 
 model Notification {
@@ -199,11 +199,10 @@ enum NeedStatus {
 
 enum DeliveryStatus {
   PENDING
-  SCHEDULED
-  IN_PROGRESS
   DELIVERED
-  FAILED
-  CANCELLED
+  ASSIGNED
+  PICKUP_SCHEDULED
+  DROPOFF_SCHEDULED
 }
 
 enum FoodStatus {

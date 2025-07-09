@@ -104,7 +104,7 @@ export const DeliveryDetails: React.FC = () => {
     statusIcons.default;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-200 via-white to-indigo-100 rounded-3xl shadow-xl border border-purple-200 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-200 via-white to-indigo-100  border-purple-200 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4">
