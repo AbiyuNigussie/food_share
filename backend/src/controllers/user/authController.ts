@@ -157,13 +157,30 @@ const verifyEmail = async (req: Request, res: Response) => {
 
 const login = async (req: Request, res: Response) => {
   try {
-    const { email, password, role, firstName, lastName, phoneNumber } = req.body;
+    const { email, password, role, firstName, lastName, phoneNumber } =
+      req.body;
 
     if (!email || !password || !role) {
       throw new CustomError("You should fill all fields", 400);
     }
 
-    const success = await authService.login(email, password, role, firstName, lastName, phoneNumber);
+    const success = await authService.login(
+      email,
+      password,
+      role,
+      firstName,
+      lastName,
+      phoneNumber
+    );
+
+    // If requireSubscription is present, send it in the response
+    if (success.requireSubscription) {
+      res.status(200).json({
+        requireSubscription: true,
+        user: success.user,
+      });
+      return;
+    }
 
     res.status(200).json({
       user: {

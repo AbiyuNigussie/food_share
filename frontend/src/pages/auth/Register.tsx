@@ -97,15 +97,7 @@ const Register: React.FC = () => {
 
       toast.success("Registration successful! Please verify your email.");
 
-      if (role === "RECIPIENT") {
-        localStorage.setItem(
-          "subscriptionUser",
-          JSON.stringify({ email, firstName, lastName })
-        );
-        setTimeout(() => navigate("/subscribe"), 1000);
-      } else {
-        setTimeout(() => navigate("/login"), 2000);
-      }
+      setTimeout(() => navigate("/login"), 2000);
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response?.data?.message) {
         toast.error(error.response.data.message);

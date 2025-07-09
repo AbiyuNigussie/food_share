@@ -19,18 +19,37 @@ const Login: React.FC = () => {
       const res = await authService.login(email, password, role);
       const data = res.data;
 
-      login({
-        id: data.user.id,
-        email: data.user.email,
-        firstName: data.user.firstName,
-        lastName: data.user.lastName,
-        phoneNumber: data.user.phoneNumber,
-        token: data.token,
-        role: data.user.role,
-      });
+      // If recipient and requireSubscription, redirect to subscribe
+      if (role === "RECIPIENT" && data.requireSubscription) {
+        // Optionally, store user info for subscription page
+        localStorage.setItem(
+          "subscriptionUser",
+          JSON.stringify({
+            email: data.user.email,
+            firstName: data.user.firstName,
+            lastName: data.user.lastName,
+            id: data.user.id,
+          })
+        );
+        toast.info("Please complete your subscription to continue.");
+        navigate("/subscribe");
+        return;
+      }
 
-      toast.success("Logged in successfully!");
-      navigate("/dashboard");
+      // Only call login if token is present
+      if (data.token) {
+        login({
+          id: data.user.id,
+          email: data.user.email,
+          firstName: data.user.firstName,
+          lastName: data.user.lastName,
+          phoneNumber: data.user.phoneNumber,
+          token: data.token,
+          role: data.user.role,
+        });
+        toast.success("Logged in successfully!");
+        navigate("/dashboard");
+      }
     } catch (err: any) {
       if (err.response && err.response.data?.message) {
         toast.error(err.response.data.message);
@@ -53,7 +72,13 @@ const Login: React.FC = () => {
         <div className="flex flex-col items-center">
           <div className="bg-gradient-to-r from-purple-100 to-indigo-100 p-3 rounded-full shadow-lg mb-2 animate-bounce-in">
             <svg width="36" height="36" fill="none" viewBox="0 0 48 48">
-              <rect width="48" height="48" rx="24" fill="#A78BFA" fillOpacity="0.15" />
+              <rect
+                width="48"
+                height="48"
+                rx="24"
+                fill="#A78BFA"
+                fillOpacity="0.15"
+              />
               <path
                 d="M16 20v12a2 2 0 002 2h12a2 2 0 002-2V20M12 20h24M20 16v-2a2 2 0 012-2h4a2 2 0 012 2v2"
                 stroke="#A78BFA"
@@ -67,11 +92,15 @@ const Login: React.FC = () => {
             Welcome back
           </h1>
           <p className="text-sm text-gray-600 text-center animate-fade-in">
-            Sign in to continue to <span className="font-semibold text-purple-600">FoodShare</span>
+            Sign in to continue to{" "}
+            <span className="font-semibold text-purple-600">FoodShare</span>
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in-slow">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4 animate-fade-in-slow"
+        >
           <input
             type="email"
             placeholder="Email"
@@ -120,7 +149,10 @@ const Login: React.FC = () => {
           >
             {loading ? (
               <span className="flex items-center gap-2">
-                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  viewBox="0 0 24 24"
+                >
                   <circle
                     className="opacity-25"
                     cx="12"
