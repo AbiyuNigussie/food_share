@@ -29,6 +29,7 @@ import autoTable from "jspdf-autotable";
 import { StatCard } from "../../components/StatCard";
 import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
+import { useAuth } from "../../contexts/AuthContext";
 
 dayjs.extend(isoWeek);
 
@@ -83,6 +84,7 @@ interface ReportEntry {
 }
 
 export default function AdminReports() {
+  const { user, setUser } = useAuth();
   const [reports, setReports] = useState<ReportEntry[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [donationPage, setDonationPage] = useState(1);
@@ -409,6 +411,11 @@ export default function AdminReports() {
       icon: <HomeIcon className="w-5 h-5" />,
       href: "/dashboard",
     },
+  {
+          label: "Recipient Approvals",
+          icon: <ClipboardListIcon className="w-5 h-5" />,
+          href: "/admin/recipients/approvals",
+        },
     {
       label: "Reports",
       icon: <ClipboardListIcon className="w-5 h-5" />,
@@ -426,8 +433,8 @@ export default function AdminReports() {
     },
         ]}
         userInfo={{
-          name: "Admin",
-          email: "admin@donation.org",
+          name:  `${user?.firstName} ${user?.lastName}`,
+          email: user?.email || "",
         }}
       />
       <div

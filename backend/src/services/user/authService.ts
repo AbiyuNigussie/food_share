@@ -171,6 +171,20 @@ const login = async (email: string, password: string, role: string) => {
           403
         );
       }
+      // If subscription is not active, require subscription
+      if (user.recipient.subscriptionStatus !== "active") {
+        return {
+          user: {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            phoneNumber: user.phoneNumber,
+            role: user.role,
+          },
+          requireSubscription: true,
+        };
+      }
     }
 
     const jwt_token = jwt.sign(

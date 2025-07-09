@@ -24,6 +24,9 @@ const AdminLogin: React.FC = () => {
         email: data.user.email,
         token: data.token,
         role: data.user.role,
+        firstName: data.user.firstName,
+        lastName: data.user.lastName,
+        phoneNumber: data.user.phoneNumber,
       });
 
       toast.success("Admin logged in successfully!");

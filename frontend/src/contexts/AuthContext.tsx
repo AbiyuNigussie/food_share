@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 interface User {
+  createdAt: string | number | Date;
   id: string;
   email: string;
   firstName: string;

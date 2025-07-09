@@ -58,28 +58,51 @@ const register = async (
   }
 };
 
+
 const login = async (email: string, password: string) => {
   try {
-    const user = await prisma.user.findUnique({
+    // find admin by email + role
+    const user = await prisma.user.findFirst({
       where: { email, role: "ADMIN" },
+      select: {
+        id: true,
+        email: true,
+        password: true,       // needed for bcrypt.compare
+        firstName: true,
+        lastName: true,
+        phoneNumber: true,
+        role: true,
+      },
     });
 
     if (!user) {
       throw new CustomError("Invalid email or password", 400);
     }
 
+    // verify password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       throw new CustomError("Invalid email or password", 400);
     }
 
-    const jwt_token = jwt.sign(
+    // issue a 24 h JWT
+    const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
-      `${JWT_SECRET}`
+      JWT_SECRET!,
+      { expiresIn: "24h" }
     );
+
+    // return identical shape to your user-login
     return {
-      user: { id: user.id, email: user.email, role: user.role },
-      token: jwt_token,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phoneNumber: user.phoneNumber,
+        role: user.role,
+      },
+      token,
     };
   } catch (error) {
     throw error;

@@ -52,16 +52,16 @@ export const SettingsPage: React.FC = () => {
 
   // pick nav items by role
   let navItems: NavItem[] = [];
-  let title = "Portal"
+  let title = "Portal";
   if (user) {
     switch (user.role) {
       case "DONOR":
         title = "DonorX";
         navItems = [
-          { label: "Dashboard",    icon: <HomeIcon className="w-5 h-5" />,           href: "/dashboard" },
-          { label: "My Donations", icon: <GiftIcon className="w-5 h-5" />,          href: "/dashboard/Donor-Donations" },
-          { label: "Insights",     icon: <BarChart2Icon className="w-5 h-5" />,     href: "/dashboard/donor-insights" },
-          { label: "Settings",     icon: <SettingsIcon className="w-5 h-5" />,       href: "/dashboard/settings" },
+          { label: "Dashboard",    icon: <HomeIcon className="w-5 h-5" />,       href: "/dashboard" },
+          { label: "My Donations", icon: <GiftIcon className="w-5 h-5" />,      href: "/dashboard/Donor-Donations" },
+          { label: "Insights",     icon: <BarChart2Icon className="w-5 h-5" />, href: "/dashboard/donor-insights" },
+          { label: "Settings",     icon: <SettingsIcon className="w-5 h-5" />,   href: "/dashboard/settings" },
         ];
         break;
       case "RECIPIENT":
@@ -75,43 +75,28 @@ export const SettingsPage: React.FC = () => {
         ];
         break;
       case "LOGISTIC_PROVIDER":
-        title = "Logistic  Portal";
+        title = "Logistic Portal";
         navItems = [
-          { label: "Dashboard",  icon: <HomeIcon className="w-5 h-5" />,             href: "/dashboard" },
-          { label: "Deliveries", icon: <TruckIcon className="w-5 h-5" />,            href: "/dashboard/deliveries" },
-          { label: "My Deliveries", icon: <BarChart2Icon />,                         href: "/dashboard/my-deliveries" },
-          { label: "Settings",   icon: <SettingsIcon className="w-5 h-5" />,         href: "/dashboard/settings" },
+          { label: "Dashboard",    icon: <HomeIcon className="w-5 h-5" />,       href: "/dashboard" },
+          { label: "Deliveries",   icon: <TruckIcon className="w-5 h-5" />,      href: "/dashboard/deliveries" },
+          { label: "My Deliveries",icon: <BarChart2Icon className="w-5 h-5" />, href: "/dashboard/my-deliveries" },
+          { label: "Settings",     icon: <SettingsIcon className="w-5 h-5" />,   href: "/dashboard/settings" },
         ];
         break;
       case "ADMIN":
         title = "Admin Portal";
         navItems = [
-          {
-            label: "Dashboard",
-            icon: <HomeIcon className="w-5 h-5" />,
-            href: "/dashboard",
-          },
-          {
-            label: "Reports",
-            icon: <ClipboardListIcon className="w-5 h-5" />,
-            href: "/admin/reports",
-          },
-          {
-            label: "Contacts",
-            icon: <MailIcon className="w-5 h-5" />,
-            href: "/admin/contacts",
-          },
-          {
-            label: "Settings",
-            icon: <SettingsIcon className="w-5 h-5" />,
-            href: "/admin/settings",
-          },
+          { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />,        href: "/dashboard" },
+          { label: "Recipient Approvals", icon: <ClipboardListIcon className="w-5 h-5" />, href: "/admin/recipients/approvals" },
+          { label: "Reports",   icon: <ClipboardListIcon className="w-5 h-5" />, href: "/admin/reports" },
+          { label: "Contacts",  icon: <MailIcon className="w-5 h-5" />,         href: "/admin/contacts" },
+          { label: "Settings",  icon: <SettingsIcon className="w-5 h-5" />,     href: "/admin/settings" },
         ];
         break;
       default:
         navItems = [
-          { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />,              href: "/dashboard" },
-          { label: "Settings",  icon: <SettingsIcon className="w-5 h-5" />,          href: "/dashboard/settings" },
+          { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />,      href: "/dashboard" },
+          { label: "Settings",  icon: <SettingsIcon className="w-5 h-5" />,  href: "/dashboard/settings" },
         ];
     }
   }
@@ -123,7 +108,7 @@ export const SettingsPage: React.FC = () => {
       await authService.updateProfile(token, {
         firstName,
         lastName,
-        email: user?.email || "",  // if email editable add state for it
+        email: user?.email || "",
         phoneNumber: phone,
       });
       toast.success("Profile updated");
@@ -156,7 +141,7 @@ export const SettingsPage: React.FC = () => {
     <>
       <SideBar
         open={sidebarOpen}
-        toggle={() => setSidebarOpen((o) => !o)}
+        toggle={() => setSidebarOpen(o => !o)}
         title={title}
         navItems={navItems}
         userInfo={{
@@ -167,21 +152,38 @@ export const SettingsPage: React.FC = () => {
 
       <main
         className={clsx(
-          "min-h-screen bg-gradient-to-br from-purple-200 via-white to-indigo-100  border border-purple-200 transition-all duration-200",
-          sidebarOpen ? "ml-64 p-8" : "ml-16 p-4"
+          "min-h-screen transition-all duration-200",
+          sidebarOpen ? "ml-64 p-8" : "ml-16 p-4",
+          "bg-gradient-to-br from-purple-200 via-white to-indigo-200 border-purple-200"
         )}
       >
         <Header title="Settings" />
 
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {/* Top Profile Card */}
+          <div className="rounded-2xl overflow-hidden shadow-lg">
+            <div className="bg-gradient-to-r from-purple-600 to-purple-400 p-8 flex items-center space-x-6">
+              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-2xl font-bold text-purple-600">
+                {user?.firstName?.[0] || user?.email?.[0] || "U"}
+              </div>
+              <div className="text-white">
+                {/* NEW: full name above email */}
+                <h1 className="text-2xl font-bold">
+                  {user?.firstName} {user?.lastName}
+                </h1>
+                <h2 className="text-xl font-semibold">{user?.email}</h2>
+              </div>
+            </div>
+          </div>
+
           {/* Tabs */}
-          <div className="flex space-x-4 border-b mb-6">
+          <div className="flex space-x-6 border-b pb-2">
             {tabs.map(({ key, label, icon }) => (
               <button
                 key={key}
                 onClick={() => setActiveTab(key as any)}
                 className={clsx(
-                  "flex items-center px-4 py-2 space-x-2 -mb-px font-medium",
+                  "flex items-center space-x-2 pb-1 font-medium",
                   activeTab === key
                     ? "border-b-2 border-purple-600 text-purple-600"
                     : "text-gray-600 hover:text-purple-600"
@@ -198,7 +200,7 @@ export const SettingsPage: React.FC = () => {
             <section className="bg-white rounded-2xl shadow p-8">
               <form
                 onSubmit={handleProfileSubmit}
-                className="grid grid-cols-1 gap-6 sm:grid-cols-2"
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
               >
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
@@ -207,7 +209,7 @@ export const SettingsPage: React.FC = () => {
                   <input
                     type="text"
                     value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    onChange={e => setFirstName(e.target.value)}
                     className="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>
@@ -218,22 +220,22 @@ export const SettingsPage: React.FC = () => {
                   <input
                     type="text"
                     value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    onChange={e => setLastName(e.target.value)}
                     className="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>
-                <div className="sm:col-span-2">
+                <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700">
                     Phone Number
                   </label>
                   <input
                     type="tel"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={e => setPhone(e.target.value)}
                     className="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>
-                <div className="sm:col-span-2 text-right">
+                <div className="md:col-span-2 text-right">
                   <button
                     type="submit"
                     className="inline-flex items-center px-6 py-2 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 transition"
@@ -247,11 +249,8 @@ export const SettingsPage: React.FC = () => {
 
           {/* Security Panel */}
           {activeTab === "security" && (
-            <section className="bg-white rounded-2xl shadow p-8 max-w-md mx-auto">
-              <form
-                onSubmit={handlePasswordSubmit}
-                className="grid gap-6"
-              >
+            <section className="bg-white rounded-2xl shadow p-8 mx-auto max-w-md">
+              <form onSubmit={handlePasswordSubmit} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Current Password
@@ -259,7 +258,7 @@ export const SettingsPage: React.FC = () => {
                   <input
                     type="password"
                     value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    onChange={e => setCurrentPassword(e.target.value)}
                     className="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>
@@ -270,7 +269,7 @@ export const SettingsPage: React.FC = () => {
                   <input
                     type="password"
                     value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
+                    onChange={e => setNewPassword(e.target.value)}
                     className="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>
@@ -281,7 +280,7 @@ export const SettingsPage: React.FC = () => {
                   <input
                     type="password"
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={e => setConfirmPassword(e.target.value)}
                     className="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>

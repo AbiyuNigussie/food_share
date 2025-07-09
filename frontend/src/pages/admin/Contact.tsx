@@ -39,6 +39,11 @@ const navItems = [
     href: "/dashboard",
   },
   {
+        label: "Recipient Approvals",
+        icon: <ClipboardListIcon className="w-5 h-5" />,
+        href: "/admin/recipients/approvals",
+ },
+  {
     label: "Reports",
     icon: <ClipboardListIcon className="w-5 h-5" />,
     href: "/admin/reports",
@@ -131,7 +136,10 @@ const AdminContactPage: React.FC = () => {
         toggle={() => setSidebarOpen((o) => !o)}
         title="Admin Panel"
         navItems={navItems}
-        userInfo={{ name: "Admin User", email: "admin@logistix.com" }}
+        userInfo={{
+          name: `${user?.firstName} ${user?.lastName}`,
+          email: user?.email || "",
+        }}
       />
 
       <div

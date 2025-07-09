@@ -15,6 +15,7 @@ import { StatCard } from "../StatCard";
 import { Header } from "../Header";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface User {
   id: string;
@@ -33,6 +34,8 @@ export const AdminDashboard: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [editedUser, setEditedUser] = useState<Partial<User>>({});
 
+    const { user } = useAuth();
+
   useEffect(() => {
     fetch("/api/admin/users")
       .then((res) => res.json())
@@ -47,19 +50,9 @@ export const AdminDashboard: React.FC = () => {
       href: "/admin/dashboard",
     },
     {
-      label: "Users",
-      icon: <UsersIcon className="w-5 h-5" />,
-      href: "/admin/users",
-    },
-    {
       label: "Recipient Approvals",
       icon: <ClipboardListIcon className="w-5 h-5" />,
       href: "/admin/recipients/approvals",
-    },
-    {
-      label: "Feedback",
-      icon: <BellIcon className="w-5 h-5" />,
-      href: "/admin/feedback",
     },
     {
       label: "Reports",
@@ -199,7 +192,8 @@ export const AdminDashboard: React.FC = () => {
         toggle={() => setSidebarOpen((o) => !o)}
         title="Admin Panel"
         navItems={navItems}
-        userInfo={{ name: "Admin User", email: "admin@logistix.com" }}
+        userInfo={{ name:  `${user?.firstName} ${user?.lastName}`,
+          email: user?.email || "", }}
       />
 
       <div
