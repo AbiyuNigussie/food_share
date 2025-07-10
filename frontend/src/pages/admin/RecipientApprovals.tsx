@@ -153,7 +153,7 @@ const RecipientApprovals: React.FC = () => {
   }, [dropdownOpen]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-purple-200 via-white to-indigo-100 border-purple-200">
       <SideBar
         open={sidebarOpen}
         toggle={() => setSidebarOpen((o) => !o)}

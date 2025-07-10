@@ -140,7 +140,7 @@ export default function AdminReports() {
   );
 
   const platformUsageData = {
-    labels: ["Donors", "Recipients"],
+    labels: ["Donors", "Recipients", "Logistics Staff"],
     datasets: [
       {
         label: "Users",
