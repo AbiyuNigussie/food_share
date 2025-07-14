@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 const BASE_URL = "http://localhost:5000/api";
 
@@ -6,7 +6,7 @@ export const authService = {
   // === User Authentication ===
   register: async (data: any, isFormData: boolean = false) => {
     if (isFormData) {
-      return axios.post(`${BASE_URL}/user/auth/register`, data, {
+      return axiosInstance.post(`/user/auth/register`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
     } else {
@@ -21,7 +21,7 @@ export const authService = {
         organization,
         amount,
       } = data;
-      return axios.post(`${BASE_URL}/user/auth/register`, {
+      return axiosInstance.post(`/user/auth/register`, {
         firstName,
         lastName,
         email,
@@ -35,17 +35,17 @@ export const authService = {
   },
 
   login: async (email: string, password: string, role: string) => {
-    return axios.post(`${BASE_URL}/user/auth/login`, { email, password, role });
+    return axiosInstance.post(`/user/auth/login`, { email, password, role });
   },
 
   verifyEmail: async (token: string) =>
-    axios.post(`${BASE_URL}/user/auth/verify-email`, { token }),
+    axiosInstance.post(`/user/auth/verify-email`, { token }),
 
   forgotPassword: async (email: string) =>
-    axios.post(`${BASE_URL}/user/auth/forgot-password`, { email }),
+    axiosInstance.post(`/user/auth/forgot-password`, { email }),
 
   updatePassword: async (token: string, password: string) =>
-    axios.post(`${BASE_URL}/user/auth/reset-password/${token}`, { password }),
+    axiosInstance.post(`/user/auth/reset-password/${token}`, { password }),
 
   adminRegister: (payload: {
     firstName: string;
@@ -55,30 +55,30 @@ export const authService = {
     password: string;
     secretKey: string;
   }) => {
-    return axios.post(`${BASE_URL}/admin/auth/register`, payload);
+    return axiosInstance.post(`/admin/auth/register`, payload);
   },
 
   adminLogin: (email: string, password: string) =>
-    axios.post(`${BASE_URL}/admin/auth/login`, { email, password }),
+    axiosInstance.post(`/admin/auth/login`, { email, password }),
 
   // === Donation (Donor) ===
   createDonation: async (donationData: any, token: string) => {
-    return axios.post(`${BASE_URL}/donations`, donationData, {
+    return axiosInstance.post(`/donations`, donationData, {
       headers: { Authorization: `Bearer ${token}` },
     });
   },
 
-getDonorDonations: (token: string, page: number, rowsPerPage: number) =>
-  axios.get(`${BASE_URL}/donations/my?page=${page}&rowsPerPage=${rowsPerPage}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  }),
+  getDonorDonations: (token: string, page: number, rowsPerPage: number) =>
+    axiosInstance.get(`/donations/my?page=${page}&rowsPerPage=${rowsPerPage}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
 
   updateDonationStatus: async (
     donationId: string,
     status: string,
     token: string
   ) => {
-    return axios.put(
+    return axiosInstance.put(
       `${BASE_URL}/donations/${donationId}`,
       { status },
       { headers: { Authorization: `Bearer ${token}` } }
@@ -86,14 +86,14 @@ getDonorDonations: (token: string, page: number, rowsPerPage: number) =>
   },
 
   deleteDonation: async (donationId: string, token: string) => {
-    return axios.delete(`${BASE_URL}/donations/${donationId}`, {
+    return axiosInstance.delete(`/donations/${donationId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
   },
 
   // === Recipient Needs (Recipient) ===
   getNeeds: (token: string, page = 1, limit = 5) => {
-    return axios.get(`${BASE_URL}/needs?page=${page}&limit=${limit}`, {
+    return axiosInstance.get(`/needs?page=${page}&limit=${limit}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
   },
@@ -108,7 +108,7 @@ getDonorDonations: (token: string, page: number, rowsPerPage: number) =>
     },
     token: string
   ) => {
-    return axios.post(
+    return axiosInstance.post(
       `${BASE_URL}/needs`,
       {
         foodType: payload.foodType,
@@ -128,7 +128,7 @@ getDonorDonations: (token: string, page: number, rowsPerPage: number) =>
   },
 
   deleteNeed: (id: string, token: string) => {
-    return axios.delete(`${BASE_URL}/needs/${id}`, {
+    return axiosInstance.delete(`/needs/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
   },
@@ -144,14 +144,14 @@ getDonorDonations: (token: string, page: number, rowsPerPage: number) =>
     },
     token: string
   ) => {
-    return axios.put(`${BASE_URL}/needs/${needId}`, data, {
+    return axiosInstance.put(`/needs/${needId}`, data, {
       headers: { Authorization: `Bearer ${token}` },
     });
   },
 
   // === Matching (Recipient) ===
   claimMatch: (token: string, needId: string, donationId: string) => {
-    return axios.post(
+    return axiosInstance.post(
       `${BASE_URL}/matches`,
       { needId, donationId },
       { headers: { Authorization: `Bearer ${token}` } }
@@ -172,7 +172,7 @@ getDonorDonations: (token: string, page: number, rowsPerPage: number) =>
     },
     token: string
   ) => {
-    const res = await axios.post(
+    const res = await axiosInstance.post(
       `${BASE_URL}/donations/${donationId}/claim`,
       payload,
       {
@@ -184,15 +184,15 @@ getDonorDonations: (token: string, page: number, rowsPerPage: number) =>
 
   // === Notifications ===
   getNotifications: async (token: string) => {
-    const res = await axios.get(`${BASE_URL}/notifications`, {
+    const res = await axiosInstance.get(`/notifications`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return res.data.data as Notification[];
   },
 
   markNotificationRead: async (id: string, token: string) => {
-    const res = await axios.put(
-      `${BASE_URL}/notifications/${id}/read`,
+    const res = await axiosInstance.put(
+      `/notifications/${id}/read`,
       {},
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -201,33 +201,33 @@ getDonorDonations: (token: string, page: number, rowsPerPage: number) =>
 
   // === Recipient’s View of Their Donations ===
   getMatchedDonations: (token: string, page = 1, rowsPerPage = 5) => {
-    return axios.get(
-      `${BASE_URL}/recipient/donations/matched?page=${page}&rowsPerPage=${rowsPerPage}`,
+    return axiosInstance.get(
+      `/recipient/donations/matched?page=${page}&rowsPerPage=${rowsPerPage}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
   },
 
   getClaimedDonations: (token: string, page = 1, rowsPerPage = 5) => {
-    return axios.get(
-      `${BASE_URL}/recipient/donations/claimed?page=${page}&rowsPerPage=${rowsPerPage}`,
+    return axiosInstance.get(
+      `/recipient/donations/claimed?page=${page}&rowsPerPage=${rowsPerPage}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
   },
 
   // …inside authService object:
   getDonorMatchedDonations: (token: string, page = 1, rowsPerPage = 5) =>
-    axios.get(
-      `${BASE_URL}/donor/donations/matched?page=${page}&rowsPerPage=${rowsPerPage}`,
+    axiosInstance.get(
+      `/donor/donations/matched?page=${page}&rowsPerPage=${rowsPerPage}`,
       { headers: { Authorization: `Bearer ${token}` } }
     ),
 
   getDonorClaimedDonations: (token: string, page = 1, rowsPerPage = 5) =>
-    axios.get(
-      `${BASE_URL}/donor/donations/claimed?page=${page}&rowsPerPage=${rowsPerPage}`,
+    axiosInstance.get(
+      `/donor/donations/claimed?page=${page}&rowsPerPage=${rowsPerPage}`,
       { headers: { Authorization: `Bearer ${token}` } }
     ),
-    
-updateProfile: (
+
+  updateProfile: (
     token: string,
     payload: {
       firstName: string;
@@ -236,38 +236,36 @@ updateProfile: (
       phoneNumber: string;
     }
   ) => {
-    return axios.put(
-      `${BASE_URL}/user/profile`,
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    return axiosInstance.put(`/user/profile`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   },
-  changePassword: (token: string, currentPassword: string, newPassword: string) =>
-    axios.post(
-      `${BASE_URL}/user/change-password`,
+  changePassword: (
+    token: string,
+    currentPassword: string,
+    newPassword: string
+  ) =>
+    axiosInstance.post(
+      `/user/change-password`,
       { currentPassword, newPassword },
       { headers: { Authorization: `Bearer ${token}` } }
     ),
-    
 
   getDonorInsights: (token: string) =>
-    axios.get(`${BASE_URL}/donor/insights`, {
+    axiosInstance.get(`/donor/insights`, {
       headers: { Authorization: `Bearer ${token}` },
     }),
 
   getRecipientInsights: (token: string) =>
-    axios.get(`${BASE_URL}/recipient/insights`, {
+    axiosInstance.get(`/recipient/insights`, {
       headers: { Authorization: `Bearer ${token}` },
     }),
 
-    getMyDeliveries: (token: string, page = 1, rowsPerPage = 8) =>
-     axios.get(`${BASE_URL}/my/deliveries`, {
-    params: { page, rowsPerPage },
-    headers: { Authorization: `Bearer ${token}` },
-  }),
-
+  getMyDeliveries: (token: string, page = 1, rowsPerPage = 8) =>
+    axiosInstance.get(`/my/deliveries`, {
+      params: { page, rowsPerPage },
+      headers: { Authorization: `Bearer ${token}` },
+    }),
 };

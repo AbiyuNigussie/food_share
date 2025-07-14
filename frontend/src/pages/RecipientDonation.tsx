@@ -17,10 +17,11 @@ import {
 } from "lucide-react";
 import PaginationControls from "../components/PaginationControl";
 import { SideBar } from "../components/SideBar";
+import { Header } from "../components/Header";
 
 const recipientNavItems = [
   { label: "Dashboard", icon: <HomeIcon />, href: "/dashboard" },
-  { label: "Donations", icon: <PackageIcon />, href: "/dashboard/my-donations" },
+  { label: "My Claims", icon: <PackageIcon />, href: "/dashboard/my-donations" },
   { label: "Insights", icon: <BarChart2Icon />, href: "/dashboard/recipient-insights" },
   { label: "My Needs", icon: <ClipboardListIcon />, href: "/dashboard/recipient-needs" },
   { label: "Settings", icon: <SettingsIcon />, href: "/dashboard/settings" },
@@ -150,15 +151,13 @@ export const RecipientDonationsPage: React.FC = () => {
       />
       <div
         className={
-          "min-h-screen bg-gradient-to-br from-purple-200 via-white to-indigo-100 py-16 px-6 transition-all duration-200 " +
+          "min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-16 px-6 transition-all duration-200 " +
           (sidebarOpen ? "ml-64" : "ml-16")
         }
       >
+        <Header title="MY CLAIMS" />
         <div className="max-w-7xl mx-auto space-y-8 mt-6 w-full">
           {/* Title */}
-          <h1 className="text-2xl font-semibold text-left text-gray-900 mb-8">
-            My Donations
-          </h1>
 
           {/* Tabs */}
           <div className="flex justify-start space-x-12 mb-12">

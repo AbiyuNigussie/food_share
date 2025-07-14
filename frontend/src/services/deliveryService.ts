@@ -27,6 +27,20 @@ export const deliveryService = {
     });
   },
 
+  getMyDeliveries: (
+    token: string,
+    filters: DeliveryFilter = {}
+  ) => {
+    const params = new URLSearchParams();
+    if (filters.page) params.append("page", filters.page.toString());
+    if (filters.rowsPerPage) params.append("rowsPerPage", filters.rowsPerPage.toString());
+    if (filters.status) params.append("status", filters.status);
+
+    return axios.get(`${BASE_URL}/my/deliveries?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  },
+
   getDeliveryById: async (token: string, id: string) => {
     return axios.get(`${BASE_URL}/deliveries/${id}`, {
       headers: {

@@ -25,16 +25,45 @@ interface User {
   role: string;
   isVerified: boolean;
 }
+interface Donor {
+  user: User;
+  address: string;
+}
+interface Recipient {
+  user: User;
+  address: string;
+}
+interface LogisticsStaff {
+  user: User;
+}
+
+interface ReportEntry {
+  id: string;
+  donor: Donor;
+  recipient: Recipient;
+  foodType: string;
+  quantity: string;
+  createdAt: string;
+  status: string;
+}
 
 export const AdminDashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [reports, setReports] = useState<ReportEntry[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [editedUser, setEditedUser] = useState<Partial<User>>({});
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [activeUsers, setActiveUsers] = useState(0);
+  const [totalDonations, setTotalDonations] = useState(0);
+  const [successRate, setSuccessRate] = useState(0);
 
     const { user } = useAuth();
+    const donations = reports;
+
+    //const totalDonationss = donations.length;
 
   useEffect(() => {
     fetch("/api/admin/users")
@@ -43,11 +72,36 @@ export const AdminDashboard: React.FC = () => {
       .catch((err) => console.error("Failed to fetch users:", err));
   }, []);
 
+    useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // 1. Users
+        const usersRes = await axios.get<User[]>("/api/admin/users");
+        const allUsers = usersRes.data;
+        setUsers(allUsers);
+        setTotalUsers(allUsers.length);
+        setActiveUsers(allUsers.filter(u => u.isVerified).length);
+
+        // 2. Donations
+        const donationsRes = await axios.get<{ data: any[] }>("/api/donations");
+        const allDonations = donationsRes.data.data;
+        setTotalDonations(allDonations.length);
+
+      } catch (err: any) {
+        console.error("Failed to fetch stats:", err);
+        toast.error("Could not load dashboard stats");
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  
   const navItems = [
     {
       label: "Dashboard",
       icon: <HomeIcon className="w-5 h-5" />,
-      href: "/admin/dashboard",
+      href: "/dashboard",
     },
     {
       label: "Recipient Approvals",
@@ -71,6 +125,7 @@ export const AdminDashboard: React.FC = () => {
     },
   ];
 
+  
   const stats = [
     { label: "Total Users", value: 324 },
     { label: "Active Users", value: 256 },
@@ -184,6 +239,7 @@ export const AdminDashboard: React.FC = () => {
       );
     }
   };
+  
 
   return (
     <div className="min-h-screen">
@@ -201,64 +257,84 @@ export const AdminDashboard: React.FC = () => {
           sidebarOpen ? "ml-64" : "ml-16"
         }`}
       >
-        <Header title="Admin Dashboard" />
+        <h1 className="text-2xl font-semibold text-gray-900">Admin Dashboard</h1>
 
         <main className="p-8 space-y-8">
           {/* Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {stats.map((s, i) => (
-              <StatCard key={i} label={s.label} value={s.value} />
-            ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+            <StatCard label="Total Users" value={totalUsers} />
+            <StatCard label="Verified Users" value={activeUsers} />
+            {/* <StatCard label="Total Donations" value={totalDonations} /> */}
           </div>
-          <section>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              User Management
-            </h2>
+          {/* User Management as Cards */}
 
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white rounded-lg shadow-lg">
-                <thead className="bg-white sticky top-0">
-                  <tr className="border-b border-gray-200">
-                    {["Name", "Email", "Role", "isVerified", "Actions"].map(
-                      (hdr) => (
-                        <th
-                          key={hdr}
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
-                          {hdr}
-                        </th>
-                      )
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((u, idx) => (
-                    <tr
-                      key={u.email}
-                      className={`${
-                        idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-purple-50 transition-colors`}
-                    >
-                      <td className="px-6 py-4 text-gray-700">{`${u.firstName} ${u.lastName}`}</td>
-                      <td className="px-6 py-4 text-gray-700">{u.email}</td>
-                      <td className="px-6 py-4 text-gray-700">{u.role}</td>
-                      <td className="px-6 py-4">
-                        {u.isVerified ? "True" : "False"}
-                      </td>
-                      <td className="px-6 py-4 text-gray-700">
-                        <button
-                          onClick={() => openUserSettings(u)}
-                          className="p-2 rounded hover:bg-gray-100"
-                        >
-                          <SettingsIcon className="w-5 h-5 text-gray-600" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
+<section>
+  <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+    User Management
+  </h2>
+
+  <div className="overflow-x-auto bg-white rounded-xl shadow">
+    <table className="min-w-full table-auto">
+      <thead className="bg-purple-600 sticky top-0 z-10">
+        <tr>
+          {["Name", "Email", "Role", "Verified", "Actions"].map((hdr) => (
+            <th
+              key={hdr}
+              className="px-6 py-3 text-left text-sm font-semibold text-white uppercase"
+            >
+              {hdr}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {users.length === 0 ? (
+          <tr>
+            <td colSpan={5} className="px-6 py-8 text-center text-sm text-gray-500">
+              No users found
+            </td>
+          </tr>
+        ) : (
+          users.map((u, idx) => (
+            <tr
+              key={u.id}
+              className={`
+                ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                hover:bg-purple-50 transition-colors
+              `}
+            >
+              <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                {u.firstName} {u.lastName}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-800 truncate">
+                {u.email}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                {u.role}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {u.isVerified
+                  ? <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Verified</span>
+                  : <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">Unverified</span>
+                }
+              </td>
+              <td className="px-10 py-4 flex space-x-4 whitespace-nowrap">
+                <button
+                  onClick={() => openUserSettings(u)}
+                  className="text-purple-600 hover:underline text-sm"
+                >
+                  Edit
+                </button>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
           {/* Other sections remain the same */}
           {/* ... */}
           {isModalOpen && selectedUser && (

@@ -140,7 +140,7 @@ export default function AdminReports() {
   );
 
   const platformUsageData = {
-    labels: ["Donors", "Recipients"],
+    labels: ["Donors", "Recipients", "Logistics Staff"],
     datasets: [
       {
         label: "Users",
@@ -443,7 +443,7 @@ export default function AdminReports() {
         }`}
       >
         {/* <Header title="Reports" /> */}
-        <main className="flex-1 p-6 bg-gradient-to-br from-purple-200 via-white to-indigo-100 overflow-auto">
+        <main className="flex-1 p-6 bg-gradient-to-br from-indigo-50 via-white to-purple-50 overflow-auto">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <ClipboardListIcon className="w-6 h-6 text-blue-600" />

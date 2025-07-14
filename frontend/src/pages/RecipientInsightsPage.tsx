@@ -47,7 +47,7 @@ export const RecipientInsightsPage: React.FC = () => {
 
   const navItems: NavItem[] = [
     { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "/dashboard" },
-    { label: "Donations", icon: <PackageIcon className="w-5 h-5" />, href: "/dashboard/my-donations" },   
+    { label: "My Claims", icon: <PackageIcon className="w-5 h-5" />, href: "/dashboard/my-donations" },
     { label: "Insights", icon: <BarChart2Icon />, href: "/dashboard/recipient-insights" },
     { label: "My Needs", icon: <ClipboardListIcon className="w-5 h-5" />, href: "/dashboard/recipient-needs" },
     { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "/dashboard/settings" },
@@ -145,27 +145,13 @@ export const RecipientInsightsPage: React.FC = () => {
 
       <main
         className={
-          "min-h-screen bg-gradient-to-br from-purple-50 to-white p-6 transition-all duration-200 " +
+          "min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-6 transition-all duration-200 " +
           (sidebarOpen ? "ml-64" : "ml-16")
         }
       >
-        <Header title="Recipient Insights" />
+        <Header title="RECIPIENT INSIGHTS" />
 
         <div className="max-w-7xl mx-auto space-y-8 mt-6 w-full">
-          <h1 className="text-3xl font-extrabold text-gray-900">Your Receipt Insights</h1>
-
-          {/* Year Selector */}
-          <div>
-            <select
-              value={selectedYear}
-              onChange={e => setSelectedYear(Number(e.target.value))}
-              className="mb-4 p-2 border rounded"
-            >
-              {[2023, 2024, 2025, 2026].map(year => (
-                <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
-          </div>
 
           {/* Stat Card */}
           <section className="grid grid-cols-1 md:grid-cols-3 gap-6">

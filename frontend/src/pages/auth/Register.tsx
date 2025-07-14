@@ -110,10 +110,7 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-100 relative overflow-hidden px-2 py-8">
-      {/* Animated background shapes */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-purple-300/30 rounded-full blur-3xl animate-float-slow -z-10" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-200/40 rounded-full blur-3xl animate-float-slower -z-10" />
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-2 py-8">
 
       <div
         className={`w-full ${

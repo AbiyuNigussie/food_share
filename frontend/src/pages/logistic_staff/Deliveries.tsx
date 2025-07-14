@@ -105,11 +105,11 @@ export const Deliveries: React.FC = () => {
       />
       <main
         className={clsx(
-          "p-8 bg-gradient-to-br from-purple-200 via-white to-indigo-100  border border-purple-200 min-h-screen transition-all duration-200",
+          "p-8 bg-gradient-to-br from-indigo-50 via-white to-purple-50 min-h-screen transition-all duration-200",
           sidebarOpen ? "ml-64" : "ml-16"
         )}
       >
-        <Header title="Deliveries" />
+        <Header title="DELIVERIES" />
         <div className="mb-6 flex justify-between items-center">
           <h2 className="text-xl font-semibold">Deliveries List</h2>
           <select

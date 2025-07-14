@@ -1,11 +1,10 @@
-// src/pages/RecipientDashboard.tsx
 import React, { useState, useEffect } from "react";
 import { Header } from "../Header";
 import { StatCard } from "../StatCard";
 import { SearchBar } from "../SearchBar";
 import { FilterSelect } from "../FilterSelect";
 import { DonationSection } from "../DonationSection";
-import { DonationStatus, Donation } from "../../types";
+import { Donation } from "../../types";
 import { SideBar } from "../SideBar";
 import clsx from "clsx";
 import { authService } from "../../services/authService";
@@ -15,6 +14,7 @@ import {
   ClipboardListIcon,
   SettingsIcon,
   BarChart2Icon,
+  TruckIcon,
 } from "lucide-react";
 import { donationService } from "../../services/donationService";
 import { useAuth } from "../../contexts/AuthContext";
@@ -24,13 +24,9 @@ import { toast } from "react-toastify";
 
 const recipientNavItems = [
   { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "#" },
-  { label: "Donations", icon: <PackageIcon className="w-5 h-5" />, href: "/dashboard/my-donations" },
-  { label: "Insights", icon: <BarChart2Icon />, href: "/dashboard/recipient-insights" },
-  {
-    label: "My Needs",
-    icon: <ClipboardListIcon className="w-5 h-5" />,
-    href: "/dashboard/Recipient-Needs",
-  },
+  { label: "My Claims", icon: <PackageIcon className="w-5 h-5" />, href: "/dashboard/my-donations" },
+  { label: "Insights", icon: <BarChart2Icon className="w-5 h-5" />, href: "/dashboard/recipient-insights" },
+  { label: "My Needs", icon: <ClipboardListIcon className="w-5 h-5" />, href: "/dashboard/Recipient-Needs" },
   { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "/dashboard/settings" },
 ];
 
@@ -46,23 +42,24 @@ const RecipientDashboard: React.FC = () => {
   const rowsPerPage = 6;
   const [loading, setLoading] = useState(false);
 
-  // donation lists
+  // donations & stats
   const [availableDonations, setAvailableDonations] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
-  // claimed total
-  const [claimedCount, setClaimedCount] = useState(0);
-
-  // claim modal
+  const [stat, setStat] = useState<{ month: string; volume: number }[]>([]);
+  const [totalLbs, setTotalLbs] = useState(0);
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null);
 
-  // insight stats
-  type RReceiveStat = { month: string; volume: number };
-  const [stat, setStat] = useState<RReceiveStat[]>([]);
-  const [totalLbs, setTotalLbs] = useState(0);
-  const [selectedYear] = useState(new Date().getFullYear());
+  useEffect(() => {
+    fetchAvailableDonations();
+  }, [search, typeFilter, currentPage]);
 
-  // fetch available donations
+  useEffect(() => {
+    fetchInsights();
+  }, [token]);
+
+  // fetchers
   const fetchAvailableDonations = async () => {
+    setLoading(true);
     try {
       const res = await donationService.getFilteredDonations(token, {
         page: currentPage,
@@ -72,69 +69,64 @@ const RecipientDashboard: React.FC = () => {
         status: "pending",
       });
       setTotal(res.data.total);
-      setAvailableDonations(
-        res.data.data.map((d: any) => ({
-          title: d.title || d.donationType,
-          donor: `${d.donor.user.firstName} ${d.donor.user.lastName}`.trim() || "Unknown Donor",
-          foodType: d.foodType,
-          quantity: d.quantity,
-          location: d.location,
-          expiryDate: new Date(d.expiryDate).toLocaleDateString(),
-          availableFrom: new Date(d.availableFrom).toLocaleDateString(),
-          availableTo: new Date(d.availableTo).toLocaleDateString(),
-          notes: d.notes,
-          onClaim: () => setSelectedDonation(d),
-        }))
-      );
+      setAvailableDonations(res.data.data.map((d: any) => ({
+        id: d.id,
+        title: d.title || d.donationType,
+        donor: `${d.donor.user.firstName} ${d.donor.user.lastName}`.trim() || "Unknown Donor",
+        foodType: d.foodType,
+        quantity: d.quantity,
+        location: d.location,
+        expiryDate: new Date(d.expiryDate).toLocaleDateString(),
+        availableFrom: new Date(d.availableFrom).toLocaleDateString(),
+        availableTo: new Date(d.availableTo).toLocaleDateString(),
+        notes: d.notes,
+        onClaim: () => setSelectedDonation(d),
+      })));
     } catch (err) {
-      console.error("Failed to fetch donations:", err);
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // fetch insight stats
   const fetchInsights = async () => {
     try {
       const res = await authService.getRecipientInsights(token);
-      const data = res.data.data;
-      setStat(data.monthly || []);
-      setTotalLbs(data.totalLbs || 0);
+      setStat(res.data.data.monthly || []);
+      setTotalLbs(res.data.data.totalLbs || 0);
     } catch (err) {
-      console.error("Failed to fetch recipient insights:", err);
+      console.error(err);
     }
   };
 
-  // fetch claimed donations count
-  const fetchClaimedCount = async () => {
-    try {
-      const res = await authService.getClaimedDonations(token, 1, 1);
-      setClaimedCount(res.data.total);
-    } catch (err) {
-      console.error("Failed to fetch claimed count:", err);
-    }
-  };
+  const totalReceived = stat.reduce((sum, s) => sum + s.volume, 0);
 
-  useEffect(() => {
-    fetchAvailableDonations();
-  }, [search, typeFilter, currentPage]);
+const volumes = stat.map((s) => s.volume);
 
-  useEffect(() => {
-    fetchInsights();
-    fetchClaimedCount();
-  }, [token, selectedYear]);
-
-  // top stats
-  const stats = [
-    { label: "Available Donations",       value: total },
-    { label: "Donations Received",        value: claimedCount },
-    { label: "Total Food Received (lbs)", value: totalLbs },
-    
-  ];
+const stats = [
+  { label: "Available Donations", value: total },
+  {
+    label: "Donations Received",
+    value: totalReceived,
+    max: 100,
+    trendData: volumes,
+  },
+  {
+    label: "Total Food Received (lbs)",
+    value: totalLbs,
+    max: 1000,
+    trendData: volumes,
+  },
+];
 
   const controls = (
     <>
       <SearchBar value={search} onChange={setSearch} placeholder="Search by food or donor" />
       <FilterSelect
-        options={["All Types","Baked Goods","Canned Goods","Fresh Produce","Dairy","Meat & Poultry"]}
+        options={[
+          "All Types", "Baked Goods", "Canned Goods",
+          "Fresh Produce", "Dairy", "Meat & Poultry"
+        ]}
         value={typeFilter}
         onChange={setTypeFilter}
       />
@@ -154,33 +146,54 @@ const RecipientDashboard: React.FC = () => {
         }}
       />
 
-      <div className={clsx("min-h-screen p-8 transition-all", sidebarOpen ? "ml-64" : "ml-16")}>
-        <Header title="Recipient Dashboard" />
+      <div
+        className={clsx(
+          "min-h-screen p-10 transition-all",
+          sidebarOpen ? "ml-64" : "ml-16",
+          ""
+        )}
+      >
+        <Header title="RECIPIENT DASHBOARD">
+          <TruckIcon className="w-6 h-6 text-purple-500 mr-2" />
+        </Header>
 
-        {/* three stat cards */}
+        {/* KPI stats with radial progress */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-          {stats.map(s => (
-            <StatCard key={s.label} label={s.label} value={s.value} />
+          {stats.map(({ label, value, max, trendData }) => (
+            <StatCard
+              key={label}
+              label={label}
+              value={value}
+              max={max}
+              trendData={trendData}
+            />
           ))}
         </div>
 
-        {/* Available Donations */}
+        {/* sticky controls */}
+        <div className="sticky top-24 z-10 bg-white/60 backdrop-blur-md p-4 rounded-2xl mb-4 shadow">
+          <div className="flex flex-col sm:flex-row gap-4">
+            {controls}
+          </div>
+        </div>
+
+        {/* donation grid */}
         <DonationSection
           title="Available Donations"
           donations={availableDonations}
-          controls={controls}
-          type="available"
+          controls={null}
           layout="grid"
-          loading={loading}
-        />
-        <PaginationControls
-          page={currentPage}
-          rowsPerPage={rowsPerPage}
-          total={total}
-          onPageChange={setCurrentPage}
-        />
+          loading={loading} id={""} type={"available"}        />
 
-        {/* Claim Donation Modal */}
+        <div className="mt-6">
+          <PaginationControls
+            page={currentPage}
+            rowsPerPage={rowsPerPage}
+            total={total}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+
         <ClaimDonationModal
           open={!!selectedDonation}
           donation={selectedDonation}
@@ -189,7 +202,6 @@ const RecipientDashboard: React.FC = () => {
             toast.success("Donation claimed successfully!");
             setSelectedDonation(null);
             fetchAvailableDonations();
-            fetchClaimedCount();
           }}
         />
       </div>

@@ -78,11 +78,11 @@ export const LogisticsHistoryPage: React.FC = () => {
 
       <main
         className={clsx(
-          "min-h-screen  bg-gradient-to-br from-purple-200 via-white to-indigo-100  border-purple-200 p-6 transition-all duration-200",
+          "min-h-screen  bg-gradient-to-br from-indigo-50 via-white to-purple-50  border-purple-200 p-6 transition-all duration-200",
           sidebarOpen ? "ml-64" : "ml-16"
         )}
       >
-        <Header title="My Deliveries" />
+        <Header title="MY DELIVERIES" />
 
         {rows.length === 0 ? (
           <div className="p-12 text-center text-gray-500">
