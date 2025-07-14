@@ -248,10 +248,10 @@ const FAQPage: React.FC = () => {
 		<MainNavLayout>
 			<div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50">
 				{/* Hero Section */}
-				<section className="relative py-20 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+				<section className="relative py-20  bg-gradient-to-r from-purple-900/80 to-indigo-900/80 text-white">
 					<div className="max-w-7xl mx-auto px-4 text-center">
 					<div 
-						className="absolute inset-0 bg-cover bg-center opacity-50"
+						className="absolute inset-0 bg-cover bg-center opacity-45"
 						style={{ backgroundImage: "url('/assets/images/faq.png')" }}
 					/>
 						<motion.h1 
