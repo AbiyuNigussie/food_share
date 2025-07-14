@@ -1,1 +1,16 @@
 @import "tailwindcss";
+@keyframes donut-fill {
+  from { --pct: 0deg; }
+  to   { --pct: var(--target-deg); }
+}
+
+.donut-animate {
+  animation: donut-fill 1.2s ease-out forwards;
+}
+
+.donut-glow {
+  box-shadow:
+    0 0 8px rgba(124, 58, 237, 0.4),   /* outer purple glow */
+    inset 0 0 4px rgba(100, 100, 0, 0.05);  /* subtle inner shadow */
+}
+

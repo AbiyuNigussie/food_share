@@ -68,7 +68,7 @@ export const SettingsPage: React.FC = () => {
         title = "Recipient Portal";
         navItems = [
           { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />,              href: "/dashboard" },
-          { label: "Donations", icon: <PackageIcon className="w-5 h-5" />,           href: "/dashboard/my-donations" },
+          { label: "My Claims", icon: <PackageIcon className="w-5 h-5" />,           href: "/dashboard/my-donations" },
           { label: "Insights",  icon: <BarChart2Icon className="w-5 h-5" />,         href: "/dashboard/recipient-insights" },
           { label: "My Needs",  icon: <ClipboardListIcon className="w-5 h-5" />,     href: "/dashboard/Recipient-Needs" },
           { label: "Settings",  icon: <SettingsIcon className="w-5 h-5" />,           href: "/dashboard/settings" },
@@ -154,10 +154,10 @@ export const SettingsPage: React.FC = () => {
         className={clsx(
           "min-h-screen transition-all duration-200",
           sidebarOpen ? "ml-64 p-8" : "ml-16 p-4",
-          "bg-gradient-to-br from-purple-200 via-white to-indigo-200 border-purple-200"
+          "bg-gradient-to-br from-indigo-50 via-white to-purple-50"
         )}
       >
-        <Header title="Settings" />
+        <Header title="SETTINGS" />
 
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Top Profile Card */}

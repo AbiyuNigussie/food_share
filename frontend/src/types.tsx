@@ -1,4 +1,5 @@
 export interface DonationCardProps {
+  id: number;
   title: string;
   donor: string;
   quantity: string;

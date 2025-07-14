@@ -130,7 +130,7 @@ const AdminContactPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-purple-200 via-white to-indigo-100 rounded-3xl shadow-xl border border-purple-200">
+    <div className="min-h-screen p-6 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       <SideBar
         open={sidebarOpen}
         toggle={() => setSidebarOpen((o) => !o)}

@@ -144,7 +144,7 @@ export const RecipientNeeds: React.FC = () => {
   const pages = Math.ceil(total / rowsPerPage);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-200 via-white to-indigo-100  border-purple-200 flex items-stretch">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-stretch">
       <EditNeedModal
         need={editNeed}
         isOpen={editModalOpen}

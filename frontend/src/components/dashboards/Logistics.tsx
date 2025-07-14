@@ -52,7 +52,7 @@ export const Logistics: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const token = user?.token || "";
-
+const [stat, setStat] = useState<{ month: string; volume: number }[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [completedCount, setCompletedCount] = useState(0);
@@ -89,7 +89,7 @@ export const Logistics: React.FC = () => {
   // 2) Count how many are DELIVERED
   const fetchCompletedCount = async () => {
     try {
-      const res = await deliveryService.getLogisticDeliveries(token, {
+      const res = await deliveryService.getMyDeliveries(token, {
         status: "DELIVERED",
         page: 1,
         rowsPerPage: 1,
@@ -259,6 +259,21 @@ export const Logistics: React.FC = () => {
     },
     { label: "Settings", icon: <SettingsIcon />, href: "/dashboard/settings" },
   ];
+ 
+  const volumes = stat.map((s) => s.volume);
+  const stats = [
+  { label: "Pending Deliveries", value: pendingCount },
+  {
+    label: "Active Deliveries",
+    value: deliveries.length,
+  },
+  {
+    label: "Completed Deliveries",
+    value: completedCount,
+    max: 100,
+    trendData: volumes,
+  },
+];
 
   return (
     <>
@@ -280,13 +295,19 @@ export const Logistics: React.FC = () => {
           sidebarOpen ? "ml-64" : "ml-16"
         )}
       >
-        <Header title="Logistics Dashboard" />
+        <Header title="LOGISTICS DASHBOARD" />
 
         {/* 🔥 NEW STAT CARDS ADDED 🔥 */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <StatCard label="Active Deliveries" value={deliveries.length} />
-          <StatCard label="Completed Deliveries" value={completedCount} />
-          <StatCard label="Pending Deliveries" value={pendingCount} />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+          {stats.map(({ label, value, max, trendData }) => (
+            <StatCard
+              key={label}
+              label={label}
+              value={value}
+              max={max}
+              trendData={trendData}
+            />
+          ))}
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-sm">

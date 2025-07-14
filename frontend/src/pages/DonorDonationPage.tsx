@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import PaginationControls from "../components/PaginationControl";
 import { SideBar } from "../components/SideBar";
+import { Header } from "../components/Header";
 
 const donorNavItems = [
   { label: "Dashboard",    icon: <HomeIcon className="w-5 h-5" />,           href: "/dashboard" },
@@ -140,14 +141,13 @@ export const DonorDonationsPage: React.FC = () => {
 
       <div
         className={
-          "min-h-screen bg-gradient-to-br from-purple-200 via-white to-indigo-100 py-16 px-6 transition-all duration-200 " +
+          "min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-16 px-6 transition-all duration-200 " +
           (sidebarOpen ? "ml-64" : "ml-16")
         }
       >
+        <Header title="MY DONATIONS" />
         <div className="max-w-7xl mx-auto space-y-8">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-8">
-            My Donations
-          </h1>
+
 
           <div className="flex space-x-12 mb-8">
             {(["matched", "claimed"] as const).map(tab => (
