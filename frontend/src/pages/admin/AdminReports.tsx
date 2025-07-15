@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import { SideBar } from "../../components/SideBar";
-import { Header } from "../../components/Header";
 import {
-  BarChartIcon,
   ClipboardListIcon,
   HomeIcon,
   DownloadIcon,
-  UsersIcon,
   MailIcon,
   SettingsIcon,
 } from "lucide-react";
@@ -84,7 +81,7 @@ interface ReportEntry {
 }
 
 export default function AdminReports() {
-  const { user, setUser } = useAuth();
+  const { user } = useAuth();
   const [reports, setReports] = useState<ReportEntry[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [donationPage, setDonationPage] = useState(1);
@@ -120,25 +117,6 @@ export default function AdminReports() {
   const donationPageCount = Math.ceil(donations.length / rowsPerPage);
   const deliveryPageCount = Math.ceil(deliveries.length / rowsPerPage);
 
-  // Chart Data
-  const deliveredCount = deliveries.filter(
-    (r) => r.delivery?.deliveryStatus === "DELIVERED"
-  ).length;
-  const pendingCount = deliveries.filter(
-    (r) => r.delivery?.deliveryStatus !== "DELIVERED"
-  ).length;
-
-  const donationTrendLabels = donations
-    .map((r) => new Date(r.createdAt).toLocaleDateString())
-    .filter((v, i, arr) => arr.indexOf(v) === i);
-
-  const donationTrendData = donationTrendLabels.map(
-    (label) =>
-      donations.filter(
-        (r) => new Date(r.createdAt).toLocaleDateString() === label
-      ).length
-  );
-
   const platformUsageData = {
     labels: ["Donors", "Recipients", "Logistics Staff"],
     datasets: [
@@ -172,33 +150,6 @@ export default function AdminReports() {
   }, {} as Record<string, number>);
   const deliveryStatusLabels = Object.keys(deliveryStatusCounts);
   const deliveryStatusData = Object.values(deliveryStatusCounts);
-
-  // Delivery trend (by updatedAt)
-  const deliveryTrendLabels = deliveries
-    .map((r) => new Date(r.delivery?.updatedAt || "").toLocaleDateString())
-    .filter((v, i, arr) => arr.indexOf(v) === i);
-  const deliveryTrendData = deliveryTrendLabels.map(
-    (label) =>
-      deliveries.filter(
-        (r) =>
-          new Date(r.delivery?.updatedAt || "").toLocaleDateString() === label
-      ).length
-  );
-
-  // Platform usage for deliveries
-  const deliveryPlatformUsageData = {
-    labels: ["Donors", "Recipients"],
-    datasets: [
-      {
-        label: "Users",
-        data: [
-          new Set(deliveries.map((r) => r.donor?.user.email)).size,
-          new Set(deliveries.map((r) => r.recipient?.user.email)).size,
-        ],
-        backgroundColor: ["#34D399", "#FBBF24"],
-      },
-    ],
-  };
 
   // Chart options
   const barOptions = {
@@ -406,34 +357,34 @@ export default function AdminReports() {
         open={sidebarOpen}
         toggle={() => setSidebarOpen(!sidebarOpen)}
         navItems={[
-{
-      label: "Dashboard",
-      icon: <HomeIcon className="w-5 h-5" />,
-      href: "/dashboard",
-    },
-  {
-          label: "Recipient Approvals",
-          icon: <ClipboardListIcon className="w-5 h-5" />,
-          href: "/admin/recipients/approvals",
-        },
-    {
-      label: "Reports",
-      icon: <ClipboardListIcon className="w-5 h-5" />,
-      href: "/admin/reports",
-    },
-    {
-      label: "Contacts",
-      icon: <MailIcon className="w-5 h-5" />,
-      href: "/admin/contacts",
-    },
-    {
-      label: "Settings",
-      icon: <SettingsIcon className="w-5 h-5" />,
-      href: "/admin/settings",
-    },
+          {
+            label: "Dashboard",
+            icon: <HomeIcon className="w-5 h-5" />,
+            href: "/dashboard",
+          },
+          {
+            label: "Recipient Approvals",
+            icon: <ClipboardListIcon className="w-5 h-5" />,
+            href: "/admin/recipients/approvals",
+          },
+          {
+            label: "Reports",
+            icon: <ClipboardListIcon className="w-5 h-5" />,
+            href: "/admin/reports",
+          },
+          {
+            label: "Contacts",
+            icon: <MailIcon className="w-5 h-5" />,
+            href: "/admin/contacts",
+          },
+          {
+            label: "Settings",
+            icon: <SettingsIcon className="w-5 h-5" />,
+            href: "/admin/settings",
+          },
         ]}
         userInfo={{
-          name:  `${user?.firstName} ${user?.lastName}`,
+          name: `${user?.firstName} ${user?.lastName}`,
           email: user?.email || "",
         }}
       />

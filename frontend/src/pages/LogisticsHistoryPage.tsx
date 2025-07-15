@@ -12,7 +12,6 @@ import {
   SettingsIcon,
   ClockIcon,
   UserIcon,
-  PackageIcon,
   MapPinIcon,
   BarChart2Icon,
 } from "lucide-react";
@@ -41,20 +40,32 @@ export const LogisticsHistoryPage: React.FC = () => {
   const perPage = 8;
 
   const navItems: NavItem[] = [
-   { label: "Dashboard",  icon: <HomeIcon className="w-5 h-5" />,             href: "/dashboard" },
-   { label: "Deliveries", icon: <TruckIcon className="w-5 h-5" />,            href: "/dashboard/deliveries" },
-   { label: "My Deliveries", icon: <BarChart2Icon className="w-5 h-5" />,     href: "/dashboard/my-deliveries" },
-   { label: "Settings",   icon: <SettingsIcon className="w-5 h-5" />,         href: "/dashboard/settings" },
+    {
+      label: "Dashboard",
+      icon: <HomeIcon className="w-5 h-5" />,
+      href: "/dashboard",
+    },
+    {
+      label: "Deliveries",
+      icon: <TruckIcon className="w-5 h-5" />,
+      href: "/dashboard/deliveries",
+    },
+    {
+      label: "My Deliveries",
+      icon: <BarChart2Icon className="w-5 h-5" />,
+      href: "/dashboard/my-deliveries",
+    },
+    {
+      label: "Settings",
+      icon: <SettingsIcon className="w-5 h-5" />,
+      href: "/dashboard/settings",
+    },
   ];
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await authService.getMyDeliveries(
-          token,
-          page,
-          perPage
-        );
+        const res = await authService.getMyDeliveries(token, page, perPage);
         setRows(res.data.data);
         setTotal(res.data.total);
       } catch (err) {
@@ -125,7 +136,7 @@ export const LogisticsHistoryPage: React.FC = () => {
                     </span>
                   </div>
                 </div>
-                
+
                 {/* Route */}
                 <div className="flex items-center mb-4">
                   <MapPinIcon className="w-5 h-5 text-blue-600 mr-2" />

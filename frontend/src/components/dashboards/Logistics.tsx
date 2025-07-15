@@ -1,14 +1,7 @@
 // src/pages/LogisticsDashboard.tsx
 import React, { useState, useEffect } from "react";
 import clsx from "clsx";
-import {
-  HomeIcon,
-  TruckIcon,
-  MapPinIcon,
-  UserIcon,
-  BarChart2Icon,
-  SettingsIcon,
-} from "lucide-react";
+import { HomeIcon, TruckIcon, BarChart2Icon, SettingsIcon } from "lucide-react";
 
 import { SideBar, NavItem } from "../SideBar";
 import { StatCard } from "../StatCard";
@@ -52,16 +45,14 @@ export const Logistics: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const token = user?.token || "";
-const [stat, setStat] = useState<{ month: string; volume: number }[]>([]);
+  const [stat] = useState<{ month: string; volume: number }[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [completedCount, setCompletedCount] = useState(0);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
-  const [modalType, setModalType] = useState<"pickup" | "dropoff" | null>(
-    null
-  );
+  const [modalType, setModalType] = useState<"pickup" | "dropoff" | null>(null);
   const [modalDelivery, setModalDelivery] = useState<Delivery | null>(null);
   const [modalDatetime, setModalDatetime] = useState("");
 
@@ -100,7 +91,7 @@ const [stat, setStat] = useState<{ month: string; volume: number }[]>([]);
     }
   };
 
-    // 3) Count pending deliveries
+  // 3) Count pending deliveries
   const fetchPendingCount = async () => {
     try {
       const res = await deliveryService.getLogisticDeliveries(token, {
@@ -207,11 +198,17 @@ const [stat, setStat] = useState<{ month: string; volume: number }[]>([]);
       case "ASSIGNED":
         return { text: "Assigned", color: "bg-blue-100 text-blue-700" };
       case "PICKUP_SCHEDULED":
-        return { text: "Pickup Scheduled", color: "bg-yellow-100 text-yellow-700" };
+        return {
+          text: "Pickup Scheduled",
+          color: "bg-yellow-100 text-yellow-700",
+        };
       case "PICKED_UP":
         return { text: "Picked Up", color: "bg-orange-100 text-orange-700" };
       case "DROPOFF_SCHEDULED":
-        return { text: "Dropoff Scheduled", color: "bg-teal-100 text-teal-700" };
+        return {
+          text: "Dropoff Scheduled",
+          color: "bg-teal-100 text-teal-700",
+        };
       case "DROPPED_OFF":
         return { text: "Dropped Off", color: "bg-green-100 text-green-700" };
       case "DELIVERED":
@@ -259,21 +256,21 @@ const [stat, setStat] = useState<{ month: string; volume: number }[]>([]);
     },
     { label: "Settings", icon: <SettingsIcon />, href: "/dashboard/settings" },
   ];
- 
+
   const volumes = stat.map((s) => s.volume);
   const stats = [
-  { label: "Pending Deliveries", value: pendingCount },
-  {
-    label: "Active Deliveries",
-    value: deliveries.length,
-  },
-  {
-    label: "Completed Deliveries",
-    value: completedCount,
-    max: 100,
-    trendData: volumes,
-  },
-];
+    { label: "Pending Deliveries", value: pendingCount },
+    {
+      label: "Active Deliveries",
+      value: deliveries.length,
+    },
+    {
+      label: "Completed Deliveries",
+      value: completedCount,
+      max: 100,
+      trendData: volumes,
+    },
+  ];
 
   return (
     <>

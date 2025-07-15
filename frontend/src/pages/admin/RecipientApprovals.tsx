@@ -10,8 +10,6 @@ import { SideBar } from "../../components/SideBar";
 import {
   ClipboardListIcon,
   HomeIcon,
-  UsersIcon,
-  BellIcon,
   SettingsIcon,
   FileTextIcon,
   MoreVerticalIcon,
@@ -107,7 +105,7 @@ const RecipientApprovals: React.FC = () => {
       icon: <ClipboardListIcon className="w-5 h-5" />,
       href: "/admin/reports",
     },
-        {
+    {
       label: "Contacts",
       icon: <MailIcon className="w-5 h-5" />,
       href: "/admin/contacts",

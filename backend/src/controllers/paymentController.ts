@@ -4,7 +4,6 @@ import { PrismaClient } from "@prisma/client";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 const prisma = new PrismaClient();
-
 export const handleInitialize = async (req: Request, res: Response) => {
   const {
     amount,

@@ -11,7 +11,6 @@ import {
   Clock,
   ArrowLeft,
   Package,
-  Calendar,
   AlertCircle,
   Info,
   Navigation,
@@ -28,11 +27,6 @@ const formatDateTime = (iso: string | null) => {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(iso));
-};
-
-const mapContainerStyle = {
-  width: "100%",
-  height: "100%",
 };
 
 const fallbackCenter = {

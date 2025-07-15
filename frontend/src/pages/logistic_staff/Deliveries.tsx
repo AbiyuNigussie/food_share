@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import clsx from "clsx";
 import PaginationControls from "../../components/PaginationControl";
 import { Header } from "../../components/Header";
@@ -7,10 +7,8 @@ import {
   BarChart2Icon,
   GiftIcon,
   HomeIcon,
-  MapPinIcon,
   SettingsIcon,
   TruckIcon,
-  UserIcon,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { deliveryService } from "../../services/deliveryService";
@@ -27,12 +25,6 @@ const statusColors: Record<DeliveryStatus, string> = {
 
 export const Deliveries: React.FC = () => {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
-  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
-  const [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(
-    null
-  );
-  const [pickupTime, setPickupTime] = useState("");
-  const [dropoffTime, setDropoffTime] = useState("");
   const [filter, setFilter] = useState<DeliveryStatus | "All">("PENDING");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -49,7 +41,11 @@ export const Deliveries: React.FC = () => {
       href: "/dashboard",
     },
     { label: "Deliveries", icon: <TruckIcon className="w-5 h-5" />, href: "#" },
-    { label: "My Deliveries", icon: <BarChart2Icon />, href: "/dashboard/my-deliveries" },
+    {
+      label: "My Deliveries",
+      icon: <BarChart2Icon />,
+      href: "/dashboard/my-deliveries",
+    },
     {
       label: "Settings",
       icon: <SettingsIcon className="w-5 h-5" />,
@@ -101,7 +97,10 @@ export const Deliveries: React.FC = () => {
         title="Logistics Portal"
         logoIcon={<GiftIcon className="w-6 h-6 text-purple-600" />}
         navItems={navItems}
-        userInfo={{ name: `${user?.firstName} ${user?.lastName}`, email: user?.email || "" }}
+        userInfo={{
+          name: `${user?.firstName} ${user?.lastName}`,
+          email: user?.email || "",
+        }}
       />
       <main
         className={clsx(

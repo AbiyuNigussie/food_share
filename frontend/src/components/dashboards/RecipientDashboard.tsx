@@ -24,10 +24,26 @@ import { toast } from "react-toastify";
 
 const recipientNavItems = [
   { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "#" },
-  { label: "My Claims", icon: <PackageIcon className="w-5 h-5" />, href: "/dashboard/my-donations" },
-  { label: "Insights", icon: <BarChart2Icon className="w-5 h-5" />, href: "/dashboard/recipient-insights" },
-  { label: "My Needs", icon: <ClipboardListIcon className="w-5 h-5" />, href: "/dashboard/Recipient-Needs" },
-  { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "/dashboard/settings" },
+  {
+    label: "My Claims",
+    icon: <PackageIcon className="w-5 h-5" />,
+    href: "/dashboard/my-donations",
+  },
+  {
+    label: "Insights",
+    icon: <BarChart2Icon className="w-5 h-5" />,
+    href: "/dashboard/recipient-insights",
+  },
+  {
+    label: "My Needs",
+    icon: <ClipboardListIcon className="w-5 h-5" />,
+    href: "/dashboard/Recipient-Needs",
+  },
+  {
+    label: "Settings",
+    icon: <SettingsIcon className="w-5 h-5" />,
+    href: "/dashboard/settings",
+  },
 ];
 
 const RecipientDashboard: React.FC = () => {
@@ -47,7 +63,9 @@ const RecipientDashboard: React.FC = () => {
   const [total, setTotal] = useState(0);
   const [stat, setStat] = useState<{ month: string; volume: number }[]>([]);
   const [totalLbs, setTotalLbs] = useState(0);
-  const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null);
+  const [selectedDonation, setSelectedDonation] = useState<Donation | null>(
+    null
+  );
 
   useEffect(() => {
     fetchAvailableDonations();
@@ -69,19 +87,23 @@ const RecipientDashboard: React.FC = () => {
         status: "pending",
       });
       setTotal(res.data.total);
-      setAvailableDonations(res.data.data.map((d: any) => ({
-        id: d.id,
-        title: d.title || d.donationType,
-        donor: `${d.donor.user.firstName} ${d.donor.user.lastName}`.trim() || "Unknown Donor",
-        foodType: d.foodType,
-        quantity: d.quantity,
-        location: d.location,
-        expiryDate: new Date(d.expiryDate).toLocaleDateString(),
-        availableFrom: new Date(d.availableFrom).toLocaleDateString(),
-        availableTo: new Date(d.availableTo).toLocaleDateString(),
-        notes: d.notes,
-        onClaim: () => setSelectedDonation(d),
-      })));
+      setAvailableDonations(
+        res.data.data.map((d: any) => ({
+          id: d.id,
+          title: d.title || d.donationType,
+          donor:
+            `${d.donor.user.firstName} ${d.donor.user.lastName}`.trim() ||
+            "Unknown Donor",
+          foodType: d.foodType,
+          quantity: d.quantity,
+          location: d.location,
+          expiryDate: new Date(d.expiryDate).toLocaleDateString(),
+          availableFrom: new Date(d.availableFrom).toLocaleDateString(),
+          availableTo: new Date(d.availableTo).toLocaleDateString(),
+          notes: d.notes,
+          onClaim: () => setSelectedDonation(d),
+        }))
+      );
     } catch (err) {
       console.error(err);
     } finally {
@@ -101,31 +123,39 @@ const RecipientDashboard: React.FC = () => {
 
   const totalReceived = stat.reduce((sum, s) => sum + s.volume, 0);
 
-const volumes = stat.map((s) => s.volume);
+  const volumes = stat.map((s) => s.volume);
 
-const stats = [
-  { label: "Available Donations", value: total },
-  {
-    label: "Donations Received",
-    value: totalReceived,
-    max: 100,
-    trendData: volumes,
-  },
-  {
-    label: "Total Food Received (lbs)",
-    value: totalLbs,
-    max: 1000,
-    trendData: volumes,
-  },
-];
+  const stats = [
+    { label: "Available Donations", value: total },
+    {
+      label: "Donations Received",
+      value: totalReceived,
+      max: 100,
+      trendData: volumes,
+    },
+    {
+      label: "Total Food Received (lbs)",
+      value: totalLbs,
+      max: 1000,
+      trendData: volumes,
+    },
+  ];
 
   const controls = (
     <>
-      <SearchBar value={search} onChange={setSearch} placeholder="Search by food or donor" />
+      <SearchBar
+        value={search}
+        onChange={setSearch}
+        placeholder="Search by food or donor"
+      />
       <FilterSelect
         options={[
-          "All Types", "Baked Goods", "Canned Goods",
-          "Fresh Produce", "Dairy", "Meat & Poultry"
+          "All Types",
+          "Baked Goods",
+          "Canned Goods",
+          "Fresh Produce",
+          "Dairy",
+          "Meat & Poultry",
         ]}
         value={typeFilter}
         onChange={setTypeFilter}
@@ -137,7 +167,7 @@ const stats = [
     <>
       <SideBar
         open={sidebarOpen}
-        toggle={() => setSidebarOpen(o => !o)}
+        toggle={() => setSidebarOpen((o) => !o)}
         title="Recipient Portal"
         navItems={recipientNavItems}
         userInfo={{
@@ -172,9 +202,7 @@ const stats = [
 
         {/* sticky controls */}
         <div className="sticky top-24 z-10 bg-white/60 backdrop-blur-md p-4 rounded-2xl mb-4 shadow">
-          <div className="flex flex-col sm:flex-row gap-4">
-            {controls}
-          </div>
+          <div className="flex flex-col sm:flex-row gap-4">{controls}</div>
         </div>
 
         {/* donation grid */}
@@ -183,7 +211,10 @@ const stats = [
           donations={availableDonations}
           controls={null}
           layout="grid"
-          loading={loading} id={""} type={"available"}        />
+          loading={loading}
+          id={""}
+          type={"available"}
+        />
 
         <div className="mt-6">
           <PaginationControls

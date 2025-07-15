@@ -23,7 +23,7 @@ export const DonationSection: React.FC<DonationSectionProps> = ({
   layout = "grid",
   loading = false,
 }) => {
-  const renderCard = (donation: DonationCardProps, idx: number) =>
+  const renderCard = (donation: DonationCardProps) =>
     type === "available" ? (
       <AvailableDonationCard {...donation} />
     ) : (
@@ -41,9 +41,7 @@ export const DonationSection: React.FC<DonationSectionProps> = ({
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">{title}</h2>
 
       {controls && (
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          {controls}
-        </div>
+        <div className="flex flex-col md:flex-row gap-4 mb-6">{controls}</div>
       )}
 
       {loading ? (
@@ -71,7 +69,7 @@ export const DonationSection: React.FC<DonationSectionProps> = ({
                 relative
               "
             >
-              {renderCard(donation, idx)}
+              {renderCard(donation)}
             </motion.div>
           ))}
         </div>

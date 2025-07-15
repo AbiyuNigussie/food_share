@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { authService } from "../services/authService";
 import { toast } from "react-toastify";
 import { AppNotification } from "../types";
-import { ChangeMatchModal } from "./changeModal"; 
+import { ChangeMatchModal } from "./changeModal";
 
 export interface HeaderProps {
   title: string;
@@ -14,7 +14,7 @@ export interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ title }) => {
   const { user } = useAuth();
   const token = user?.token || "";
-  const role = user?.role; 
+  const role = user?.role;
 
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [open, setOpen] = useState(false);
@@ -22,8 +22,8 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
 
   const [changeModalOpen, setChangeModalOpen] = useState(false);
   const [selectedDonationId, setSelectedDonationId] = useState<string>("");
-  const [initialAddress, setInitialAddress] = useState<string>("");
-  const [initialPhone, setInitialPhone] = useState<string>("");
+  const [initialAddress] = useState<string>("");
+  const [initialPhone] = useState<string>("");
 
   useEffect(() => {
     if (!token) return;
@@ -94,16 +94,15 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
 
   return (
     <div className="flex items-center justify-between mb-6 relative" ref={ref}>
-    <div className="mb-6">
-  <h1 className="text-3xl font-bold text-purple-800 tracking-tight">
-    {title}
-  </h1>
-  <div className="mt-2 space-y-1">
-    <div className="w-32 h-1 bg-purple-500 rounded-full" />
-    <div className="w-20 h-1 bg-purple-300 rounded-full" />
-  </div>
-</div>
-
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-purple-800 tracking-tight">
+          {title}
+        </h1>
+        <div className="mt-2 space-y-1">
+          <div className="w-32 h-1 bg-purple-500 rounded-full" />
+          <div className="w-20 h-1 bg-purple-300 rounded-full" />
+        </div>
+      </div>
 
       <div className="relative">
         <button

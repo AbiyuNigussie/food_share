@@ -9,8 +9,6 @@ import {
   TruckIcon,
   HomeIcon,
   PackageIcon,
-  MapPinIcon,
-  UserIcon,
   SettingsIcon,
   ClipboardListIcon,
   BarChart2Icon,
@@ -21,9 +19,21 @@ import { Header } from "../components/Header";
 
 const recipientNavItems = [
   { label: "Dashboard", icon: <HomeIcon />, href: "/dashboard" },
-  { label: "My Claims", icon: <PackageIcon />, href: "/dashboard/my-donations" },
-  { label: "Insights", icon: <BarChart2Icon />, href: "/dashboard/recipient-insights" },
-  { label: "My Needs", icon: <ClipboardListIcon />, href: "/dashboard/recipient-needs" },
+  {
+    label: "My Claims",
+    icon: <PackageIcon />,
+    href: "/dashboard/my-donations",
+  },
+  {
+    label: "Insights",
+    icon: <BarChart2Icon />,
+    href: "/dashboard/recipient-insights",
+  },
+  {
+    label: "My Needs",
+    icon: <ClipboardListIcon />,
+    href: "/dashboard/recipient-needs",
+  },
   { label: "Settings", icon: <SettingsIcon />, href: "/dashboard/settings" },
 ];
 
@@ -116,7 +126,9 @@ export const RecipientDonationsPage: React.FC = () => {
                 {activeTab === "matched" ? (
                   <>
                     Matched on{" "}
-                    {new Date((it as unknown as MatchedDonation).createdAt).toLocaleDateString(undefined, {
+                    {new Date(
+                      (it as unknown as MatchedDonation).createdAt
+                    ).toLocaleDateString(undefined, {
                       month: "short",
                       day: "2-digit",
                       year: "numeric",
@@ -125,7 +137,9 @@ export const RecipientDonationsPage: React.FC = () => {
                 ) : (
                   <>
                     Claimed on{" "}
-                    {new Date((it as unknown as ClaimedDonation).createdAt).toLocaleDateString(undefined, {
+                    {new Date(
+                      (it as unknown as ClaimedDonation).createdAt
+                    ).toLocaleDateString(undefined, {
                       month: "short",
                       day: "2-digit",
                       year: "numeric",
@@ -147,7 +161,10 @@ export const RecipientDonationsPage: React.FC = () => {
         toggle={() => setSidebarOpen((o) => !o)}
         title="Recipient Portal"
         navItems={recipientNavItems}
-        userInfo={{ name: `${user?.firstName} ${user?.lastName}`, email: user?.email || "" }}
+        userInfo={{
+          name: `${user?.firstName} ${user?.lastName}`,
+          email: user?.email || "",
+        }}
       />
       <div
         className={
@@ -194,9 +211,12 @@ export const RecipientDonationsPage: React.FC = () => {
                   <h3 className="text-2xl font-bold text-gray-800">
                     {d.foodType}
                   </h3>
-                  <p className="text-gray-700"><strong>Qty:</strong> {d.quantity}</p>
                   <p className="text-gray-700">
-                    <strong>Donor:</strong> {d.donor.user.firstName} {d.donor.user.lastName}
+                    <strong>Qty:</strong> {d.quantity}
+                  </p>
+                  <p className="text-gray-700">
+                    <strong>Donor:</strong> {d.donor.user.firstName}{" "}
+                    {d.donor.user.lastName}
                   </p>
                 </>
               ))
@@ -211,9 +231,12 @@ export const RecipientDonationsPage: React.FC = () => {
                 <h3 className="text-2xl font-bold text-gray-800">
                   {d.foodType}
                 </h3>
-                <p className="text-gray-700"><strong>Qty:</strong> {d.quantity}</p>
                 <p className="text-gray-700">
-                  <strong>Donor:</strong> {d.donor.user.firstName} {d.donor.user.lastName}
+                  <strong>Qty:</strong> {d.quantity}
+                </p>
+                <p className="text-gray-700">
+                  <strong>Donor:</strong> {d.donor.user.firstName}{" "}
+                  {d.donor.user.lastName}
                 </p>
                 {d.delivery && (
                   <div className="mt-3">

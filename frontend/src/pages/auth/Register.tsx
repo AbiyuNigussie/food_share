@@ -57,7 +57,6 @@ const Register: React.FC = () => {
 
     try {
       setLoading(true);
-      let result;
       if (role === "RECIPIENT") {
         const formData = new FormData();
         formData.append("firstName", firstName);
@@ -82,9 +81,9 @@ const Register: React.FC = () => {
         if (proofOfAddressDoc) {
           formData.append("proofOfAddressDoc", proofOfAddressDoc);
         }
-        result = await authService.register(formData, true);
+        await authService.register(formData, true);
       } else {
-        result = await authService.register({
+        await authService.register({
           firstName,
           lastName,
           email,
@@ -111,7 +110,6 @@ const Register: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-2 py-8">
-
       <div
         className={`w-full ${
           role === "RECIPIENT" ? "max-w-4xl" : "max-w-md"

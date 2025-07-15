@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
 import {
   HomeIcon,
-  UsersIcon,
   ClipboardListIcon,
   SettingsIcon,
   XIcon,
   EditIcon,
   SaveIcon,
   MailIcon,
-  BellIcon,
 } from "lucide-react";
 import { SideBar } from "../SideBar";
 import { StatCard } from "../StatCard";
-import { Header } from "../Header";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
@@ -25,31 +22,9 @@ interface User {
   role: string;
   isVerified: boolean;
 }
-interface Donor {
-  user: User;
-  address: string;
-}
-interface Recipient {
-  user: User;
-  address: string;
-}
-interface LogisticsStaff {
-  user: User;
-}
-
-interface ReportEntry {
-  id: string;
-  donor: Donor;
-  recipient: Recipient;
-  foodType: string;
-  quantity: string;
-  createdAt: string;
-  status: string;
-}
 
 export const AdminDashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [reports, setReports] = useState<ReportEntry[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -57,13 +32,11 @@ export const AdminDashboard: React.FC = () => {
   const [editedUser, setEditedUser] = useState<Partial<User>>({});
   const [totalUsers, setTotalUsers] = useState(0);
   const [activeUsers, setActiveUsers] = useState(0);
-  const [totalDonations, setTotalDonations] = useState(0);
-  const [successRate, setSuccessRate] = useState(0);
+  const [, setTotalDonations] = useState(0);
 
-    const { user } = useAuth();
-    const donations = reports;
+  const { user } = useAuth();
 
-    //const totalDonationss = donations.length;
+  //const totalDonationss = donations.length;
 
   useEffect(() => {
     fetch("/api/admin/users")
@@ -72,7 +45,7 @@ export const AdminDashboard: React.FC = () => {
       .catch((err) => console.error("Failed to fetch users:", err));
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchStats = async () => {
       try {
         // 1. Users
@@ -80,13 +53,12 @@ export const AdminDashboard: React.FC = () => {
         const allUsers = usersRes.data;
         setUsers(allUsers);
         setTotalUsers(allUsers.length);
-        setActiveUsers(allUsers.filter(u => u.isVerified).length);
+        setActiveUsers(allUsers.filter((u) => u.isVerified).length);
 
         // 2. Donations
         const donationsRes = await axios.get<{ data: any[] }>("/api/donations");
         const allDonations = donationsRes.data.data;
         setTotalDonations(allDonations.length);
-
       } catch (err: any) {
         console.error("Failed to fetch stats:", err);
         toast.error("Could not load dashboard stats");
@@ -96,7 +68,6 @@ export const AdminDashboard: React.FC = () => {
     fetchStats();
   }, []);
 
-  
   const navItems = [
     {
       label: "Dashboard",
@@ -124,28 +95,6 @@ export const AdminDashboard: React.FC = () => {
       href: "/admin/settings",
     },
   ];
-
-  
-  const stats = [
-    { label: "Total Users", value: 324 },
-    { label: "Active Users", value: 256 },
-    { label: "Total Donations", value: 1458 },
-    { label: "Success Rate", value: "92%" },
-  ];
-
-  const getStatusBadge = (status: string) => {
-    const base = "px-3 py-1 rounded-full text-xs font-semibold";
-    const normalized = status.toLowerCase();
-    if (normalized === "active")
-      return (
-        <span className={`${base} bg-purple-100 text-purple-700`}>Active</span>
-      );
-    if (normalized === "suspended")
-      return (
-        <span className={`${base} bg-red-100 text-red-700`}>Suspended</span>
-      );
-    return <span className={`${base} bg-gray-200 text-gray-600`}>Pending</span>;
-  };
 
   const openUserSettings = (user: User) => {
     setSelectedUser(user);
@@ -212,35 +161,6 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
-  const deleteUser = async (userId: string) => {
-    try {
-      const toastId = toast.loading("Deleting user...");
-
-      await axios.delete(`/api/admin/users/${userId}`);
-
-      setUsers(users.filter((user) => user.id !== userId));
-
-      toast.update(toastId, {
-        render: "User deleted successfully!",
-        type: "success",
-        isLoading: false,
-        autoClose: 3000,
-        closeButton: true,
-      });
-
-      if (selectedUser?.id === userId) {
-        closeModal();
-      }
-    } catch (error: any) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to delete user. Please try again.",
-        { autoClose: 5000 }
-      );
-    }
-  };
-  
-
   return (
     <div className="min-h-screen">
       <SideBar
@@ -248,8 +168,10 @@ export const AdminDashboard: React.FC = () => {
         toggle={() => setSidebarOpen((o) => !o)}
         title="Admin Panel"
         navItems={navItems}
-        userInfo={{ name:  `${user?.firstName} ${user?.lastName}`,
-          email: user?.email || "", }}
+        userInfo={{
+          name: `${user?.firstName} ${user?.lastName}`,
+          email: user?.email || "",
+        }}
       />
 
       <div
@@ -257,83 +179,94 @@ export const AdminDashboard: React.FC = () => {
           sidebarOpen ? "ml-64" : "ml-16"
         }`}
       >
-        <h1 className="text-2xl font-semibold text-gray-900">Admin Dashboard</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">
+          Admin Dashboard
+        </h1>
 
         <main className="p-8 space-y-8">
           {/* Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
             <StatCard label="Total Users" value={totalUsers} />
             <StatCard label="Verified Users" value={activeUsers} />
             {/* <StatCard label="Total Donations" value={totalDonations} /> */}
           </div>
           {/* User Management as Cards */}
 
-<section>
-  <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-    User Management
-  </h2>
+          <section>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              User Management
+            </h2>
 
-  <div className="overflow-x-auto bg-white rounded-xl shadow">
-    <table className="min-w-full table-auto">
-      <thead className="bg-purple-600 sticky top-0 z-10">
-        <tr>
-          {["Name", "Email", "Role", "Verified", "Actions"].map((hdr) => (
-            <th
-              key={hdr}
-              className="px-6 py-3 text-left text-sm font-semibold text-white uppercase"
-            >
-              {hdr}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {users.length === 0 ? (
-          <tr>
-            <td colSpan={5} className="px-6 py-8 text-center text-sm text-gray-500">
-              No users found
-            </td>
-          </tr>
-        ) : (
-          users.map((u, idx) => (
-            <tr
-              key={u.id}
-              className={`
+            <div className="overflow-x-auto bg-white rounded-xl shadow">
+              <table className="min-w-full table-auto">
+                <thead className="bg-purple-600 sticky top-0 z-10">
+                  <tr>
+                    {["Name", "Email", "Role", "Verified", "Actions"].map(
+                      (hdr) => (
+                        <th
+                          key={hdr}
+                          className="px-6 py-3 text-left text-sm font-semibold text-white uppercase"
+                        >
+                          {hdr}
+                        </th>
+                      )
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="px-6 py-8 text-center text-sm text-gray-500"
+                      >
+                        No users found
+                      </td>
+                    </tr>
+                  ) : (
+                    users.map((u, idx) => (
+                      <tr
+                        key={u.id}
+                        className={`
                 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
                 hover:bg-purple-50 transition-colors
               `}
-            >
-              <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                {u.firstName} {u.lastName}
-              </td>
-              <td className="px-6 py-4 text-sm text-gray-800 truncate">
-                {u.email}
-              </td>
-              <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                {u.role}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {u.isVerified
-                  ? <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Verified</span>
-                  : <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">Unverified</span>
-                }
-              </td>
-              <td className="px-10 py-4 flex space-x-4 whitespace-nowrap">
-                <button
-                  onClick={() => openUserSettings(u)}
-                  className="text-purple-600 hover:underline text-sm"
-                >
-                  Edit
-                </button>
-              </td>
-            </tr>
-          ))
-        )}
-      </tbody>
-    </table>
-  </div>
-</section>
-
+                      >
+                        <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                          {u.firstName} {u.lastName}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-800 truncate">
+                          {u.email}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                          {u.role}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {u.isVerified ? (
+                            <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                              Verified
+                            </span>
+                          ) : (
+                            <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">
+                              Unverified
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-10 py-4 flex space-x-4 whitespace-nowrap">
+                          <button
+                            onClick={() => openUserSettings(u)}
+                            className="text-purple-600 hover:underline text-sm"
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
 
           {/* Other sections remain the same */}
           {/* ... */}

@@ -8,7 +8,6 @@ import { Header } from "../../components/Header";
 import {
   MailIcon,
   HomeIcon,
-  UsersIcon,
   ClipboardListIcon,
   SettingsIcon,
 } from "lucide-react";
@@ -39,10 +38,10 @@ const navItems = [
     href: "/dashboard",
   },
   {
-        label: "Recipient Approvals",
-        icon: <ClipboardListIcon className="w-5 h-5" />,
-        href: "/admin/recipients/approvals",
- },
+    label: "Recipient Approvals",
+    icon: <ClipboardListIcon className="w-5 h-5" />,
+    href: "/admin/recipients/approvals",
+  },
   {
     label: "Reports",
     icon: <ClipboardListIcon className="w-5 h-5" />,

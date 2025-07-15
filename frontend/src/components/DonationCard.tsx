@@ -21,11 +21,7 @@ export const DonationCard: React.FC<DonationCardProps> = ({
   donor,
   quantity,
   location,
-  expires,
-  distance,
   status,
-  onClaim,
-  showButton = true,
   variant = "available",
   onFeedback,
 }) => {

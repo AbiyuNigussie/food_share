@@ -115,7 +115,15 @@ const RecipientIcon = () => (
 const LogisticsIcon = () => (
   <svg width="48" height="48" fill="none" viewBox="0 0 48 48">
     <rect width="48" height="48" rx="24" fill="#6366F1" fillOpacity="0.15" />
-    <rect x="14" y="20" width="20" height="10" rx="2" stroke="#6366F1" strokeWidth="2" />
+    <rect
+      x="14"
+      y="20"
+      width="20"
+      height="10"
+      rx="2"
+      stroke="#6366F1"
+      strokeWidth="2"
+    />
     <circle cx="18" cy="32" r="2" stroke="#6366F1" strokeWidth="2" />
     <circle cx="30" cy="32" r="2" stroke="#6366F1" strokeWidth="2" />
   </svg>
@@ -141,9 +149,6 @@ const sectionVariant: Variants = {
     transition: { delay: i * 0.2, duration: 0.6 },
   }),
 };
-
-
-const sectionBg = "bg-gradient-to-br from-purple-50 to-indigo-50";
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -176,9 +181,24 @@ const features = [
 ];
 
 const howItWorks = [
-  { title: "Donors", desc: "Easily list surplus food items with a few clicks.", icon: DonorIcon, link: "/faq/donor" },
-  { title: "Recipients", desc: "Browse available donations and request what’s needed.", icon: RecipientIcon, link: "/faq/recipient" },
-  { title: "Logistics", desc: "Coordinate fast, eco‑conscious deliveries to recipients.", icon: LogisticsIcon, link: "/faq/logistics" },
+  {
+    title: "Donors",
+    desc: "Easily list surplus food items with a few clicks.",
+    icon: DonorIcon,
+    link: "/faq/donor",
+  },
+  {
+    title: "Recipients",
+    desc: "Browse available donations and request what’s needed.",
+    icon: RecipientIcon,
+    link: "/faq/recipient",
+  },
+  {
+    title: "Logistics",
+    desc: "Coordinate fast, eco‑conscious deliveries to recipients.",
+    icon: LogisticsIcon,
+    link: "/faq/logistics",
+  },
 ];
 
 const stats = [
@@ -201,19 +221,21 @@ const timeline = [
 ];
 const testimonials = [
   {
-    quote: "This platform helped us redirect 3 tons of surplus food to communities in need last quarter.",
+    quote:
+      "This platform helped us redirect 3 tons of surplus food to communities in need last quarter.",
     author: "Sarah Johnson",
     role: "Food Service Director, FreshMarket Co.",
   },
   {
-    quote: "As a small shelter, we've been able to reliably source fresh produce through this network.",
+    quote:
+      "As a small shelter, we've been able to reliably source fresh produce through this network.",
     author: "Miguel Rodriguez",
     role: "Director, Hope Community Shelter",
   },
 ];
 
 const LandingPage: React.FC = () => {
-  const [impact, setImpact] = useState(25000);
+  const [impact] = useState(25000);
   return (
     <MainNavLayout>
       {/* HERO */}
@@ -225,15 +247,15 @@ const LandingPage: React.FC = () => {
             className="w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-black/40 to-indigo-900/80" />
-          <motion.div 
+          <motion.div
             className="absolute inset-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
           >
-            <Lottie 
-              animationData={FoodPattern} 
-              className="w-full h-full opacity-30" 
+            <Lottie
+              animationData={FoodPattern}
+              className="w-full h-full opacity-30"
             />
           </motion.div>
         </div>
@@ -246,9 +268,9 @@ const LandingPage: React.FC = () => {
           >
             <SimpleTypewriter
               words={[
-                "Reduce Waste.", 
-                "Feed Communities.", 
-                "Transform Food Systems."
+                "Reduce Waste.",
+                "Feed Communities.",
+                "Transform Food Systems.",
               ]}
             />
           </motion.h1>
@@ -267,7 +289,10 @@ const LandingPage: React.FC = () => {
               href="/register"
               className="inline-flex items-center justify-center bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-bold py-3 px-8 rounded-full shadow-xl hover:scale-105 transition-transform duration-300 whitespace-nowrap"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1, transition: { delay: 1.2, duration: 0.8 } }}
+              animate={{
+                opacity: 1,
+                transition: { delay: 1.2, duration: 0.8 },
+              }}
             >
               Join Our Network
               <ArrowRight className="ml-2 w-5 h-5" />
@@ -276,7 +301,10 @@ const LandingPage: React.FC = () => {
               href="/about"
               className="inline-flex items-center justify-center bg-white/20 text-white font-bold py-3 px-8 rounded-full shadow-xl hover:bg-white/30 transition-colors duration-300 whitespace-nowrap"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1, transition: { delay: 1.4, duration: 0.8 } }}
+              animate={{
+                opacity: 1,
+                transition: { delay: 1.4, duration: 0.8 },
+              }}
             >
               How It Works
             </motion.a>
@@ -284,7 +312,7 @@ const LandingPage: React.FC = () => {
         </div>
 
         {/* Stats bar */}
-        <motion.div 
+        <motion.div
           className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-sm py-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0, transition: { delay: 1.8 } }}
@@ -304,7 +332,9 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* WHY IT MATTERS */}
-      <section className={`py-24 bg-gradient-to-br from-purple-50 to-indigo-50`}>
+      <section
+        className={`py-24 bg-gradient-to-br from-purple-50 to-indigo-50`}
+      >
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <motion.h2
@@ -316,7 +346,7 @@ const LandingPage: React.FC = () => {
             >
               Solving the Food Waste Crisis
             </motion.h2>
-            <motion.p 
+            <motion.p
               className="text-lg text-gray-600"
               initial="hidden"
               whileInView="visible"
@@ -324,11 +354,11 @@ const LandingPage: React.FC = () => {
               variants={sectionVariant}
               custom={0.5}
             >
-              Our platform addresses critical challenges in the food supply chain 
-              through technology and community collaboration.
+              Our platform addresses critical challenges in the food supply
+              chain through technology and community collaboration.
             </motion.p>
           </div>
-          
+
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((f, i) => {
               const IconComp = f.icon;
@@ -359,9 +389,9 @@ const LandingPage: React.FC = () => {
               );
             })}
           </div>
-      
+
           {/* Impact Visualization */}
-          <motion.div 
+          <motion.div
             className="mt-20 bg-white rounded-2xl p-8 shadow-lg border border-purple-100"
             initial="hidden"
             whileInView="visible"
@@ -380,13 +410,15 @@ const LandingPage: React.FC = () => {
                 <div className="text-5xl font-bold text-purple-600 mb-2">
                   {impact.toLocaleString()}+
                 </div>
-                <p className="text-lg text-gray-700">Meals to communities in need</p>
+                <p className="text-lg text-gray-700">
+                  Meals to communities in need
+                </p>
               </div>
               <div className="w-full md:w-2/5">
                 <div className="bg-gray-200 rounded-full h-4 mb-2 overflow-hidden">
-                  <div 
-                    className="bg-purple-600 h-4 rounded-full" 
-                    style={{ width: '85%' }}
+                  <div
+                    className="bg-purple-600 h-4 rounded-full"
+                    style={{ width: "85%" }}
                   ></div>
                 </div>
                 <div className="flex justify-between text-sm text-gray-600">
@@ -412,7 +444,7 @@ const LandingPage: React.FC = () => {
             >
               Streamlined Food Recovery
             </motion.h2>
-            <motion.p 
+            <motion.p
               className="text-lg text-gray-600"
               initial="hidden"
               whileInView="visible"
@@ -420,10 +452,11 @@ const LandingPage: React.FC = () => {
               variants={sectionVariant}
               custom={0.5}
             >
-              Our three-step process makes food recovery simple, efficient, and impactful
+              Our three-step process makes food recovery simple, efficient, and
+              impactful
             </motion.p>
           </div>
-          
+
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 mb-16">
             {howItWorks.map((h, i) => {
               const IconComp = h.icon;
@@ -439,7 +472,7 @@ const LandingPage: React.FC = () => {
                 >
                   <div className="flex items-center mb-4">
                     <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-4">
-                      <span className="text-purple-700 font-bold">{i+1}</span>
+                      <span className="text-purple-700 font-bold">{i + 1}</span>
                     </div>
                     <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
                       <IconComp />
@@ -459,9 +492,9 @@ const LandingPage: React.FC = () => {
               );
             })}
           </div>
-          
+
           {/* Benefits Section */}
-          <motion.div 
+          <motion.div
             className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-8 text-white"
             initial="hidden"
             whileInView="visible"
@@ -486,7 +519,17 @@ const LandingPage: React.FC = () => {
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M12 20h9"></path>
                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                   </svg>
@@ -520,24 +563,23 @@ const LandingPage: React.FC = () => {
                 Trusted by Food System Leaders
               </h2>
               <p className="text-lg text-gray-600 mb-8">
-                Join hundreds of organizations already creating positive change 
+                Join hundreds of organizations already creating positive change
                 through our platform
               </p>
-              
+
               <div className="grid grid-cols-3 gap-6">
                 {partners.map((partner, i) => (
-                  <motion.div 
+                  <motion.div
                     key={i}
                     className="bg-white rounded-lg p-4 flex items-center justify-center h-24 border border-gray-200"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
-                    
                   >
-                    <img 
-                      src={partner.logo } 
-                      height ={"199px"}
+                    <img
+                      src={partner.logo}
+                      height={"199px"}
                       width={"188px"}
                       alt={partner.name}
                       className="max-h-12 max-w-full object-contain"
@@ -546,7 +588,7 @@ const LandingPage: React.FC = () => {
                 ))}
               </div>
             </motion.div>
-            
+
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -557,10 +599,10 @@ const LandingPage: React.FC = () => {
               <h2 className="text-4xl font-bold text-purple-700 mb-6">
                 Success Stories
               </h2>
-              
+
               <div className="space-y-6">
                 {testimonials.map((testimonial, i) => (
-                  <motion.div 
+                  <motion.div
                     key={i}
                     className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-purple-500"
                     initial={{ opacity: 0, x: -20 }}
@@ -568,7 +610,9 @@ const LandingPage: React.FC = () => {
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.2 }}
                   >
-                    <p className="text-gray-700 italic mb-4">"{testimonial.quote}"</p>
+                    <p className="text-gray-700 italic mb-4">
+                      "{testimonial.quote}"
+                    </p>
                     <div className="flex items-center">
                       <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3">
                         <span className="text-purple-700 font-bold">
@@ -577,7 +621,9 @@ const LandingPage: React.FC = () => {
                       </div>
                       <div>
                         <p className="font-semibold">{testimonial.author}</p>
-                        <p className="text-sm text-gray-600">{testimonial.role}</p>
+                        <p className="text-sm text-gray-600">
+                          {testimonial.role}
+                        </p>
                       </div>
                     </div>
                   </motion.div>
@@ -585,7 +631,7 @@ const LandingPage: React.FC = () => {
               </div>
             </motion.div>
           </div>
-          
+
           {/* OUR STORY */}
           <motion.div
             className="bg-white rounded-2xl shadow-lg overflow-hidden"
@@ -601,17 +647,19 @@ const LandingPage: React.FC = () => {
                   Our Journey
                 </h3>
                 <p className="text-gray-700 mb-6">
-                  Founded in 2024 during the global food crisis, our platform has 
-                  evolved into a comprehensive solution connecting all stakeholders 
-                  in the food recovery ecosystem.
+                  Founded in 2024 during the global food crisis, our platform
+                  has evolved into a comprehensive solution connecting all
+                  stakeholders in the food recovery ecosystem.
                 </p>
-                
+
                 <div className="space-y-4 mb-8">
                   {timeline.map((item, i) => (
                     <div key={i} className="flex">
                       <div className="mr-4">
                         <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-                          <span className="font-bold text-purple-700">{item.year}</span>
+                          <span className="font-bold text-purple-700">
+                            {item.year}
+                          </span>
                         </div>
                       </div>
                       <div>
@@ -620,7 +668,7 @@ const LandingPage: React.FC = () => {
                     </div>
                   ))}
                 </div>
-                
+
                 <a
                   href="/about"
                   className="inline-flex items-center text-purple-600 font-semibold hover:underline"
@@ -628,12 +676,9 @@ const LandingPage: React.FC = () => {
                   Read Our Full Story <ArrowRight className="ml-2 w-4 h-4" />
                 </a>
               </div>
-              
+
               <div className="bg-gray-100 min-h-[400px] flex items-center justify-center p-4">
-                <Lottie 
-                  animationData={aboutAnim} 
-                  className="w-full max-w-md" 
-                />
+                <Lottie animationData={aboutAnim} className="w-full max-w-md" />
               </div>
             </div>
           </motion.div>
@@ -659,7 +704,7 @@ const LandingPage: React.FC = () => {
           variants={blobVariants}
           animate="animate"
         />
-        
+
         <div className="relative max-w-3xl mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Ready to Make an Impact?
@@ -667,7 +712,7 @@ const LandingPage: React.FC = () => {
           <p className="text-xl mb-8">
             Join our network of food system changemakers today
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/register"
@@ -688,11 +733,11 @@ const LandingPage: React.FC = () => {
               Logistics Partner
             </a>
           </div>
-          
+
           <div className="mt-10 pt-8 border-t border-white/20">
             <p className="mb-4">Have questions about getting started?</p>
-            <a 
-              href="/contact" 
+            <a
+              href="/contact"
               className="inline-flex items-center text-white/90 hover:text-white underline"
             >
               Contact our team <ArrowRight className="ml-1 w-4 h-4" />
@@ -705,66 +750,153 @@ const LandingPage: React.FC = () => {
       <footer className="py-12 bg-gray-900 text-gray-400">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-4">
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">Sustainable Food Optimization</h3>
-            <p className="mb-4">Redistributing surplus food to combat hunger and reduce waste.</p>
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Sustainable Food Optimization
+            </h3>
+            <p className="mb-4">
+              Redistributing surplus food to combat hunger and reduce waste.
+            </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white">
                 <span className="sr-only">Twitter</span>
-                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/>
+                <svg
+                  className="h-6 w-6"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
                 </svg>
               </a>
               <a href="#" className="text-gray-400 hover:text-white">
                 <span className="sr-only">LinkedIn</span>
-                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                <svg
+                  className="h-6 w-6"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
                 </svg>
               </a>
             </div>
           </div>
-          
+
           <div>
             <h4 className="font-semibold text-white mb-4">Platform</h4>
             <ul className="space-y-2">
-              <li><a href="/features" className="hover:text-white transition">Features</a></li>
-              <li><a href="/how-it-works" className="hover:text-white transition">How It Works</a></li>
-              <li><a href="/pricing" className="hover:text-white transition">Pricing</a></li>
-              <li><a href="/security" className="hover:text-white transition">Security</a></li>
-              <li><a href="/case-studies" className="hover:text-white transition">Case Studies</a></li>
+              <li>
+                <a href="/features" className="hover:text-white transition">
+                  Features
+                </a>
+              </li>
+              <li>
+                <a href="/how-it-works" className="hover:text-white transition">
+                  How It Works
+                </a>
+              </li>
+              <li>
+                <a href="/pricing" className="hover:text-white transition">
+                  Pricing
+                </a>
+              </li>
+              <li>
+                <a href="/security" className="hover:text-white transition">
+                  Security
+                </a>
+              </li>
+              <li>
+                <a href="/case-studies" className="hover:text-white transition">
+                  Case Studies
+                </a>
+              </li>
             </ul>
           </div>
-          
+
           <div>
             <h4 className="font-semibold text-white mb-4">Resources</h4>
             <ul className="space-y-2">
-              <li><a href="/blog" className="hover:text-white transition">Blog</a></li>
-              <li><a href="/guides" className="hover:text-white transition">Guides</a></li>
-              <li><a href="/webinars" className="hover:text-white transition">Webinars</a></li>
-              <li><a href="/faq/:rol" className="hover:text-white transition">FAQ</a></li>
-              <li><a href="/api" className="hover:text-white transition">API Documentation</a></li>
+              <li>
+                <a href="/blog" className="hover:text-white transition">
+                  Blog
+                </a>
+              </li>
+              <li>
+                <a href="/guides" className="hover:text-white transition">
+                  Guides
+                </a>
+              </li>
+              <li>
+                <a href="/webinars" className="hover:text-white transition">
+                  Webinars
+                </a>
+              </li>
+              <li>
+                <a href="/faq/:rol" className="hover:text-white transition">
+                  FAQ
+                </a>
+              </li>
+              <li>
+                <a href="/api" className="hover:text-white transition">
+                  API Documentation
+                </a>
+              </li>
             </ul>
           </div>
-          
+
           <div>
             <h4 className="font-semibold text-white mb-4">Company</h4>
             <ul className="space-y-2">
-              <li><a href="/about" className="hover:text-white transition">About Us</a></li>
-              <li><a href="/careers" className="hover:text-white transition">Careers</a></li>
-              <li><a href="/contact" className="hover:text-white transition">Contact</a></li>
-              <li><a href="/partners" className="hover:text-white transition">Partners</a></li>
-              <li><a href="/press" className="hover:text-white transition">Press</a></li>
+              <li>
+                <a href="/about" className="hover:text-white transition">
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a href="/careers" className="hover:text-white transition">
+                  Careers
+                </a>
+              </li>
+              <li>
+                <a href="/contact" className="hover:text-white transition">
+                  Contact
+                </a>
+              </li>
+              <li>
+                <a href="/partners" className="hover:text-white transition">
+                  Partners
+                </a>
+              </li>
+              <li>
+                <a href="/press" className="hover:text-white transition">
+                  Press
+                </a>
+              </li>
             </ul>
           </div>
         </div>
-        
+
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-gray-800 text-sm">
           <div className="md:flex md:items-center md:justify-between">
-            <p>&copy; {new Date().getFullYear()} Sustainable Food Optimization. All rights reserved.</p>
+            <p>
+              &copy; {new Date().getFullYear()} Sustainable Food Optimization.
+              All rights reserved.
+            </p>
             <div className="mt-4 md:mt-0">
               <ul className="flex space-x-6">
-                <li><a href="/privacy" className="hover:text-white transition">Privacy Policy</a></li>
-                <li><a href="/terms" className="hover:text-white transition">Terms of Service</a></li>
-                <li><a href="/cookies" className="hover:text-white transition">Cookie Policy</a></li>
+                <li>
+                  <a href="/privacy" className="hover:text-white transition">
+                    Privacy Policy
+                  </a>
+                </li>
+                <li>
+                  <a href="/terms" className="hover:text-white transition">
+                    Terms of Service
+                  </a>
+                </li>
+                <li>
+                  <a href="/cookies" className="hover:text-white transition">
+                    Cookie Policy
+                  </a>
+                </li>
               </ul>
             </div>
           </div>

@@ -34,7 +34,7 @@ export const ClaimedDonationCard: React.FC<DonationCardProps> = ({
       </div>
       <div className="space-y-2 text-right">
         <p>{quantity}</p>
-        <p>{location}</p>
+        <p>{location.label}</p>
       </div>
     </div>
     {status === "completed" && onFeedback && (

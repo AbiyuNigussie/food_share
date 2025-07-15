@@ -1,7 +1,7 @@
 // src/pages/RecipientInsightsPage.tsx
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { authService } from '../services/authService';
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { authService } from "../services/authService";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -15,7 +15,15 @@ import {
   Filler, // <-- ADD THIS
 } from "chart.js";
 import { Bar, Line, Doughnut } from "react-chartjs-2";
-import { MapPinIcon, HomeIcon, BarChart2Icon, GiftIcon, ListIcon, UserIcon, SettingsIcon, PackageIcon, ClipboardListIcon } from 'lucide-react';
+import {
+  MapPinIcon,
+  HomeIcon,
+  BarChart2Icon,
+  GiftIcon,
+  SettingsIcon,
+  PackageIcon,
+  ClipboardListIcon,
+} from "lucide-react";
 import { SideBar, NavItem } from "../components/SideBar";
 import { Header } from "../components/Header";
 
@@ -39,18 +47,35 @@ export const RecipientInsightsPage: React.FC = () => {
   const [stats, setStats] = useState<ReceiveStat[]>([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [recentReceipts, setRecentReceipts] = useState<
-    { date: string; volume: number; foodType: string }[]
-  >([]);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear] = useState(new Date().getFullYear());
   const [totalLbs, setTotalLbs] = useState(0);
 
   const navItems: NavItem[] = [
-    { label: "Dashboard", icon: <HomeIcon className="w-5 h-5" />, href: "/dashboard" },
-    { label: "My Claims", icon: <PackageIcon className="w-5 h-5" />, href: "/dashboard/my-donations" },
-    { label: "Insights", icon: <BarChart2Icon />, href: "/dashboard/recipient-insights" },
-    { label: "My Needs", icon: <ClipboardListIcon className="w-5 h-5" />, href: "/dashboard/recipient-needs" },
-    { label: "Settings", icon: <SettingsIcon className="w-5 h-5" />, href: "/dashboard/settings" },
+    {
+      label: "Dashboard",
+      icon: <HomeIcon className="w-5 h-5" />,
+      href: "/dashboard",
+    },
+    {
+      label: "My Claims",
+      icon: <PackageIcon className="w-5 h-5" />,
+      href: "/dashboard/my-donations",
+    },
+    {
+      label: "Insights",
+      icon: <BarChart2Icon />,
+      href: "/dashboard/recipient-insights",
+    },
+    {
+      label: "My Needs",
+      icon: <ClipboardListIcon className="w-5 h-5" />,
+      href: "/dashboard/recipient-needs",
+    },
+    {
+      label: "Settings",
+      icon: <SettingsIcon className="w-5 h-5" />,
+      href: "/dashboard/settings",
+    },
   ];
 
   useEffect(() => {
@@ -83,11 +108,13 @@ export const RecipientInsightsPage: React.FC = () => {
   const totalReceived = stats.reduce((sum, s) => sum + s.volume, 0);
 
   // Chart data
-  const labels = stats.map(s => {
+  const labels = stats.map((s) => {
     const [year, month] = s.month.split("-");
-    return new Date(Number(year), Number(month) - 1).toLocaleString('default', { month: 'short' });
+    return new Date(Number(year), Number(month) - 1).toLocaleString("default", {
+      month: "short",
+    });
   });
-  const volumes = stats.map(s => s.volume);
+  const volumes = stats.map((s) => s.volume);
 
   const barData = {
     labels,
@@ -124,9 +151,18 @@ export const RecipientInsightsPage: React.FC = () => {
       {
         data: volumes,
         backgroundColor: [
-          "#A78BFA", "#C4B5FD", "#DDD6FE", "#F3E8FF",
-          "#EDE9FE", "#E0E7FF", "#C7D2FE", "#A5B4FC",
-          "#818CF8", "#6366F1", "#4F46E5", "#4338CA",
+          "#A78BFA",
+          "#C4B5FD",
+          "#DDD6FE",
+          "#F3E8FF",
+          "#EDE9FE",
+          "#E0E7FF",
+          "#C7D2FE",
+          "#A5B4FC",
+          "#818CF8",
+          "#6366F1",
+          "#4F46E5",
+          "#4338CA",
         ],
       },
     ],
@@ -140,7 +176,10 @@ export const RecipientInsightsPage: React.FC = () => {
         title="Recipient Portal"
         logoIcon={<GiftIcon className="w-6 h-6 text-purple-600" />}
         navItems={navItems}
-        userInfo={{ name: `${user?.firstName} ${user?.lastName}`, email: user?.email || "" }}
+        userInfo={{
+          name: `${user?.firstName} ${user?.lastName}`,
+          email: user?.email || "",
+        }}
       />
 
       <main
@@ -152,13 +191,16 @@ export const RecipientInsightsPage: React.FC = () => {
         <Header title="RECIPIENT INSIGHTS" />
 
         <div className="max-w-7xl mx-auto space-y-8 mt-6 w-full">
-
           {/* Stat Card */}
           <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="col-span-1 md:col-span-3 bg-gradient-to-r from-purple-600 to-indigo-500 rounded-2xl shadow-lg p-8 flex flex-col items-center justify-center text-white">
-              <span className="text-lg font-semibold tracking-wide mb-2">Total Received</span>
+              <span className="text-lg font-semibold tracking-wide mb-2">
+                Total Received
+              </span>
               <span className="text-6xl font-extrabold">{totalReceived}</span>
-              <span className="text-md opacity-80 mt-1">All‑time Donations received</span>
+              <span className="text-md opacity-80 mt-1">
+                All‑time Donations received
+              </span>
             </div>
           </section>
 
@@ -189,7 +231,9 @@ export const RecipientInsightsPage: React.FC = () => {
               />
             </div>
             <div className="bg-white rounded-2xl shadow p-6 flex flex-col items-center justify-center h-[400px]">
-              <h3 className="font-semibold text-gray-700 mb-2">Monthly Distribution</h3>
+              <h3 className="font-semibold text-gray-700 mb-2">
+                Monthly Distribution
+              </h3>
               <Doughnut
                 data={doughnutData}
                 options={{
@@ -214,8 +258,6 @@ export const RecipientInsightsPage: React.FC = () => {
             </div>
             {/* Add more stat cards as needed */}
           </div>
-
-
         </div>
       </main>
     </>

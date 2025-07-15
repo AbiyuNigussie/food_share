@@ -8,7 +8,6 @@ import {
   TruckIcon,
   HomeIcon,
   BarChart2Icon,
-  UserIcon,
   SettingsIcon,
 } from "lucide-react";
 import PaginationControls from "../components/PaginationControl";
@@ -16,10 +15,26 @@ import { SideBar } from "../components/SideBar";
 import { Header } from "../components/Header";
 
 const donorNavItems = [
-  { label: "Dashboard",    icon: <HomeIcon className="w-5 h-5" />,           href: "/dashboard" },
-  { label: "My Donations", icon: <GiftIcon className="w-5 h-5" />,          href: "/dashboard/Donor-Donations" },
-  { label: "Insights",     icon: <BarChart2Icon className="w-5 h-5" />,     href: "/dashboard/donor-insights" },
-  { label: "Settings",     icon: <SettingsIcon className="w-5 h-5" />,       href: "/dashboard/settings" },
+  {
+    label: "Dashboard",
+    icon: <HomeIcon className="w-5 h-5" />,
+    href: "/dashboard",
+  },
+  {
+    label: "My Donations",
+    icon: <GiftIcon className="w-5 h-5" />,
+    href: "/dashboard/Donor-Donations",
+  },
+  {
+    label: "Insights",
+    icon: <BarChart2Icon className="w-5 h-5" />,
+    href: "/dashboard/donor-insights",
+  },
+  {
+    label: "Settings",
+    icon: <SettingsIcon className="w-5 h-5" />,
+    href: "/dashboard/settings",
+  },
 ];
 
 export const DonorDonationsPage: React.FC = () => {
@@ -44,7 +59,7 @@ export const DonorDonationsPage: React.FC = () => {
   useEffect(() => {
     authService
       .getDonorMatchedDonations(token, matchedPage, rows)
-      .then(res => {
+      .then((res) => {
         setMatched(res.data.data);
         setMatchedTotal(res.data.total);
       })
@@ -54,7 +69,7 @@ export const DonorDonationsPage: React.FC = () => {
   useEffect(() => {
     authService
       .getDonorClaimedDonations(token, claimedPage, rows)
-      .then(res => {
+      .then((res) => {
         setClaimed(res.data.data);
         setClaimedTotal(res.data.total);
       })
@@ -74,7 +89,7 @@ export const DonorDonationsPage: React.FC = () => {
       <div className="h-1 bg-purple-500" />
       <div className="p-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-          {items.map(it => (
+          {items.map((it) => (
             <div
               key={it.id}
               className="relative flex flex-col bg-white border-l-4 border-purple-500 rounded-lg shadow hover:shadow-lg transition p-8"
@@ -85,7 +100,7 @@ export const DonorDonationsPage: React.FC = () => {
                 </span>
               </div>
               <div className="space-y-1 mb-4">{content(it)}</div>
-                            {/* View Details button */}
+              {/* View Details button */}
               {"delivery" in it && (it as any).delivery?.id && (
                 <button
                   onClick={() =>
@@ -102,20 +117,28 @@ export const DonorDonationsPage: React.FC = () => {
               )}
               <div className="mt-auto text-xs text-gray-400 text-right">
                 {activeTab === "matched" ? (
-                  <>Matched on{" "}
-                    {new Date((it as any).createdAt).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "2-digit",
-                      year: "numeric",
-                    })}
+                  <>
+                    Matched on{" "}
+                    {new Date((it as any).createdAt).toLocaleDateString(
+                      undefined,
+                      {
+                        month: "short",
+                        day: "2-digit",
+                        year: "numeric",
+                      }
+                    )}
                   </>
                 ) : (
-                  <>Claimed on{" "}
-                    {new Date((it as any).createdAt).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "2-digit",
-                      year: "numeric",
-                    })}
+                  <>
+                    Claimed on{" "}
+                    {new Date((it as any).createdAt).toLocaleDateString(
+                      undefined,
+                      {
+                        month: "short",
+                        day: "2-digit",
+                        year: "numeric",
+                      }
+                    )}
                   </>
                 )}
               </div>
@@ -130,7 +153,7 @@ export const DonorDonationsPage: React.FC = () => {
     <>
       <SideBar
         open={sidebarOpen}
-        toggle={() => setSidebarOpen(o => !o)}
+        toggle={() => setSidebarOpen((o) => !o)}
         title="Donor Portal"
         navItems={donorNavItems}
         userInfo={{
@@ -147,10 +170,8 @@ export const DonorDonationsPage: React.FC = () => {
       >
         <Header title="MY DONATIONS" />
         <div className="max-w-7xl mx-auto space-y-8">
-
-
           <div className="flex space-x-12 mb-8">
-            {(["matched", "claimed"] as const).map(tab => (
+            {(["matched", "claimed"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -176,56 +197,7 @@ export const DonorDonationsPage: React.FC = () => {
 
           {activeTab === "matched" ? (
             matched.length ? (
-              renderCardsContainer(matched, d => (
-                <>
-                  <h3 className="text-2xl font-bold text-gray-800">
-                    {(d as any).foodType}
-                  </h3>
-                  <p className="text-gray-700">
-                    <strong>Qty:</strong> {(d as any).quantity}
-                  </p>
-                  <p className="text-gray-700">
-                    <strong>Recipient:</strong>{" "}
-                    {(d as any).recipient?.user
-                      ? `${(d as any).recipient.user.firstName} ${
-                          (d as any).recipient.user.lastName
-                        }`
-                      : "TBD"}
-                  </p>
-                {(d as any).delivery && (
-                    <div className="mt-3 space-y-2">
-                      <p className="text-gray-700">
-                        <strong>Delivery Status:</strong>{" "}
-                        <span
-                          className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${
-                            (d as any).delivery.deliveryStatus === "DELIVERED"
-                              ? "bg-green-200 text-green-800"
-                              : (d as any).delivery.deliveryStatus === "IN_TRANSIT"
-                              ? "bg-blue-200 text-blue-800"
-                              : "bg-yellow-200 text-yellow-800"
-                          }`}
-                        >
-                          {(d as any).delivery.deliveryStatus.replace(/_/g, " ")}
-                        </span>
-                      </p>
-                      <p className="text-gray-700">
-                        {d.recipient?.organization && (
-                          <span className="ml-2 text-sm text-gray-500">
-                            ({d.recipient.organization})
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                  )}
-                </>
-              ))
-            ) : (
-              <div className="text-center text-purple-500 py-12">
-                No matched donations yet.
-              </div>
-            )
-          ) : claimed.length ? (
-            renderCardsContainer(claimed, d => (
+              renderCardsContainer(matched, (d) => (
                 <>
                   <h3 className="text-2xl font-bold text-gray-800">
                     {(d as any).foodType}
@@ -249,12 +221,16 @@ export const DonorDonationsPage: React.FC = () => {
                           className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${
                             (d as any).delivery.deliveryStatus === "DELIVERED"
                               ? "bg-green-200 text-green-800"
-                              : (d as any).delivery.deliveryStatus === "IN_TRANSIT"
+                              : (d as any).delivery.deliveryStatus ===
+                                "IN_TRANSIT"
                               ? "bg-blue-200 text-blue-800"
                               : "bg-yellow-200 text-yellow-800"
                           }`}
                         >
-                          {(d as any).delivery.deliveryStatus.replace(/_/g, " ")}
+                          {(d as any).delivery.deliveryStatus.replace(
+                            /_/g,
+                            " "
+                          )}
                         </span>
                       </p>
                       <p className="text-gray-700">
@@ -267,6 +243,56 @@ export const DonorDonationsPage: React.FC = () => {
                     </div>
                   )}
                 </>
+              ))
+            ) : (
+              <div className="text-center text-purple-500 py-12">
+                No matched donations yet.
+              </div>
+            )
+          ) : claimed.length ? (
+            renderCardsContainer(claimed, (d) => (
+              <>
+                <h3 className="text-2xl font-bold text-gray-800">
+                  {(d as any).foodType}
+                </h3>
+                <p className="text-gray-700">
+                  <strong>Qty:</strong> {(d as any).quantity}
+                </p>
+                <p className="text-gray-700">
+                  <strong>Recipient:</strong>{" "}
+                  {(d as any).recipient?.user
+                    ? `${(d as any).recipient.user.firstName} ${
+                        (d as any).recipient.user.lastName
+                      }`
+                    : "TBD"}
+                </p>
+                {(d as any).delivery && (
+                  <div className="mt-3 space-y-2">
+                    <p className="text-gray-700">
+                      <strong>Delivery Status:</strong>{" "}
+                      <span
+                        className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${
+                          (d as any).delivery.deliveryStatus === "DELIVERED"
+                            ? "bg-green-200 text-green-800"
+                            : (d as any).delivery.deliveryStatus ===
+                              "IN_TRANSIT"
+                            ? "bg-blue-200 text-blue-800"
+                            : "bg-yellow-200 text-yellow-800"
+                        }`}
+                      >
+                        {(d as any).delivery.deliveryStatus.replace(/_/g, " ")}
+                      </span>
+                    </p>
+                    <p className="text-gray-700">
+                      {d.recipient?.organization && (
+                        <span className="ml-2 text-sm text-gray-500">
+                          ({d.recipient.organization})
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                )}
+              </>
             ))
           ) : (
             <div className="text-center text-purple-500 py-12">
@@ -279,10 +305,8 @@ export const DonorDonationsPage: React.FC = () => {
               page={activeTab === "matched" ? matchedPage : claimedPage}
               rowsPerPage={rows}
               total={activeTab === "matched" ? matchedTotal : claimedTotal}
-              onPageChange={p =>
-                activeTab === "matched"
-                  ? setMatchedPage(p)
-                  : setClaimedPage(p)
+              onPageChange={(p) =>
+                activeTab === "matched" ? setMatchedPage(p) : setClaimedPage(p)
               }
             />
           </div>

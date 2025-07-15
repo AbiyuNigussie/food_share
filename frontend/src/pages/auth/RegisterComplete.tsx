@@ -28,15 +28,15 @@ const RegisterComplete: React.FC = () => {
       } = JSON.parse(data);
 
       try {
-        await authService.register(
+        await authService.register({
           firstName,
           lastName,
           email,
           phoneNumber,
           password,
           role,
-          organization
-        );
+          organization,
+        });
 
         sessionStorage.removeItem("recipientRegistrationData");
         toast.success("Registration complete! Please verify email.");
