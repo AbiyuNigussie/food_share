@@ -42,13 +42,12 @@ app.use("/api/admin", adminRoute);
 app.use("/api/my", MDrouter);
 app.use("/api/contact", contactRoutes);
 
-
 app.get("/", (req, res) => {
   res.send("Hello, welcome to the ekekiyans gang with typeScript and Express!");
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on ${PORT}`);
 });
 
 app.use("/api/admin", adminRoute);
