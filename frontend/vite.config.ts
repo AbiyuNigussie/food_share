@@ -6,7 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
 
-  base: process.env.VITE_BASE_PATH || "/food_share/frontend/",
+  base: process.env.VITE_BASE_PATH || "/food_share",
 
   server: {
     proxy: {
