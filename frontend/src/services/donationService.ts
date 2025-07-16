@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.BASE_URL || "http://localhost:5000/api";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 interface DonationFilters {
   page?: number;
@@ -49,7 +49,7 @@ export const donationService = {
     });
   },
   getMyDonations: (token: string, page: number, rowsPerPage: number) =>
-    axios.get("/api/donations/my", {
+    axios.get(`${BASE_URL}/donations/my`, {
       params: { page, rowsPerPage },
       headers: { Authorization: `Bearer ${token}` },
     }),

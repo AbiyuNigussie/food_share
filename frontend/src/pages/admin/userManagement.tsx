@@ -13,10 +13,7 @@ export default function UserManagement() {
 
   useEffect(() => {
     axios
-      .get(
-        import.meta.env.VITE_BASE_URL + "/admin/users" ||
-          "http://localhost:5000/api/admin/users"
-      )
+      .get(import.meta.env.VITE_BASE_URL + "/admin/users")
       .then((res) => setUsers(res.data))
       .catch((err) => console.error("Failed to fetch users", err));
   }, []);
