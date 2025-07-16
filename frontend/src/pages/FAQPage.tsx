@@ -3,8 +3,6 @@ import { Info, Users, Truck, HelpCircle, Search, HandHeart, PackageCheck, Chevro
 import MainNavLayout from "../layouts/MainNavLayout";
 import { motion } from "framer-motion";
 
-
-// FAQ data remains the same...
 const faqSections = [
 	{
 		title: "General Information",

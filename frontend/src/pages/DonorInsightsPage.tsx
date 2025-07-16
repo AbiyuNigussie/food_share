@@ -1,4 +1,3 @@
-// src/pages/DonorInsightsPage.tsx
 import React, { useState, useEffect } from "react";
 import clsx from "clsx";
 import { BarChart2Icon, HomeIcon, GiftIcon, SettingsIcon } from "lucide-react";

@@ -1,4 +1,3 @@
-// src/pages/AboutPage.tsx
 "use client";
 
 import MainNavLayout from "../layouts/MainNavLayout";
@@ -15,9 +14,6 @@ import {
 import Tilt from "react-parallax-tilt";
 import { HandHeart, PackageCheck, Truck } from "lucide-react";
 
-// ——————————————————
-// Data
-// ——————————————————
 const stats = [
   { label: "Meals Rescued", value: 12500, icon: FaHandHoldingHeart },
   { label: "Active Donors", value: 850, icon: FaUsers },
@@ -178,13 +174,9 @@ function CommunityIcon() {
   );
 }
 
-// ——————————————————
-// Component
-// ——————————————————
 export default function AboutPage() {
   return (
     <MainNavLayout>
-      {/* Removed space-y classes to control spacing manually */}
       <div>
         {/* HERO */}
         <section className="relative h-[70vh] bg-cover bg-center">
