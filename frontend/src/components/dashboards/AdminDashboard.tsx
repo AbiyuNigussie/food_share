@@ -50,7 +50,7 @@ export const AdminDashboard: React.FC = () => {
       try {
         // 1. Users
         const usersRes = await axios.get<User[]>(
-          `${import.meta.env.VITE_BASE_URL}/api/admin/users`
+          `${import.meta.env.VITE_BASE_URL}/admin/users`
         );
         const allUsers = usersRes.data;
         setUsers(allUsers);
