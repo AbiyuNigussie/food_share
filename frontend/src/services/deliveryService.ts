@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:5000/api";
 
 interface DeliveryFilter {
   page?: number;
@@ -27,17 +27,15 @@ export const deliveryService = {
     });
   },
 
-  getMyDeliveries: (
-    token: string,
-    filters: DeliveryFilter = {}
-  ) => {
+  getMyDeliveries: (token: string, filters: DeliveryFilter = {}) => {
     const params = new URLSearchParams();
     if (filters.page) params.append("page", filters.page.toString());
-    if (filters.rowsPerPage) params.append("rowsPerPage", filters.rowsPerPage.toString());
+    if (filters.rowsPerPage)
+      params.append("rowsPerPage", filters.rowsPerPage.toString());
     if (filters.status) params.append("status", filters.status);
 
     return axios.get(`${BASE_URL}/my/deliveries?${params.toString()}`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     });
   },
 

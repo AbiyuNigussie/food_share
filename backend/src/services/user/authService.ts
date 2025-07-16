@@ -97,7 +97,6 @@ const register = async (
 
     // Optionally send verification email here
     const emailSubject = "Verify Your Email";
-    // const verificationUrl = `http://localhost:${process.env.PORT}/api/user/auth/verify-email?token=${verificationToken}`;
     const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=${verificationToken}`;
     const emailBody = `Click the following link to verify your email: ${verificationUrl}`;
     console.log("Verification URL:", verificationUrl);

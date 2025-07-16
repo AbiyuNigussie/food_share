@@ -14,9 +14,12 @@ export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/admin/users")
-      .then(res => setUsers(res.data))
-      .catch(err => console.error("Failed to fetch users", err));
+    axios
+      .get(
+        import.meta.env.VITE_BASE_URL || "http://localhost:5000/api/admin/users"
+      )
+      .then((res) => setUsers(res.data))
+      .catch((err) => console.error("Failed to fetch users", err));
   }, []);
 
   return (
@@ -31,7 +34,7 @@ export default function UserManagement() {
           </tr>
         </thead>
         <tbody>
-          {users.map(user => (
+          {users.map((user) => (
             <tr key={user.id}>
               <td className="border p-2">{user.name}</td>
               <td className="border p-2">{user.email}</td>
