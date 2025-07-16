@@ -39,7 +39,7 @@ export const AdminDashboard: React.FC = () => {
   //const totalDonationss = donations.length;
 
   useEffect(() => {
-    fetch("/api/admin/users")
+    fetch(`${import.meta.env.VITE_BASE_URL}/admin/users`)
       .then((res) => res.json())
       .then((data) => setUsers(data))
       .catch((err) => console.error("Failed to fetch users:", err));
@@ -49,14 +49,18 @@ export const AdminDashboard: React.FC = () => {
     const fetchStats = async () => {
       try {
         // 1. Users
-        const usersRes = await axios.get<User[]>("/api/admin/users");
+        const usersRes = await axios.get<User[]>(
+          `${import.meta.env.VITE_BASE_URL}/api/admin/users`
+        );
         const allUsers = usersRes.data;
         setUsers(allUsers);
         setTotalUsers(allUsers.length);
         setActiveUsers(allUsers.filter((u) => u.isVerified).length);
 
         // 2. Donations
-        const donationsRes = await axios.get<{ data: any[] }>("/api/donations");
+        const donationsRes = await axios.get<{ data: any[] }>(
+          `${import.meta.env.VITE_BASE_URL}/donations`
+        );
         const allDonations = donationsRes.data.data;
         setTotalDonations(allDonations.length);
       } catch (err: any) {
@@ -124,7 +128,7 @@ export const AdminDashboard: React.FC = () => {
       const toastId = toast.loading("Updating user...");
 
       const response = await axios.put(
-        `/api/admin/users/${selectedUser.id}`,
+        `${import.meta.env.VITE_BASE_URL}/admin/users/${selectedUser.id}`,
         editedUser,
         {
           headers: {
