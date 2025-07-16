@@ -52,7 +52,10 @@ export const getMessagesWithResponses = async (token: string) => {
 };
 
 // Admin: delete a contact message (requires admin token)
-export const deleteContactMessage = async (messageId: string, token: string) => {
+export const deleteContactMessage = async (
+  messageId: string,
+  token: string
+) => {
   const res = await axios.delete(`${API_URL}/${messageId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });

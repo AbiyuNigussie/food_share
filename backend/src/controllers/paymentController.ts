@@ -44,7 +44,7 @@ export const handleInitialize = async (req: Request, res: Response) => {
       success_url:
         success_url ||
         `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancel_url || `http://localhost:5173/register`,
+      cancel_url: cancel_url || process.env.CLIENT_URL,
       metadata: {
         plan,
         email,
