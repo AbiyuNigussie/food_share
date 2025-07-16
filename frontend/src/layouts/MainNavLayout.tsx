@@ -62,7 +62,7 @@ const MainNavLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 </a>
                 <div className="relative group">
                   <a 
-                    href="/faq" 
+                    href="/faq/:rol" 
                     className="flex items-center text-gray-600 hover:text-purple-700 font-medium transition-colors"
                   >
                     FAQ

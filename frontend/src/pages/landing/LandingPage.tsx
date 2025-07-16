@@ -1,4 +1,3 @@
-// src/pages/LandingPage.tsx
 import React, { useEffect, useState } from "react";
 import { ArrowRight, HeartHandshake, Leaf, Users } from "lucide-react";
 import { motion, Variants, Easing } from "framer-motion";
@@ -7,7 +6,6 @@ import MainNavLayout from "../../layouts/MainNavLayout";
 import aboutAnim from "../../assets/about.json";
 import FoodPattern from "../../assets/FoodPattern.json";
 
-// --- Inline Typewriter (no external dep) ---
 function SimpleTypewriter({
   words,
   speed = 80,

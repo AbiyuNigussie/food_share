@@ -1,4 +1,3 @@
-// src/components/DonationSection.tsx
 import React, { ReactNode } from "react";
 import { DonationCardProps } from "../types";
 import { AvailableDonationCard } from "./AvailableDonationCard";

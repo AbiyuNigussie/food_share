@@ -1,4 +1,3 @@
-// src/pages/Admin/UserManagement.tsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -7,7 +6,6 @@ interface User {
   name: string;
   email: string;
   role: string;
-  // Add more fields based on your model
 }
 
 export default function UserManagement() {

@@ -20,6 +20,7 @@ import Tab from "../components/tracking/Tab";
 import InfoCard from "../components/tracking/InfoCard";
 import DriverInfo from "../components/tracking/DriverInfo";
 import SectionTitle from "../components/tracking/SectionTitle";
+import TimelineAccordion from "../components/TimelineAccordion";
 
 export const LiveTrackingPage: React.FC = () => {
   const [tab, setTab] = useState<"default" | "satellite" | "traffic">(
@@ -207,7 +208,8 @@ export const LiveTrackingPage: React.FC = () => {
         </div>
 
         <div className="space-y-2 mb-6">
-          <SectionTitle>Checkpoints</SectionTitle>
+          <SectionTitle>Timeline</SectionTitle>
+          <TimelineAccordion events={delivery?.timeline ?? []} />
         </div>
       </div>
 

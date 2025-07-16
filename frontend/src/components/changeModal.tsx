@@ -9,9 +9,9 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   donationId: string;
-  initialAddress?: string;       // e.g. “123 Main St, City…”
-  initialLatitude?: number;      // may be undefined if not provided
-  initialLongitude?: number;     // may be undefined if not provided
+  initialAddress?: string;       
+  initialLatitude?: number;    
+  initialLongitude?: number;     
   initialPhone?: string;
   token: string;
   onClaimed: () => void;
