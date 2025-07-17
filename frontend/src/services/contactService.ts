@@ -1,9 +1,7 @@
 import axios from "axios";
 
 // Base URL for contact endpoints
-const API_URL =
-  `${import.meta.env.VITE_BASE_URL}/contact` ||
-  "http://localhost:5000/api/contact";
+const API_URL = `${import.meta.env.VITE_BASE_URL}/contact`;
 
 // Submit a new contact message (public)
 export const submitContactMessage = async (data: {

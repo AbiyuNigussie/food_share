@@ -241,7 +241,7 @@ const Register: React.FC = () => {
                 />
                 <input
                   type="text"
-                  placeholder="Official Website URL"
+                  placeholder="Official Website URL (Optional)"
                   className="border border-gray-200 p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition md:col-span-2"
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
@@ -252,6 +252,7 @@ const Register: React.FC = () => {
                   className="border border-gray-200 p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition md:col-span-2"
                   value={contactPersonTitle}
                   onChange={(e) => setContactPersonTitle(e.target.value)}
+                  required
                 />
                 <select
                   className="border border-gray-200 p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition md:col-span-2"

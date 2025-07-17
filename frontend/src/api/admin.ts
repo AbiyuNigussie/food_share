@@ -23,7 +23,7 @@ const getAuthHeaders = () => {
 };
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL + "/api/admin",
+  baseURL: import.meta.env.VITE_BASE_URL + "/admin",
 });
 
 export const fetchDashboardStats = () =>

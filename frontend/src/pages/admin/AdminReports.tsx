@@ -95,7 +95,7 @@ export default function AdminReports() {
   >("month");
 
   useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}/api/admin/report/donations`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/admin/report/donations`)
       .then((res) => res.json())
       .then((data) => setReports(Array.isArray(data.data) ? data.data : []))
       .catch((err) => console.error("Failed to fetch report:", err));
