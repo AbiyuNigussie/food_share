@@ -34,37 +34,37 @@ const team = [
   {
     name: "Yonatan Girmachew",
     role: "Frontend Engineering",
-    image: "/assets/images/dev1.jpg",
-    linkedin: "#",
-    github: "#",
+    image: "/assets/images/yoni.png",
+    linkedin: "https://www.linkedin.com/in/yonatan-girmachew-b693b3291/",
+    github: "https://github.com/yonatan1611",
   },
   {
     name: "Dagim Sisay",
     role: "Backend Development",
-    image: "/assets/images/dev2.jpg",
-    linkedin: "#",
-    github: "#",
+    image: "/assets/images/dagi.png",
+    linkedin: "https://www.linkedin.com/in/dagi-sis-545a03323/",
+    github: "https://github.com/dagimsisay6",
   },
   {
     name: "Mohammed Elamin",
     role: "UI/UX Design",
-    image: "/assets/images/dev3.jpg",
+    image: "/assets/images/mame.jpg",
     linkedin: "#",
     github: "#",
   },
   {
     name: "Lealem Mekuria",
     role: "Project Management",
-    image: "/assets/images/dev4.jpg",
-    linkedin: "#",
-    github: "#",
+    image: "/assets/images/lealem.jpg",
+    linkedin: "https://www.linkedin.com/in/lealem-mekuria-599737322/",
+    github: "https://github.com/lealem07",
   },
   {
     name: "Abiyu Nigussie",
     role: "Full Stack Development",
-    image: "/assets/images/dev5.jpg",
-    linkedin: "#",
-    github: "#",
+    image: "/assets/images/abiyu.png",
+    linkedin: "https://www.linkedin.com/in/abiyu-nigussie-531381260/",
+    github: "https://github.com/AbiyuNigussie",
   },
 ];
 
@@ -408,8 +408,8 @@ export default function AboutPage() {
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     </div>
                     <p className="ml-3">
-                      <span className="font-medium">AI-powered matching</span>{" "}
-                      algorithm optimizing distribution
+                      <span className="font-medium">Matching Algorithm</span>{" "}
+                      Score and Sort algorithm optimizing distribution
                     </p>
                   </div>
                   <div className="flex">
