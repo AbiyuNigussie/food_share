@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .logo { max-width: 150px; margin-bottom: 20px; }
+    .title { color: #2c3e50; }
+    .section { margin-bottom: 20px; }
+    .divider { border-top: 1px solid #eee; margin: 25px 0; }
+    .footer { text-align: center; color: #7f8c8d; font-size: 0.9em; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 8px; background: #f8f9fa; }
+    td { padding: 8px; border-bottom: 1px solid #eee; }
+    .text-right { text-align: right; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 class="title">FoodShare Subscription Receipt</h1>
+      <p>Thank you for your support!</p>
+    </div>
+    
+    <div class="section">
+      <table>
+        <tr>
+          <th>Transaction ID:</th>
+          <td>{{transaction_id}}</td>
+          <th>Date:</th>
+          <td>{{date}}</td>
+        </tr>
+        <tr>
+          <th>Customer:</th>
+          <td>{{full_name}}</td>
+          <th>Plan:</th>
+          <td>{{plan}}</td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="section">
+      <h2>Payment Details</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th class="text-right">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{plan}} Subscription Plan</td>
+            <td class="text-right">{{amount}} {{currency}}</td>
+          </tr>
+          <tr>
+            <td class="text-right"><strong>Total</strong></td>
+            <td class="text-right"><strong>{{amount}} {{currency}}</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="footer">
+      <p>If you have any questions, contact support@foodshare.app</p>
+      <p>&copy; {{year}} FoodShare. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

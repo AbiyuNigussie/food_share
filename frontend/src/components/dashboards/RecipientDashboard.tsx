@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Header } from "../Header";
 import { StatCard } from "../StatCard";
 import { SearchBar } from "../SearchBar";
@@ -7,7 +7,6 @@ import { DonationSection } from "../DonationSection";
 import { Donation } from "../../types";
 import { SideBar } from "../SideBar";
 import clsx from "clsx";
-import { authService } from "../../services/authService";
 import {
   HomeIcon,
   PackageIcon,
@@ -16,6 +15,7 @@ import {
   BarChart2Icon,
   TruckIcon,
 } from "lucide-react";
+import { authService } from "../../services/authService";
 import { donationService } from "../../services/donationService";
 import { useAuth } from "../../contexts/AuthContext";
 import PaginationControls from "../PaginationControl";
@@ -67,9 +67,10 @@ const RecipientDashboard: React.FC = () => {
     null
   );
 
+  // Re-fetch when page or type changes (not on every keystroke)
   useEffect(() => {
     fetchAvailableDonations();
-  }, [search, typeFilter, currentPage]);
+  }, [typeFilter, currentPage]);
 
   useEffect(() => {
     fetchInsights();
@@ -82,7 +83,7 @@ const RecipientDashboard: React.FC = () => {
       const res = await donationService.getFilteredDonations(token, {
         page: currentPage,
         rowsPerPage,
-        donorName: search,
+        donorName: undefined,      // server search disabled
         foodType: typeFilter !== "All Types" ? typeFilter : undefined,
         status: "pending",
       });
@@ -91,9 +92,7 @@ const RecipientDashboard: React.FC = () => {
         res.data.data.map((d: any) => ({
           id: d.id,
           title: d.title || d.donationType,
-          donor:
-            `${d.donor.user.firstName} ${d.donor.user.lastName}`.trim() ||
-            "Unknown Donor",
+          donor: `${d.donor.user.firstName} ${d.donor.user.lastName}`.trim() || "Unknown Donor",
           foodType: d.foodType,
           quantity: d.quantity,
           location: d.location,
@@ -121,8 +120,22 @@ const RecipientDashboard: React.FC = () => {
     }
   };
 
-  const totalReceived = stat.reduce((sum, s) => sum + s.volume, 0);
+  // client-side search filter
+  const filteredDonations = useMemo(() => {
+    const q = search.toLowerCase();
+    return availableDonations.filter((d) => {
+      const foodType = (d.foodType || "").toLowerCase();
+      const title    = (d.title    || "").toLowerCase();
+      const donor    = (d.donor    || "").toLowerCase();
+      return (
+        foodType.includes(q) ||
+        title.includes(q) ||
+        donor.includes(q)
+      );
+    });
+  }, [availableDonations, search]);
 
+  const totalReceived = stat.reduce((sum, s) => sum + s.volume, 0);
   const volumes = stat.map((s) => s.volume);
 
   const stats = [
@@ -145,8 +158,8 @@ const RecipientDashboard: React.FC = () => {
     <>
       <SearchBar
         value={search}
-        onChange={setSearch}
-        placeholder="Search by food or donor"
+        onChange={(v) => { setSearch(v); setCurrentPage(1); }}
+        placeholder="Search by food, title or donor"
       />
       <FilterSelect
         options={[
@@ -158,7 +171,7 @@ const RecipientDashboard: React.FC = () => {
           "Meat & Poultry",
         ]}
         value={typeFilter}
-        onChange={setTypeFilter}
+        onChange={(v) => { setTypeFilter(v); setCurrentPage(1); }}
       />
     </>
   );
@@ -179,15 +192,13 @@ const RecipientDashboard: React.FC = () => {
       <div
         className={clsx(
           "min-h-screen p-10 transition-all",
-          sidebarOpen ? "ml-64" : "ml-16",
-          ""
+          sidebarOpen ? "ml-64" : "ml-16"
         )}
       >
         <Header title="RECIPIENT DASHBOARD">
           <TruckIcon className="w-6 h-6 text-purple-500 mr-2" />
         </Header>
 
-        {/* KPI stats with radial progress */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
           {stats.map(({ label, value, max, trendData }) => (
             <StatCard
@@ -200,15 +211,13 @@ const RecipientDashboard: React.FC = () => {
           ))}
         </div>
 
-        {/* sticky controls */}
         <div className="sticky top-24 z-10 bg-white/60 backdrop-blur-md p-4 rounded-2xl mb-4 shadow">
           <div className="flex flex-col sm:flex-row gap-4">{controls}</div>
         </div>
 
-        {/* donation grid */}
         <DonationSection
           title="Available Donations"
-          donations={availableDonations}
+          donations={filteredDonations}
           controls={null}
           layout="grid"
           loading={loading}
