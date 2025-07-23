@@ -130,7 +130,8 @@ export const LiveTrackingPage: React.FC = () => {
       <div className="w-96 p-6 space-y-6 overflow-y-auto">
         <button
           onClick={() =>
-            navigate(`/dashboard/deliveries/delivery-details/${delivery.id}`)
+            //navigate(`/dashboard/deliveries/delivery-details/${delivery.id}`)
+            navigate(-2)
           }
           className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
         >

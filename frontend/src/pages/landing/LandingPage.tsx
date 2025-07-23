@@ -215,7 +215,7 @@ const timeline = [
   { year: "2020", event: "Platform concept developed during food crisis" },
   { year: "2021", event: "Beta launch in 3 cities with 50+ partners" },
   { year: "2022", event: "National expansion with logistics integration" },
-  { year: "2023", event: "AI-powered matching system implemented" },
+  { year: "2023", event: "matching Algorithm system implemented" },
 ];
 const testimonials = [
   {
