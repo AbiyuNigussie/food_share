@@ -253,7 +253,7 @@ export const RecipientInsightsPage: React.FC = () => {
             </div>
             <div className="bg-white rounded-2xl shadow p-6 flex flex-col items-center">
               <span className="text-2xl font-bold">{totalLbs}</span>
-              <span className="text-gray-500">Total Received (lbs)</span>
+              <span className="text-gray-500">Total Received (Kgs)</span>
             </div>
             {/* Add more stat cards as needed */}
           </div>
