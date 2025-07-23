@@ -97,6 +97,15 @@ export const DeliveryDetails: React.FC = () => {
     statusIcons[delivery.deliveryStatus as keyof typeof statusIcons] ||
     statusIcons.default;
 
+
+ const handleGoBack = () => {
+  if (window.history.state && window.history.state.idx > 0) {
+    navigate(-1);
+  } else {
+    navigate('/', { replace: true }); // Reset history
+  }
+};
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -104,7 +113,7 @@ export const DeliveryDetails: React.FC = () => {
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate(-1)}
+              onClick={handleGoBack}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-gray-600" />
