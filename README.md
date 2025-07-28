@@ -1,4 +1,4 @@
-# Food Share Platform – Logistics Dashboard
+# Food Share Platform 
 
 ![MIT License](https://img.shields.io/badge/License-MIT-green.svg)
 
